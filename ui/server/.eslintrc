@@ -1,0 +1,9 @@
+{
+  "env": {
+    "node": true
+  },
+  "rules": {
+    "import/extensions": "off",
+    "no-console": "off"
+  }
+}
