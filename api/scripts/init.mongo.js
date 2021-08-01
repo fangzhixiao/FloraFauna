@@ -10,50 +10,39 @@
 /* global db print */
 /* eslint no-restricted-globals: "off" */
 
-db.issues.remove({});
-db.deleted_issues.remove({});
+db.posts.deleteMany({});
+db.deleted_posts.deleteMany({});
 
-const issuesDB = [
+const postsDB = [
   {
     id: 1,
-    status: 'New',
-    owner: 'Ravan',
-    effort: 5,
+    title: 'A Turkey',
+    authorId: 1,
     created: new Date('2019-01-15'),
-    due: undefined,
-    title: 'Error in console when clicking Add',
-    description: 'Steps to recreate the problem:'
-      + '\n1. Refresh the browser.'
-      + '\n2. Select "New" in the filter'
-      + '\n3. Refresh the browser again. Note the warning in the console:'
-      + '\n   Warning: Hash history cannot PUSH the same path; a new entry'
-      + '\n   will not be added to the history stack'
-      + '\n4. Click on Add.'
-      + '\n5. There is an error in console, and add doesn\'t work.',
+    location: '42.341202420969076, -71.09062007732885',
+    sightingType: 'animal',
+    description: 'I saw a turkey',
   },
   {
     id: 2,
-    status: 'Assigned',
-    owner: 'Eddie',
-    effort: 14,
-    created: new Date('2019-01-16'),
-    due: new Date('2019-02-01'),
-    title: 'Missing bottom border on panel',
-    description: 'There needs to be a border in the bottom in the panel'
-      + ' that appears when clicking on Add',
+    title: 'A Poppy',
+    authorId: 2,
+    created: new Date('2019-05-20'),
+    location: '42.29863208367337, -71.11892728387238',
+    sightingType: 'plant',
+    description: 'I saw a poppy',
   },
 ];
 
-db.issues.insertMany(issuesDB);
-const count = db.issues.count();
-print('Inserted', count, 'issues');
+db.posts.insertMany(postsDB);
+const count = db.posts.count();
+print('Inserted', count, 'posts');
 
-db.counters.remove({ _id: 'issues' });
-db.counters.insert({ _id: 'issues', current: count });
+db.counters.deleteMany({ _id: 'posts' });
+db.counters.insertOne({ _id: 'posts', current: count });
 
-db.issues.createIndex({ id: 1 }, { unique: true });
-db.issues.createIndex({ status: 1 });
-db.issues.createIndex({ owner: 1 });
-db.issues.createIndex({ created: 1 });
-db.issues.createIndex({ title: 'text', description: 'text' });
-db.deleted_issues.createIndex({ id: 1 }, { unique: true });
+db.posts.createIndex({ id: 1 }, { unique: true });
+db.posts.createIndex({ author: 1 });
+db.posts.createIndex({ created: 1 });
+db.posts.createIndex({ title: 'text', description: 'text' });
+db.deleted_posts.createIndex({ id: 1 }, { unique: true });
