@@ -11,7 +11,7 @@
 /* eslint no-restricted-globals: "off" */
 
 const authors = ['Ravan', 'Eddie', 'Pieta', 'Parvati', 'Victor'];
-const sightingTypes = ['animal', 'plant'];
+const sightingTypes = ['Animal', 'Plant'];
 const initialCount = db.posts.count();
 
 for (let i = 0; i < 100; i += 1) {

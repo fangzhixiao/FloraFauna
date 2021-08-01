@@ -20,7 +20,7 @@ const postsDB = [
     authorId: 1,
     created: new Date('2019-01-15'),
     location: '42.341202420969076, -71.09062007732885',
-    sightingType: 'animal',
+    sightingType: 'Animal',
     description: 'I saw a turkey',
   },
   {
@@ -29,7 +29,7 @@ const postsDB = [
     authorId: 2,
     created: new Date('2019-05-20'),
     location: '42.29863208367337, -71.11892728387238',
-    sightingType: 'plant',
+    sightingType: 'Plant',
     description: 'I saw a poppy',
   },
 ];
