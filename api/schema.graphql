@@ -43,7 +43,6 @@ undefined fields will remain unmmodified."""
 input PostUpdateInputs {
     title: String
     sightingType: SightingType
-    created: GraphQLDate
     images: [String]
     description: String
 }
