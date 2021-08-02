@@ -18,6 +18,7 @@ type Post {
     sightingType: SightingType!
     authorId: Int!
     created: GraphQLDate!
+    spotted: GraphQLDate!
     images:[String]
     description: String
     comments: [Comment]
@@ -33,13 +34,15 @@ type User {
 }
 
 "Toned down Posts, used as inputs, without server generated values."
-"Where is this used?"
 input PostInputs {
+    _id: ID!
+    id: Int!
     title: String!
     sightingType: SightingType!
-    author: String!
+    authorId: Int!
     created: GraphQLDate!
-    images: [String]
+    spotted: GraphQLDate!
+    images:[String]
     description: String
 }
 
