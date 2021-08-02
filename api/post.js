@@ -30,8 +30,8 @@ function validate(post) {
   if (post.title.length < 3) {
     errors.push('Field "title" must be at least 3 characters long.');
   }
-  if (post.sightingType !== 'Plant' && post.sightingType !== 'Animal') {
-    errors.push('Field "sightingType" must be "Plant" or "Animal"');
+  if (post.sightingType !== 'PLANT' && post.sightingType !== 'ANIMAL') {
+    errors.push('Field "sightingType" must be "PLANT" or "ANIMAL"');
   }
   if (errors.length > 0) {
     throw new UserInputError('Invalid input(s)', { errors });

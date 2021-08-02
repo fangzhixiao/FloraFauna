@@ -19,7 +19,7 @@ const postsDB = [
     title: 'A Turkey',
     authorId: 1,
     created: new Date('2019-01-15'),
-    sightingType: 'Animal',
+    sightingType: 'ANIMAL',
     description: 'I saw a turkey',
   },
   {
@@ -27,7 +27,7 @@ const postsDB = [
     title: 'A Poppy',
     authorId: 2,
     created: new Date('2019-05-20'),
-    sightingType: 'Plant',
+    sightingType: 'PLANT',
     description: 'I saw a poppy',
   },
 ];

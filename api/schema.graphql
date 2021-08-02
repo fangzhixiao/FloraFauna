@@ -1,8 +1,14 @@
 scalar GraphQLDate
 
 enum SightingType {
-    Animal
-    Plant
+    ANIMAL
+    PLANT
+}
+
+type Comment {
+    commenter: String!
+    content:String!
+    created: GraphQLDate!
 }
 
 type Post {
@@ -10,25 +16,24 @@ type Post {
     id: Int!
     title: String!
     sightingType: SightingType!
-    author: String!
+    authorId: Int!
     created: GraphQLDate!
     images:[String]
     description: String
-}
-
-type PostList {
-    posts: [Post!]!
+    comments: [Comment]
 }
 
 type User {
+    _id: ID!
+    id: Int!
     signedIn: Boolean!
-    givenName: String
     name: String
     email: String
-    posts: [Int]
+    postIds: [Int]
 }
 
-"Toned down Issue, used as inputs, without server generated values."
+"Toned down Posts, used as inputs, without server generated values."
+"Where is this used?"
 input PostInputs {
     title: String!
     sightingType: SightingType!
@@ -38,7 +43,7 @@ input PostInputs {
     description: String
 }
 
-"""Inputs for issueUpdate: all are optional. Whichever is specified will be set to the given value,
+"""Inputs for postUpdate: all are optional. Whichever is specified will be set to the given value,
 undefined fields will remain unmmodified."""
 input PostUpdateInputs {
     title: String
@@ -48,14 +53,16 @@ input PostUpdateInputs {
 }
 
 ##### Top level declarations
+# Query and Mutation define the entry point of every GraphQL query
 
 type Query {
     about: String!
     user: User!
     postList(
-      sightingType: SightingType
-      search: String
-    ): PostList!
+        sightingType: SightingType
+        search: String
+        authorId: Int
+    ): [Post!]!
     post(id: Int!): Post!
 }
 
