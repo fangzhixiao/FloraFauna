@@ -33,6 +33,10 @@ const browserConfig = {
           },
         },
       },
+      {
+        test: /\.css$/i,
+        use: ['style-loader', 'css-loader'],
+      },
     ],
   },
   optimization: {
@@ -74,6 +78,10 @@ const serverConfig = {
             ],
           },
         },
+      },
+      {
+        test: /\.css$/i,
+        use: ['style-loader', 'css-loader'],
       },
     ],
   },

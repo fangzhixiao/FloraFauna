@@ -19,6 +19,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "moment": "^2.29.1",
+    "react-datetime": "^3.0.4",
     "babel-polyfill": "^6.26.0",
     "bootstrap": "^3.4.1",
     "dotenv": "^6.2.0",

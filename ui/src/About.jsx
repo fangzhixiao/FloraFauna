@@ -28,11 +28,22 @@ export default class About extends React.Component {
 
     return (
       <div className="text-center">
-        <h3>Issue Tracker version 0.9</h3>
+        <h3>Flora Fauna Sighting Map version 0.9</h3>
         <h4>
           {apiAbout}
         </h4>
+        <small>
+          <hr />
+          <p className="text-center">
+            Full source code available at this
+            {' '}
+            <a href="https://github.ccs.neu.edu/NEU-CS5610-SU21/TeamOrb-FloraFauna">
+              GitHub repository
+            </a>
+          </p>
+        </small>
       </div>
+
     );
   }
 }

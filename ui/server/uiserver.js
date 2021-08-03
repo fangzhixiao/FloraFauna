@@ -72,3 +72,8 @@ app.listen(8000, () => {
 if (module.hot) {
   module.hot.accept('./render.jsx');
 }
+
+
+// For image uploading --> will likely have to put in something here.
+// backend likely will pass a url for image and front end will have to fetch the image
+// what about passing the image to back end? probably upload to S3 then pass url back

@@ -35,7 +35,7 @@ class IssueEdit extends React.Component {
       }
     }`;
 
-    const { params: { id } } = match;
+    const { params: { id } } = match; // this is how it knows what issue to edit?
     const result = await graphQLFetch(query, { id }, showError);
     return result;
   }

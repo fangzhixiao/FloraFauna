@@ -2,7 +2,6 @@ import React from 'react';
 import {
   Navbar,
   Nav,
-  NavItem,
   NavDropdown,
   MenuItem,
   Glyphicon,
@@ -10,7 +9,7 @@ import {
   Col,
 } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-import IssueAddNavItem from './IssueAddNavItem.jsx';
+import PostAddNavItem from './PostAddNavItem.jsx';
 import SignInNavItem from './SignInNavItem.jsx';
 import Contents from './Contents.jsx';
 import Search from './Search.jsx';
@@ -22,26 +21,15 @@ function NavBar({ user, onUserChange }) {
   return (
     <Navbar fluid>
       <Navbar.Header>
-        <Navbar.Brand>Issue Tracker</Navbar.Brand>
+        <Navbar.Brand>Flora and Fauna Sighting</Navbar.Brand>
       </Navbar.Header>
-      <Nav>
-        <LinkContainer exact to="/">
-          <NavItem>Home</NavItem>
-        </LinkContainer>
-        <LinkContainer to="/issues">
-          <NavItem>Issue List</NavItem>
-        </LinkContainer>
-        <LinkContainer to="/report">
-          <NavItem>Report</NavItem>
-        </LinkContainer>
-      </Nav>
       <Col sm={5}>
         <Navbar.Form>
           <Search />
         </Navbar.Form>
       </Col>
       <Nav pullRight>
-        <IssueAddNavItem user={user} />
+        <PostAddNavItem user={user} />
         <SignInNavItem user={user} onUserChange={onUserChange} />
 
         <NavDropdown
@@ -58,25 +46,10 @@ function NavBar({ user, onUserChange }) {
   );
 }
 
-function Footer() {
-  return (
-    <small>
-      <hr />
-      <p className="text-center">
-        Full source code available at this
-        {' '}
-        <a href="https://github.ccs.neu.edu/NEU-CS5610-SU21/ZhiningFang-Book">
-          GitHub repository
-        </a>
-      </p>
-    </small>
-  );
-}
-
 export default class Page extends React.Component {
   static async fetchData(cookie) {
     const query = `query { user {
-      signedIn givenName
+      signedIn
     }}`;
     const data = await graphQLFetch(query, null, null, cookie);
     return data;
@@ -113,7 +86,6 @@ export default class Page extends React.Component {
             <Contents />
           </UserContext.Provider>
         </Grid>
-        <Footer />
       </div>
     );
   }
