@@ -51,6 +51,7 @@ undefined fields will remain unmmodified."""
 input PostUpdateInputs {
     title: String
     sightingType: SightingType
+    spotted: GraphQLDate!
     images: [String]
     description: String
 }
