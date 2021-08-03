@@ -89,7 +89,7 @@ class PostMap extends React.Component {
 
     return (
       <React.Fragment>
-        <Col xs={6} sm={4} md={3} lg={2}>
+        <Col xs="7" sm="6" md="5" lg="4">
           <Panel>
             <Panel.Heading>
               <Panel.Title>Filter</Panel.Title>

@@ -2,7 +2,6 @@ import React from 'react';
 import URLSearchParams from 'url-search-params';
 import { withRouter } from 'react-router-dom';
 import Datetime from 'react-datetime';
-// import 'react-datetime/css/react-datetime.css';
 
 import {
   ButtonToolbar,
@@ -13,6 +12,7 @@ import {
   InputGroup,
   Row,
   Col,
+  Panel,
 } from 'react-bootstrap';
 
 class PostSightingFilter extends React.Component {
@@ -97,11 +97,14 @@ class PostSightingFilter extends React.Component {
 
     return (
       <Col>
-        <Row xs={6} sm={4} md={3} lg={2}>
-          <FormGroup>
+        <Panel>
+          <Panel.Heading>
+            <Panel.Title toggle>Sighting Type</Panel.Title>
+          </Panel.Heading>
+          <Panel.Body collapsible>
             <ControlLabel>Sighting Type</ControlLabel>
             <FormControl
-              componentClass="sightingType"
+              componentClass="select"
               value={sightingType}
               onChange={this.onChangeStatus}
             >
@@ -109,10 +112,13 @@ class PostSightingFilter extends React.Component {
               <option value="Animal">Animal</option>
               <option value="Plant">Plant</option>
             </FormControl>
-          </FormGroup>
-        </Row>
-        <Row xs={6} sm={4} md={3} lg={2}>
-          <FormGroup>
+          </Panel.Body>
+        </Panel>
+        <Panel>
+          <Panel.Heading>
+            <Panel.Title toggle>Sighting Date</Panel.Title>
+          </Panel.Heading>
+          <Panel.Body collapsible>
             <ControlLabel>Sighting Date</ControlLabel>
             <Datetime
               value={date}
@@ -120,10 +126,13 @@ class PostSightingFilter extends React.Component {
               input={false}
               onChange={this.onChangeDate}
             />
-          </FormGroup>
-        </Row>
-        <Row xs={6} sm={4} md={3} lg={2}>
-          <FormGroup>
+          </Panel.Body>
+        </Panel>
+        <Panel>
+          <Panel.Heading>
+            <Panel.Title toggle>Sighting Time</Panel.Title>
+          </Panel.Heading>
+          <Panel.Body collapsible>
             <ControlLabel>Sighting Time</ControlLabel>
             <InputGroup>
               <Datetime
@@ -134,25 +143,23 @@ class PostSightingFilter extends React.Component {
                 onChange={this.onChangeTime}
               />
             </InputGroup>
-          </FormGroup>
-        </Row>
-        <Row xs={6} sm={4} md={3} lg={2}>
-          <FormGroup>
-            <ControlLabel>&nbsp;</ControlLabel>
-            <ButtonToolbar>
-              <Button bsStyle="primary" type="button" onClick={this.applyFilter}>
-                Apply
-              </Button>
-              <Button
-                type="button"
-                onClick={this.showOriginalFilter}
-                disabled={!changed}
-              >
-                Reset
-              </Button>
-            </ButtonToolbar>
-          </FormGroup>
-        </Row>
+          </Panel.Body>
+        </Panel>
+        <FormGroup>
+          <ControlLabel>&nbsp;</ControlLabel>
+          <ButtonToolbar>
+            <Button bsStyle="primary" type="button" onClick={this.applyFilter}>
+              Apply
+            </Button>
+            <Button
+              type="button"
+              onClick={this.showOriginalFilter}
+              disabled={!changed}
+            >
+              Reset
+            </Button>
+          </ButtonToolbar>
+        </FormGroup>
       </Col>
     );
   }
