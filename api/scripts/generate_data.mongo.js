@@ -17,6 +17,9 @@ const initialCount = db.posts.count();
 for (let i = 0; i < 100; i += 1) {
   const randomCreatedDate = (new Date()) - Math.floor(Math.random() * 60) * 1000 * 60 * 60 * 24;
   const created = new Date(randomCreatedDate);
+  const randomLat = Math.random() * 360 - 180;
+  const randomLon = Math.random() * 360 - 180;
+  const location = { randomLat, randomLon };
 
   const author = authors[Math.floor(Math.random() * 5)];
   const sightingType = sightingTypes[Math.floor(Math.random() * 2)];
@@ -24,7 +27,7 @@ for (let i = 0; i < 100; i += 1) {
   const id = initialCount + i + 1;
 
   const post = {
-    id, author, title, created, sightingType,
+    id, author, title, created, sightingType, location,
   };
 
   db.posts.insertOne(post);

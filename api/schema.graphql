@@ -5,6 +5,11 @@ enum SightingType {
     PLANT
 }
 
+type Location {
+    lat: Float!
+    lon: Float!
+}
+
 type Comment {
     commenter: String!
     content:String!
@@ -19,6 +24,7 @@ type Post {
     authorId: Int!
     created: GraphQLDate!
     spotted: GraphQLDate!
+    location: Location!
     images:[String]
     description: String
     comments: [Comment]
@@ -33,6 +39,11 @@ type User {
     postIds: [Int]
 }
 
+input LocationInput {
+    lat: Float!
+    lon: Float!
+}
+
 "Toned down Posts, used as inputs, without server generated values."
 input PostInputs {
     _id: ID!
@@ -42,6 +53,7 @@ input PostInputs {
     authorId: Int!
     created: GraphQLDate!
     spotted: GraphQLDate!
+    location: LocationInput!
     images:[String]
     description: String
 }
@@ -52,6 +64,7 @@ input PostUpdateInputs {
     title: String
     sightingType: SightingType
     spotted: GraphQLDate!
+    location: LocationInput!
     images: [String]
     description: String
 }
