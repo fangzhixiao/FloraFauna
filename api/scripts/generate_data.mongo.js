@@ -10,7 +10,6 @@
 /* global db print */
 /* eslint no-restricted-globals: "off" */
 
-const authors = ['Ravan', 'Eddie', 'Pieta', 'Parvati', 'Victor'];
 const sightingTypes = ['ANIMAL', 'PLANT'];
 const initialCount = db.posts.count();
 
@@ -22,13 +21,14 @@ for (let i = 0; i < 100; i += 1) {
   const randomLon = Math.random() * 360 - 180;
   const location = { lat: randomLat, lon: randomLon };
 
-  const author = authors[Math.floor(Math.random() * 5)];
+  const authorId = Math.floor(Math.random() * 50);
   const sightingType = sightingTypes[Math.floor(Math.random() * 2)];
   const title = `Lorem ipsum dolor sit amet, ${i}`;
+  const description = 'Lorem ipsun dolor sit amet';
   const id = initialCount + i + 1;
 
   const post = {
-    id, author, title, created, sightingType, location, spotted,
+    id, authorId, title, created, sightingType, location, spotted, description,
   };
 
   db.posts.insertOne(post);
