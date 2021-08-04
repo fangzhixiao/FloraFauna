@@ -7,7 +7,7 @@ import {
 // import graphQLFetch from './graphQLFetch.js';
 // import NumInput from './NumInput.jsx';
 import DateInput from './DateInput.jsx';
-import TextInput from './TextInput.jsx';
+// import TextInput from './TextInput.jsx';
 import withToast from './withToast.jsx';
 import UserContext from './UserContext.js';
 
@@ -19,6 +19,7 @@ class PostAddNavItem extends React.Component {
       showing: false,
       invalidFields: {},
       showingValidation: false,
+      date: '',
     };
 
     this.showModal = this.showModal.bind(this);
@@ -27,6 +28,7 @@ class PostAddNavItem extends React.Component {
     this.dismissValidation = this.dismissValidation.bind(this);
     this.showValidation = this.showValidation.bind(this);
     this.onValidityChange = this.onValidityChange.bind(this);
+    this.onChangeDate = this.onChangeDate.bind(this);
   }
 
   onValidityChange(event, valid) {
@@ -36,6 +38,12 @@ class PostAddNavItem extends React.Component {
       if (valid) delete invalidFields[name];
       return { invalidFields };
     });
+  }
+
+  onChangeDate(e, dateVal) {
+    const { value: textValue } = e.target;
+    const value = dateVal === undefined ? textValue : dateVal;
+    this.setState({ date: value });
   }
 
   showModal() {
@@ -58,20 +66,20 @@ class PostAddNavItem extends React.Component {
   async handleSubmit(e) {
     e.preventDefault();
     this.showValidation();
-    const { invalidFields } = this.state;
-    if (Object.keys(invalidFields).length !== 0) return;
+    const { invalidFields, date } = this.state;
+    if (Object.keys(invalidFields).length !== 0) return; // keep from submitting if validation fails
 
     const user = this.context; // attempt to save user's name for post
     const form = document.forms.postAdd;
     const post = {
       title: form.title.value,
-      sightingType: form.type.value,
+      sightingType: form.sightingType.value,
       authorId: user.id,
       owner: user.name, // schema needs to add this to post and post input types
       description: form.description.value,
       location: form.location.value, // placeholder for now
       created: new Date(new Date().getTime()),
-      spotted: form.date.value,
+      spotted: date,
       // images: []
     };
 
@@ -107,6 +115,7 @@ class PostAddNavItem extends React.Component {
 
     const { invalidFields, showingValidation } = this.state;
     let validationMessage;
+
     if (Object.keys(invalidFields).length !== 0 && showingValidation) {
       validationMessage = (
         <Alert bsStyle="danger" onDismiss={this.dismissValidation}>
@@ -143,13 +152,13 @@ class PostAddNavItem extends React.Component {
                   <option value="Plant">Plant</option>
                 </FormControl>
               </FormGroup>
-              <FormGroup controlId="formControlsFile" type="file">
+              <FormGroup controlId="formControlsFile">
                 <ControlLabel>Sighting image upload</ControlLabel>
+                <FormControl type="file" />
               </FormGroup>
               <FormGroup>
                 <ControlLabel>Sighting Description</ControlLabel>
                 <FormControl
-                  componentClass={TextInput}
                   tag="textarea"
                   rows={4}
                   cols={50}
@@ -158,13 +167,15 @@ class PostAddNavItem extends React.Component {
               </FormGroup>
               <FormGroup>
                 <ControlLabel>Location</ControlLabel>
-                <FormControl name="location" autoFocus />
+                <FormControl name="location" />
               </FormGroup>
               <FormGroup validationState={invalidFields.spotted ? 'error' : null}>
+                <ControlLabel>Date Spotted</ControlLabel>
                 <FormControl
                   componentClass={DateInput}
                   onValidityChange={this.onValidityChange}
                   name="spotted"
+                  onChange={this.onChangeDate}
                 />
                 <FormControl.Feedback />
               </FormGroup>

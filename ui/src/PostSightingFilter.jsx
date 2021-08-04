@@ -10,7 +10,6 @@ import {
   FormControl,
   ControlLabel,
   InputGroup,
-  Row,
   Col,
   Panel,
 } from 'react-bootstrap';
@@ -47,7 +46,7 @@ class PostSightingFilter extends React.Component {
   onChangeDate(e) {
     let dateString;
     try {
-      dateString = e.format('MM/DD/YYYY');
+      dateString = e.format('YYYY-MM-DD');
       if (dateString) {
         this.setState({ date: dateString, changed: true });
       }
@@ -91,9 +90,9 @@ class PostSightingFilter extends React.Component {
   }
 
   render() {
-    const { sightingType, changed } = this.state;
-    const { date } = this.state;
-    const { time } = this.state;
+    const {
+      sightingType, date, time, changed,
+    } = this.state;
 
     return (
       <Col>
@@ -106,7 +105,7 @@ class PostSightingFilter extends React.Component {
             <FormControl
               componentClass="select"
               value={sightingType}
-              onChange={this.onChangeStatus}
+              onChange={this.onChangeSightingType}
             >
               <option value="">(All)</option>
               <option value="Animal">Animal</option>
@@ -119,7 +118,11 @@ class PostSightingFilter extends React.Component {
             <Panel.Title toggle>Sighting Date</Panel.Title>
           </Panel.Heading>
           <Panel.Body collapsible>
-            <ControlLabel>Sighting Date</ControlLabel>
+            <ControlLabel>
+              Sighting Date:
+              {' '}
+              {date}
+            </ControlLabel>
             <Datetime
               value={date}
               timeFormat={false}

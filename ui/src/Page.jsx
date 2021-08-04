@@ -6,7 +6,7 @@ import {
   MenuItem,
   Glyphicon,
   Grid,
-  Col,
+  Col, NavItem,
 } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import PostAddNavItem from './PostAddNavItem.jsx';
@@ -21,7 +21,11 @@ function NavBar({ user, onUserChange }) {
   return (
     <Navbar fluid>
       <Navbar.Header>
-        <Navbar.Brand>Flora and Fauna Sighting</Navbar.Brand>
+        <LinkContainer exact to="/">
+          <NavItem>
+            <Navbar.Brand>Flora and Fauna Sighting</Navbar.Brand>
+          </NavItem>
+        </LinkContainer>
       </Navbar.Header>
       <Col sm={5}>
         <Navbar.Form>
@@ -49,7 +53,7 @@ function NavBar({ user, onUserChange }) {
 export default class Page extends React.Component {
   static async fetchData(cookie) {
     const query = `query { user {
-      signedIn
+      signedIn givenName
     }}`;
     const data = await graphQLFetch(query, null, null, cookie);
     return data;

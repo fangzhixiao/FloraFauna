@@ -5,7 +5,19 @@ enum SightingType {
     PLANT
 }
 
+type Location {
+    lat: Float!
+    lon: Float!
+}
+
 type Comment {
+    commenter: String!
+    content:String!
+    created: GraphQLDate!
+}
+
+# "TODO: Need to add comment input in schema"
+input CommentInput {
     commenter: String!
     content:String!
     created: GraphQLDate!
@@ -19,6 +31,7 @@ type Post {
     authorId: Int!
     created: GraphQLDate!
     spotted: GraphQLDate!
+    location: Location!
     images:[String]
     description: String
     comments: [Comment]
@@ -28,9 +41,14 @@ type User {
     _id: ID!
     id: Int!
     signedIn: Boolean!
-    name: String
+    givenName: String
     email: String
     postIds: [Int]
+}
+
+input LocationInput {
+    lat: Float!
+    lon: Float!
 }
 
 "Toned down Posts, used as inputs, without server generated values."
@@ -42,22 +60,28 @@ input PostInputs {
     authorId: Int!
     created: GraphQLDate!
     spotted: GraphQLDate!
+    location: LocationInput!
     images:[String]
     description: String
 }
 
 """Inputs for postUpdate: all are optional. Whichever is specified will be set to the given value,
 undefined fields will remain unmmodified."""
+
+# "TODO: Need to add comments to this part of schema"
 input PostUpdateInputs {
     title: String
     sightingType: SightingType
+    spotted: GraphQLDate!
+    location: LocationInput!
     images: [String]
     description: String
+    comments: [CommentInput]
 }
 
 ##### Top level declarations
 # Query and Mutation define the entry point of every GraphQL query
-
+# "TODO need to add more to postList for filter purposes"
 type Query {
     about: String!
     user: User!

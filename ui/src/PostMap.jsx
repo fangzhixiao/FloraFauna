@@ -2,8 +2,6 @@ import React from 'react';
 import { Panel, Col } from 'react-bootstrap';
 // import URLSearchParams from 'url-search-params';
 //
-// import IssueFilter from './IssueFilter.jsx';
-// import IssueDetail from './IssueDetail.jsx';
 // import graphQLFetch from './graphQLFetch.js';
 // import store from './store.js';
 import PostSightingFilter from './PostSightingFilter.jsx';
@@ -89,7 +87,7 @@ class PostMap extends React.Component {
 
     return (
       <React.Fragment>
-        <Col xs="7" sm="6" md="5" lg="4">
+        <Col xs={7} sm={6} md={5} lg={4}>
           <Panel>
             <Panel.Heading>
               <Panel.Title>Filter</Panel.Title>
