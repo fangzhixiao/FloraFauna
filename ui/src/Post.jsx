@@ -45,8 +45,6 @@ class Post extends React.Component {
   }
 
   showModal() {
-    const { showing } = this.state;
-    console.log(showing);
     this.setState({ showing: true });
   }
 
@@ -128,7 +126,7 @@ class Post extends React.Component {
       const display = images.map((image, index) => (
         <Carousel.Item>
           {/* eslint-disable-next-line react/no-array-index-key */}
-          <img scr={image} key={index} alt={title} />
+          <img src={image} key={index} alt={title} />
         </Carousel.Item>
       ));
 

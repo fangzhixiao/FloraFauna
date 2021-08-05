@@ -131,7 +131,7 @@ class Profile extends React.Component {
     const { posts, showing } = this.state;
     if (posts == null) return null;
     const { user } = this.props;
-    console.log(posts);
+
 
     // TODO: Location will need to be converted to town/state?
     return (

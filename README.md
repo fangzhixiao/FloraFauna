@@ -30,7 +30,7 @@ Application should run in http://ui.promernstack.com:8000 on the web
     * Filter panel has collapsible filter options
     * Date filter implements a third party calendar component
         * link: https://github.com/arqex/react-datetime
-* New Components:
+* Additional New Components:
     * Add a post
     * Edit a post
     * View a post

@@ -1,12 +1,11 @@
 import React from 'react';
-import { Panel, Col, Button } from 'react-bootstrap';
+import { Panel, Col } from 'react-bootstrap';
 import URLSearchParams from 'url-search-params';
 //
 import graphQLFetch from './graphQLFetch.js';
 import store from './store.js';
 import PostSightingFilter from './PostSightingFilter.jsx';
 import withToast from './withToast.jsx';
-import PostTable from './PostTable.jsx';
 
 // eslint-disable-next-line react/prefer-stateless-function
 class PostMap extends React.Component {
@@ -67,9 +66,6 @@ class PostMap extends React.Component {
     this.state = {
       posts,
     };
-
-    // The following methods should be deleted when Map is functioning
-    this.deletePost = this.deletePost.bind(this);
   }
 
   componentDidMount() {
@@ -99,63 +95,11 @@ class PostMap extends React.Component {
     }
   }
 
-  async deletePost(index) {
-    const query = `mutation postDelete($id: Int!) {
-      postDelete(id: $id)
-    }`;
-
-    const { posts } = this.state;
-    const {
-      location: {
-        pathname,
-        search,
-      },
-      history,
-    } = this.props;
-    const {
-      showSuccess,
-      showError,
-    } = this.props;
-    const { id, title } = posts[index];
-    const data = await graphQLFetch(query, { id }, showError);
-    if (data && data.postDelete) {
-      this.setState((prevState) => {
-        const newList = [...prevState.posts];
-        if (pathname === `/posts/${id}`) {
-          history.push({ pathname: '/posts', search });
-        }
-        newList.splice(index, 1);
-        return { posts: newList };
-      });
-      const undoMessage = (
-        <span>
-          {`Deleted post ${id}:${title} successfully.`}
-          <Button bsStyle="link" onClick={() => this.restorePost(id, title)}>
-            UNDO
-          </Button>
-        </span>
-      );
-      showSuccess(undoMessage);
-    } else {
-      this.loadData();
-    }
-  }
-
-  async restorePost(id, title) {
-    const query = `mutation postRestore($id: Int!) {
-      postRestore(id: $id)
-    }`;
-    const { showSuccess, showError } = this.props;
-    const data = await graphQLFetch(query, { id }, showError);
-    if (data) {
-      showSuccess(`Post ${id}:${title} restored successfully.`);
-      this.loadData();
-    }
-  }
-
   render() {
     const { posts } = this.state;
     if (posts == null) return null;
+    // eslint-disable-next-line no-console
+    console.log(posts);
 
     return (
       <React.Fragment>
@@ -165,16 +109,12 @@ class PostMap extends React.Component {
               <Panel.Title>Filter</Panel.Title>
             </Panel.Heading>
             <Panel.Body>
-              <PostSightingFilter urlBase="/map" />
+              <PostSightingFilter urlBase="/posts" />
             </Panel.Body>
           </Panel>
         </Col>
         <Col>
           <h2> THIS IS A PLACEHOLDER FOR A MAP </h2>
-          <PostTable
-            posts={posts.postList}
-            deletePost={this.deletePost}
-          />
         </Col>
 
       </React.Fragment>

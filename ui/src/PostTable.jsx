@@ -41,9 +41,9 @@ class PostRowPlain extends React.Component {
         <td>{post.spotted.toLocaleDateString()}</td>
         <td>{post.spotted.toLocaleTimeString()}</td>
         <td>
-          <LinkContainer to={`/edit/${post.id}`}>
+          <LinkContainer to="/">
             <OverlayTrigger delayShow={1000} overlay={editTooltip}>
-              <Button bsSize="xsmall">
+              <Button bsSize="xsmall" onClick={() => { window.open(`/edit/${post.id}`, '_blank'); }}>
                 <Glyphicon glyph="edit" />
               </Button>
             </OverlayTrigger>

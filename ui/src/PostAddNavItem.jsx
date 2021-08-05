@@ -3,11 +3,8 @@ import {
   NavItem, Glyphicon, Modal, Form, FormGroup, FormControl, ControlLabel, Col,
   Button, ButtonToolbar, Tooltip, OverlayTrigger, Alert,
 } from 'react-bootstrap';
-
 // import graphQLFetch from './graphQLFetch.js';
-// import NumInput from './NumInput.jsx';
 import DateInput from './DateInput.jsx';
-// import TextInput from './TextInput.jsx';
 import withToast from './withToast.jsx';
 
 
@@ -68,18 +65,19 @@ class PostAddNavItem extends React.Component {
     const { invalidFields, date } = this.state;
     if (Object.keys(invalidFields).length !== 0) return; // keep from submitting if validation fails
 
+    // TODO replace hardcoded ID with actual user.id
     const { user } = this.props; // attempt to save user's name for post
     const form = document.forms.postAdd;
     const post = {
       title: form.title.value,
       sightingType: form.sightingType.value,
-      authorId: user.id,
+      authorId: 1,
       owner: user.name, // schema needs to add this to post and post input types
       description: form.description.value,
       location: form.location.value, // placeholder for now
       created: new Date(new Date().getTime()),
       spotted: date,
-      // images: []
+      images: null,
     };
 
     console.log(post);

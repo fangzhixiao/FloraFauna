@@ -21,7 +21,7 @@ function NavBar({ user, onUserChange }) {
   return (
     <Navbar fluid>
       <Navbar.Header>
-        <LinkContainer exact to="/">
+        <LinkContainer to="/posts">
           <NavItem>
             <Navbar.Brand>Flora and Fauna Sighting</Navbar.Brand>
           </NavItem>
