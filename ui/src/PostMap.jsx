@@ -6,7 +6,7 @@ import graphQLFetch from './graphQLFetch.js';
 import store from './store.js';
 import PostSightingFilter from './PostSightingFilter.jsx';
 import withToast from './withToast.jsx';
-import PostTable from './postTable.jsx';
+import PostTable from './PostTable.jsx';
 
 // eslint-disable-next-line react/prefer-stateless-function
 class PostMap extends React.Component {
