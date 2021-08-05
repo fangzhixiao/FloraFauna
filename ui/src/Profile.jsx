@@ -3,7 +3,9 @@ import {
   Modal, FormGroup, FormControl, ControlLabel, Alert, Col, Button, Carousel, Row,
 } from 'react-bootstrap';
 import withToast from './withToast.jsx';
+// eslint-disable-next-line no-unused-vars
 import graphQLFetch from './graphQLFetch.js';
+// eslint-disable-next-line no-unused-vars
 import TextInput from './TextInput.jsx';
 import UserContext from './UserContext.js';
 
