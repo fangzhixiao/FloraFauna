@@ -1,22 +1,120 @@
 import React from 'react';
 import {
-  Modal, FormGroup, FormControl, ControlLabel, Alert, Col, Button, Carousel, Row,
+  Button,
+  Modal,
+  Col, Panel,
 } from 'react-bootstrap';
 import withToast from './withToast.jsx';
 import graphQLFetch from './graphQLFetch.js';
-import TextInput from './TextInput.jsx';
 import UserContext from './UserContext.js';
+import PostTable from './PostTable.jsx';
 
+/**
+ * This component should only be showing all posts for now, back end lacks a user.js
+ */
 class Profile extends React.Component {
-  // props in this case would be passing in the post object from clicking on a map marker
+  // props in this case would be passing in the currently signed in user
   constructor(props) {
     super(props);
     this.state = {
+      posts: null,
       showing: false,
     };
 
     this.showModal = this.showModal.bind(this);
     this.hideModal = this.hideModal.bind(this);
+    this.deletePost = this.deletePost.bind(this);
+  }
+
+  componentDidMount() {
+    const { posts } = this.state;
+    if (posts == null) this.loadData();
+  }
+
+  // componentDidUpdate(prevProps) {
+  //   const { match: { params: { id: prevId } } } = prevProps;
+  //   const { match: { params: { id } } } = this.props;
+  //   if (id !== prevId) {
+  //     this.loadData();
+  //   }
+  // }
+
+  async loadData() {
+    // const { user } = this.props;
+    const { showError } = this.props;
+    const query = `query postList(
+      $authorId: Int
+      ) {
+        postList(
+          authorId: $authorId
+      ) {
+        id
+        title
+        sightingType
+        authorId
+        created 
+        spotted
+        location {
+          lat lon
+          }
+        images
+        description 
+        comments {
+          commenter content created
+        }
+      }
+    }`;
+
+    const data = await graphQLFetch(query, {}, showError);
+    if (data) {
+      this.setState({
+        posts: data.postList,
+      });
+    }
+  }
+
+  async deletePost(index) {
+    const query = `mutation postDelete($id: Int!) {
+      postDelete(id: $id)
+    }`;
+
+    const { posts } = this.state;
+    const {
+      showSuccess,
+      showError,
+    } = this.props;
+    const { id, title } = posts[index];
+    const data = await graphQLFetch(query, { id }, showError);
+    if (data && data.postDelete) {
+      this.setState((prevState) => {
+        const newList = [...prevState.posts];
+        newList.splice(index, 1);
+        return { posts: newList };
+      });
+      const undoMessage = (
+        <span>
+          {`Deleted post ${id}:${title} successfully.`}
+          <Button bsStyle="link" onClick={() => this.restorePost(id, title)}>
+            UNDO
+          </Button>
+        </span>
+      );
+      showSuccess(undoMessage);
+    } else {
+      await this.loadData();
+    }
+  }
+
+  async restorePost(id, title) {
+    const query = `mutation postRestore($id: Int!) {
+      postRestore(id: $id)
+    }`;
+    const { showSuccess, showError } = this.props;
+    const data = await graphQLFetch(query, { id }, showError);
+    if (data) {
+      showSuccess(`Post ${id}:${title} restored successfully.`);
+      await this.loadData();
+    }
   }
 
 
@@ -30,15 +128,18 @@ class Profile extends React.Component {
 
 
   render() {
-    const { showing } = this.state;
-    const { post } = this.props;
-
-    const { user } = this.context;
+    const { posts, showing } = this.state;
+    if (posts == null) return null;
+    const { user } = this.props;
+    console.log(posts);
 
     // TODO: Location will need to be converted to town/state?
     return (
       <React.Fragment>
-        <Modal keyboard showing={showing} onHide={this.hideModal}>
+        <Button onClick={this.showModal}>
+          View Profile
+        </Button>
+        <Modal keyboard show={showing} onHide={this.hideModal} bsSize="lg">
           <Modal.Header closeButton>
             <Modal.Title>
               {user.givenName}
@@ -47,7 +148,29 @@ class Profile extends React.Component {
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            // TODO Add table of posts here
+            <Col>
+              <Panel>
+                <Panel.Heading>
+                  <Panel.Title>User Info</Panel.Title>
+                </Panel.Heading>
+                <Panel.Body>
+                  Name:
+                  {' '}
+                  {user.givenName}
+                  <br />
+                  Email:
+                  {' '}
+                  {user.email}
+                </Panel.Body>
+              </Panel>
+            </Col>
+            <Col>
+              <PostTable
+                posts={posts}
+                deletePost={this.deletePost}
+              />
+            </Col>
+
           </Modal.Body>
         </Modal>
       </React.Fragment>
@@ -56,4 +179,6 @@ class Profile extends React.Component {
 }
 
 Profile.contextType = UserContext;
-export default withToast(Profile);
+const ProfileWithToast = withToast(Profile);
+ProfileWithToast.fetchData = Profile.fetchData;
+export default ProfileWithToast;
