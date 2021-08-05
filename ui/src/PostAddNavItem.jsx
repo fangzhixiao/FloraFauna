@@ -9,7 +9,6 @@ import {
 import DateInput from './DateInput.jsx';
 // import TextInput from './TextInput.jsx';
 import withToast from './withToast.jsx';
-import UserContext from './UserContext.js';
 
 
 class PostAddNavItem extends React.Component {
@@ -69,7 +68,7 @@ class PostAddNavItem extends React.Component {
     const { invalidFields, date } = this.state;
     if (Object.keys(invalidFields).length !== 0) return; // keep from submitting if validation fails
 
-    const user = this.context; // attempt to save user's name for post
+    const { user } = this.props; // attempt to save user's name for post
     const form = document.forms.postAdd;
     const post = {
       title: form.title.value,
@@ -111,7 +110,7 @@ class PostAddNavItem extends React.Component {
 
   render() {
     const { showing } = this.state;
-    const { user: { signedIn } } = this.props;
+    const { user } = this.props;
 
     const { invalidFields, showingValidation } = this.state;
     let validationMessage;
@@ -126,7 +125,7 @@ class PostAddNavItem extends React.Component {
 
     return (
       <React.Fragment>
-        <NavItem disabled={!signedIn} onClick={this.showModal}>
+        <NavItem disabled={!user.signedIn} onClick={this.showModal}>
           <OverlayTrigger
             placement="left"
             delayShow={1000}
@@ -201,5 +200,5 @@ class PostAddNavItem extends React.Component {
     );
   }
 }
-PostAddNavItem.contextType = UserContext;
+
 export default withToast(PostAddNavItem);

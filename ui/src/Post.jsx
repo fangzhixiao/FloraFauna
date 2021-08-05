@@ -104,7 +104,7 @@ class Post extends React.Component {
     const { showing } = this.state;
     const { post } = this.props;
 
-    const { user } = this.context;
+    const user = this.context;
 
     const { invalidFields, showingValidation, newComment } = this.state;
     let validationMessage;
@@ -135,6 +135,9 @@ class Post extends React.Component {
     // TODO: Location will need to be converted to town/state?
     return (
       <React.Fragment>
+        <Button onClick={this.showModal}>
+          View Post
+        </Button>
         <Modal keyboard showing={showing} onHide={this.hideModal}>
           <Modal.Header closeButton>
             <Modal.Title>{post.title}</Modal.Title>
@@ -154,6 +157,7 @@ class Post extends React.Component {
             <Row>
               {post.description}
             </Row>
+            <Row>Comment Placeholder</Row>
           </Modal.Body>
           <Modal.Footer>
             <FormGroup>

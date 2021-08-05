@@ -1,89 +1,161 @@
 import React from 'react';
-import { Panel, Col } from 'react-bootstrap';
-// import URLSearchParams from 'url-search-params';
+import { Panel, Col, Button } from 'react-bootstrap';
+import URLSearchParams from 'url-search-params';
 //
-// import graphQLFetch from './graphQLFetch.js';
-// import store from './store.js';
+import graphQLFetch from './graphQLFetch.js';
+import store from './store.js';
 import PostSightingFilter from './PostSightingFilter.jsx';
 import withToast from './withToast.jsx';
-
+import PostTable from './postTable.jsx';
 
 // eslint-disable-next-line react/prefer-stateless-function
 class PostMap extends React.Component {
-  // static async fetchData(match, search, showError) { TODO: This will be important for filter uses
-  //   // const params = new URLSearchParams(search);
-  //   // const vars = { hasSelection: false, selectedId: 0 };
-  //   // if (params.get('status')) vars.status = params.get('status');
-  //   //
-  //   // const effortMin = parseInt(params.get('effortMin'), 10);
-  //   // if (!Number.isNaN(effortMin)) vars.effortMin = effortMin;
-  //   // const effortMax = parseInt(params.get('effortMax'), 10);
-  //   // if (!Number.isNaN(effortMax)) vars.effortMax = effortMax;
-  //   //
-  //   // const { params: { id } } = match;
-  //   // const idInt = parseInt(id, 10);
-  //   // if (!Number.isNaN(idInt)) {
-  //   //   vars.hasSelection = true;
-  //   //   vars.selectedId = idInt;
-  //   // }
-  //   //
-  //   // const query = `placeholder`;
-  //   //
-  //   // const data = await graphQLFetch(query, vars, showError);
-  //   // return data;
-  // }
+  static async fetchData(match, search, showError) {
+    const params = new URLSearchParams(search);
+    const vars = { hasSelection: false, selectedId: 0 };
+    if (params.get('sightingType')) vars.sightingType = params.get('sightingType');
+    if (params.get('date')) vars.date = params.get('date');
+    // if (params.get('time')) vars.time = params.get('time');
 
-  // constructor() {
-  //   super();
-  //   const initialData = store.initialData || { issueList: {} };
-  //   const {
-  //     issueList: { issues, pages }, issue: selectedIssue,
-  //   } = initialData;
-  //
-  //   delete store.initialData;
-  //   this.state = {
-  //     sightings
-  //   };
-  //   this.closeIssue = this.closeIssue.bind(this);
-  //   this.deleteIssue = this.deleteIssue.bind(this);
-  // }
+    // const { params: { id } } = match;
+    // const idInt = parseInt(id, 10);
+    // if (!Number.isNaN(idInt)) {
+    //   vars.hasSelection = true;
+    //   vars.selectedId = idInt;
+    // }
 
-  // componentDidMount() {
-  //   const { sightings } = this.state;
-  //   if (sightings == null) this.loadData();
-  // }
-  //
-  // componentDidUpdate(prevProps) {
-  //   const {
-  //     location: { search: prevSearch },
-  //     match: { params: { id: prevId } },
-  //   } = prevProps;
-  //   const { location: { search }, match: { params: { id } } } = this.props;
-  //   if (prevSearch !== search || prevId !== id) {
-  //     this.loadData();
-  //   }
-  // }
+    // TODO: figure out how to use graphQL date to filter by time (without consideration for time)
 
-  // async loadData() { TODO: will have to load marker data and map here;
-  //   const { location: { search }, match, showError } = this.props;
-  //   const data = await PostMap.fetchData(match, search, showError);
-  //   if (data) {
-  //     this.setState({
-  //       issues: data.issueList.issues,
-  //       selectedIssue: data.issue,
-  //       pages: data.issueList.pages,
-  //     });
-  //   }
-  // }
+    const query = `query postList(
+      $sightingType: SightingType
+      $spotted: GraphQLDate
+      $minTime: GraphQLDate
+      $maxTime: GraphQLDate
+    ) {
+      postList(
+        sightingType: $sightingType
+        spotted: $spotted
+        minTime: $minTime
+        maxTime: $maxTime
+    ) {
+      id
+      title
+      sightingType
+      authorId
+      created 
+      spotted
+      location {
+        lat lon
+        }
+      images
+      description 
+      comments {
+        commenter content created
+      }
+    }
+  }`;
+
+    const data = await graphQLFetch(query, vars, showError);
+    return data;
+  }
+
+  constructor() {
+    super();
+    const posts = store.initialData || { postList: [] };
+    delete store.initialData;
+
+    this.state = {
+      posts,
+    };
+
+    // The following methods should be deleted when Map is functioning
+    this.deletePost = this.deletePost.bind(this);
+  }
+
+  componentDidMount() {
+    const { posts } = this.state;
+    if (posts == null) this.loadData();
+  }
+
+  componentDidUpdate(prevProps) {
+    const {
+      location: { search: prevSearch },
+      match: { params: { id: prevId } },
+    } = prevProps;
+    const { location: { search }, match: { params: { id } } } = this.props;
+    if (prevSearch !== search || prevId !== id) {
+      this.loadData();
+    }
+  }
+
+  // TODO: currently loads a list, will need to load marker data when map is active
+  async loadData() {
+    const { location: { search }, match, showError } = this.props;
+    const data = await PostMap.fetchData(match, search, showError);
+    if (data) {
+      this.setState({
+        posts: data.postList,
+      });
+    }
+  }
+
+  async deletePost(index) {
+    const query = `mutation postDelete($id: Int!) {
+      postDelete(id: $id)
+    }`;
+
+    const { posts } = this.state;
+    const {
+      location: {
+        pathname,
+        search,
+      },
+      history,
+    } = this.props;
+    const {
+      showSuccess,
+      showError,
+    } = this.props;
+    const { id, title } = posts[index];
+    const data = await graphQLFetch(query, { id }, showError);
+    if (data && data.postDelete) {
+      this.setState((prevState) => {
+        const newList = [...prevState.posts];
+        if (pathname === `/posts/${id}`) {
+          history.push({ pathname: '/posts', search });
+        }
+        newList.splice(index, 1);
+        return { posts: newList };
+      });
+      const undoMessage = (
+        <span>
+          {`Deleted post ${id}:${title} successfully.`}
+          <Button bsStyle="link" onClick={() => this.restorePost(id, title)}>
+            UNDO
+          </Button>
+        </span>
+      );
+      showSuccess(undoMessage);
+    } else {
+      this.loadData();
+    }
+  }
+
+  async restorePost(id, title) {
+    const query = `mutation postRestore($id: Int!) {
+      postRestore(id: $id)
+    }`;
+    const { showSuccess, showError } = this.props;
+    const data = await graphQLFetch(query, { id }, showError);
+    if (data) {
+      showSuccess(`Post ${id}:${title} restored successfully.`);
+      this.loadData();
+    }
+  }
 
   render() {
-    // const { sightings } = this.state;
-    // if (sightings == null) return null;
-    // const { location: { search } } = this.props;
-    //
-    // const params = new URLSearchParams(search);
-    //
-    // const items = [];
+    const { posts } = this.state;
+    if (posts == null) return null;
 
     return (
       <React.Fragment>
@@ -98,7 +170,11 @@ class PostMap extends React.Component {
           </Panel>
         </Col>
         <Col>
-          <h1> THIS IS A PLACEHOLDER FOR A MAP </h1>
+          <h2> THIS IS A PLACEHOLDER FOR A MAP </h2>
+          <PostTable
+            posts={posts.postList}
+            deletePost={this.deletePost}
+          />
         </Col>
 
       </React.Fragment>
@@ -107,5 +183,5 @@ class PostMap extends React.Component {
 }
 
 const PostMapWithToast = withToast(PostMap);
-// PostMapWithToast.fetchData = PostMap.fetchData;
+PostMapWithToast.fetchData = PostMap.fetchData;
 export default PostMapWithToast;
