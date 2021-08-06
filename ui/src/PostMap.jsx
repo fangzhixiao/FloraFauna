@@ -10,28 +10,22 @@ import PostSightingFilter from "./PostSightingFilter.jsx";
 import Panel from "react-bootstrap/lib/Panel";
 import mapStyles from "./mapStyles.jsx";
 
+
 const markers = [
     {
         id: 1,
-        name: "Chicago, Illinois",
-        position: { lat: 41.881832, lng: -87.623177 }
+        name: "A Turkey",
+        position: { lat: 42.341146910114595, lng: -71.0917251720235 }
     },
     {
         id: 2,
-        name: "Denver, Colorado",
-        position: { lat: 39.739235, lng: -104.99025 }
+        name: "A Poppy",
+        position: { lat:49.341146910114595, lng: -79.0917251720235 }
     },
-    {
-        id: 3,
-        name: "Los Angeles, California",
-        position: { lat: 34.052235, lng: -118.243683 }
-    },
-    {
-        id: 4,
-        name: "New York, New York",
-        position: { lat: 40.712776, lng: -74.005974 }
-    }
+
 ];
+
+
 
 
 
@@ -63,9 +57,15 @@ function PostMap() {
         libraries,
     })
 
+    const [activeMarker, setActiveMarker] = React.useState([]);
+    const [selected, setSelected] = React.useState(null);
+
     const mapRef = React.useRef();
     const onMapLoad = React.useCallback((map) => {
         mapRef.current = map;
+        const bounds = new google.maps.LatLngBounds();
+        markers.forEach(({ position }) => bounds.extend(position));
+        map.fitBounds(bounds);
     }, []);
 
     const panTo = React.useCallback(({ lat, lng }) => {
@@ -80,6 +80,18 @@ function PostMap() {
     if (loadError) return  "Error";
     if (!isLoaded) return "loding";
 
+
+
+
+
+    const handleActiveMarker = (marker) => {
+        if (marker === activeMarker) {
+            return;
+        }
+
+        setActiveMarker(marker);
+        panTo(marker.position);
+    };
 
 
 
@@ -119,6 +131,20 @@ function PostMap() {
                     options={options}
                 >
 
+
+                    {markers.map(({ id, name, position }) => (
+                        <Marker
+                            key={id}
+                            position={position}
+                            onClick={() => handleActiveMarker(id)}
+                        >
+                            {activeMarker === id ? (
+                                <InfoWindow onCloseClick={() => setActiveMarker(null)}>
+                                    <div>{name}</div>
+                                </InfoWindow>
+                            ) : null}
+                        </Marker>
+                    ))}
 
                 </GoogleMap>
             </div>
