@@ -27,11 +27,16 @@ markers will display actual posts from the database. Other plans include impleme
 displaying images, user specific profiles, and post commenting.
 
 #### API Functionality: Responsible Member: Zhiqi Lin
-* Defined GraphQL Schema for Posts, Users, Comments, and Location. Added appropriate schema for
-  Queries and Mutations related to Post filtering and CRUD operations.
+* Defined GraphQL Schema for Posts, Users, Comments, and Location. Modified schema for Queries and Mutations related to Post filtering and CRUD operations. For the next iteration, user information will be created or updated in a “users” collection and persisted.
 * Established Atlas MongoDB for project and defined methods for post CRUD operations.
-    * Refactored issue code to posts and post related attributes
-    
+    * Refactored issue code to posts and post related attributes.
+* Set up Amazon S3 bucket to store images of the posts. 
+    * For image uploading, at the moment, the API receive the images from UI as base64 Strings, and store the imageKeys into MongoDB. For the next iteration, API will store the images in S3 bucket 
+    * For image retrieval, in the next iteration, the API will send the image keys to S3 to get the corresponding image urls, and send the list of urls to UI to display
+
+![Graphql Playground screenshot 1](readme_images/ite1_api_1.png)
+![Graphql Playground screenshot 2](readme_images/ite1_api_2.png)
+![Graphql Playground screenshot 3](readme_images/ite1_api_3.png)
 
 #### UI Functionality:
 * Refactored Page code to accommodate map and new filter panel. 
