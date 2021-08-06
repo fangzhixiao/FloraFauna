@@ -55,9 +55,9 @@ class Profile extends React.Component {
         created 
         spotted
         location {
-          lat lon
+          lat lng
           }
-        images
+        imageKeys
         description 
         comments {
           commenter content created

@@ -77,8 +77,8 @@ class Post extends React.Component {
     const { post } = this.props;
 
     const query = `mutation postUpdate(
-      $id: Int!
-      $changes: PostUpdateInputs!
+      $id: String!
+      $changes: PostUpdateInput!
     ) {
       postUpdate(
         id: $id
@@ -92,11 +92,11 @@ class Post extends React.Component {
     const { id, ...changes } = post;
     const { showSuccess, showError } = this.props;
     const data = await graphQLFetch(
-      query, { changes, id: parseInt(id, 10) }, showError,
+      query, { changes, id }, showError,
     );
     if (data) {
       this.setState({ comments: [...comments, comment] });
-      showSuccess('Updated issue successfully');
+      showSuccess('Comment added successfully');
     }
   }
 
@@ -117,17 +117,18 @@ class Post extends React.Component {
     }
 
     // TODO: image from DB should be a URL see google doc for reference
+    // TODO:
     function DisplayImages() {
-      const { title, images } = post;
-      if (images == null) {
+      const { title, imageKeys } = post;
+      if (imageKeys == null) {
         return (
           <div align="center">No Images to Display</div>
         );
       }
-      const display = images.map((image, index) => (
+      const display = imageKeys.map((image, index) => (
         <Carousel.Item>
           {/* eslint-disable-next-line react/no-array-index-key */}
-          <img src={image} key={index} alt={title} />
+          <img src={imageKeys} key={index} alt={title} />
         </Carousel.Item>
       ));
 
@@ -160,7 +161,7 @@ class Post extends React.Component {
               {' '}
               Longitude:
               {' '}
-              {post.location.lon}
+              {post.location.lng}
             </Row>
             <br />
             <Row><DisplayImages /></Row>

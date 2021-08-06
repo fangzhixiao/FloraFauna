@@ -20,7 +20,7 @@ import UserContext from './UserContext.js';
 
 class PostEdit extends React.Component {
   static async fetchData(match, search, showError) {
-    const query = `query post($id:Int!) {
+    const query = `query post($id:String!) {
       post(id: $id) {
         id
         title
@@ -29,9 +29,9 @@ class PostEdit extends React.Component {
         created
         spotted
         location {
-          lat lon
+          lat lng
         }
-        images
+        imageKeys
         description
       }
     }`;
@@ -94,8 +94,8 @@ class PostEdit extends React.Component {
     if (Object.keys(invalidFields).length !== 0) return;
 
     const query = `mutation postUpdate(
-      $id: Int!
-      $changes: PostUpdateInputs!
+      $id: String!
+      $changes: PostUpdateInput!
     ) {
       postUpdate(
         id: $id
@@ -109,7 +109,7 @@ class PostEdit extends React.Component {
         location {
           lat lng
          }
-        images
+        imageKeys
         description
       }
     }`;
@@ -122,7 +122,7 @@ class PostEdit extends React.Component {
     } = post;
     const { showSuccess, showError } = this.props;
     const data = await graphQLFetch(
-      query, { changes, id: parseInt(id, 10) }, showError,
+      query, { changes, id }, showError,
     );
     if (data) {
       this.setState({ post: data.postUpdate });
