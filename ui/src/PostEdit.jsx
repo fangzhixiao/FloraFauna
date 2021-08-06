@@ -106,7 +106,9 @@ class PostEdit extends React.Component {
         sightingType
         created
         spotted
-        location
+        location {
+          lat lng
+         }
         images
         description
       }

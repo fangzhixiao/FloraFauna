@@ -14,6 +14,7 @@ class PostMap extends React.Component {
     const vars = { hasSelection: false, selectedId: 0 };
     if (params.get('sightingType')) vars.sightingType = params.get('sightingType');
     if (params.get('date')) vars.date = params.get('date');
+    // TODO: Add hasImages based on images
     // if (params.get('time')) vars.time = params.get('time');
 
     // const { params: { id } } = match;
@@ -44,7 +45,7 @@ class PostMap extends React.Component {
       created 
       spotted
       location {
-        lat lon
+        lat lng
         }
       images
       description 

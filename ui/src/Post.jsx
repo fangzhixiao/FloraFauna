@@ -116,6 +116,7 @@ class Post extends React.Component {
       );
     }
 
+    // TODO: image from DB should be a URL see google doc for reference
     function DisplayImages() {
       const { title, images } = post;
       if (images == null) {
