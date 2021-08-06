@@ -83,7 +83,7 @@ class PostAddNavItem extends React.Component {
     console.log(post);
     this.hideModal();
 
-    // need to add some code here to handle images
+    // TODO need to add some code here to handle images, need to actually write query for add
 
     // const query = `mutation postAdd($post: PostInputs!) {
     //   postAdd(post: $post) {
