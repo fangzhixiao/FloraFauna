@@ -18,7 +18,7 @@ Application should run in http://ui.promernstack.com:8000 on the web
 ---
 ### Project Iteration 1
 
-TL;DR: Backend API has the DB, GraphQL Schema and most CRUD operations set up. Front End has all 
+TL;DR: The project starter code comes from the Pro MERN Stack book project. Backend API has the DB, GraphQL Schema and most CRUD operations set up. Front End has all 
 proposed UI components made (Map + Filter, Sighting Post Modal, User Profile, Post Add Modal. Post 
 Edit), but CRUD operations are currently non-functional. CRUD operations are set up but need to be 
 tested with backend as significant changes have been made to the API. Profile should be able to Get 
