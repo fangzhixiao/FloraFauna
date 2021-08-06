@@ -36,14 +36,14 @@ async function installHandler(app) {
   const resolvers = {
     Query: {
       about: about.getMessage,
-      // user: auth.resolveUser,
+      user: auth.resolveUser,
       postList: postController.list,
       post: postController.get,
     },
     Mutation: {
       setAboutMessage: about.setMessage,
       postAdd: postController.add,
-      // postUpdate: post.update,
+      postUpdate: postController.update,
       // postDelete: post.delete,
       // postRestore: post.restore,
     },

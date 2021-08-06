@@ -28,6 +28,7 @@ class Controller {
     this.add = this.add.bind(this);
     this.get = this.get.bind(this);
     this.list = this.list.bind(this);
+    this.update = this.update.bind(this);
   }
 
   async add(_, { post }) {
@@ -93,6 +94,17 @@ class Controller {
     }
     return posts;
   }
+
+  async update(_, { id, changes }) {
+    const post = await this.db.collection('posts').findOne({ id });
+    Object.assign(post, changes);
+    if (changes.title || changes.sightingType) {
+      validate(post);
+    }
+    await this.db.collection('posts').updateOne({ id }, { $set: changes });
+    const savedPost = await this.db.collection('posts').findOne({ id });
+    return savedPost;
+  }
 }
 
 // async function add(_, { post }) {
@@ -136,18 +148,18 @@ class Controller {
 //   return post;
 // }
 
-async function list(_, {
-  sightingType, search, authorId,
-}) {
-  const db = getDb();
-  const filter = {};
-  if (sightingType) filter.sightingType = sightingType;
-  if (search) filter.$text = { $search: search };
-  if (authorId) filter.authorId = authorId;
-
-  const posts = db.collection('posts').find(filter).toArray();
-  return posts;
-}
+// async function list(_, {
+//   sightingType, search, authorId,
+// }) {
+//   const db = getDb();
+//   const filter = {};
+//   if (sightingType) filter.sightingType = sightingType;
+//   if (search) filter.$text = { $search: search };
+//   if (authorId) filter.authorId = authorId;
+//
+//   const posts = db.collection('posts').find(filter).toArray();
+//   return posts;
+// }
 
 
 async function update(_, { id, changes }) {

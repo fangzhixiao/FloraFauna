@@ -72,8 +72,8 @@ undefined fields will remain unmmodified."""
 input PostUpdateInput {
     title: String
     sightingType: SightingType
-    spotted: GraphQLDate!
-    location: LocationInput!
+    spotted: GraphQLDate
+    location: LocationInput
     images: [String]
     description: String
     comments: [CommentInput]
@@ -92,13 +92,14 @@ type Query {
         maxHour: GraphQLDate
     ): [Post!]!
     post(id: String!): Post!
+    user: User!
 }
 
 type Mutation {
     setAboutMessage(message: String!): String
     userFind(user: UserInput): User!
     postAdd(post: PostInput!): Post!
-    postUpdate(id: Int!, changes: PostUpdateInput!): Post!
-    postDelete(id: Int!): Boolean!
-    postRestore(id: Int!): Boolean!
+    postUpdate(id: String!, changes: PostUpdateInput!): Post!
+    postDelete(id: String!): Boolean!
+    postRestore(id: String!): Boolean!
 }
