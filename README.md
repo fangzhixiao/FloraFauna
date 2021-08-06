@@ -5,7 +5,8 @@ Link to deployment: _____
 Developers:  
 Jiatian Wang wang.jiati@northeastern.edu  
 Zhiqi Lin lin.zhiq@northeastern.edu  
-Zhining Fang fang.zhi@northeastern.edu  
+Zhining Fang fang.zhi@northeastern.edu
+* user fang.zhi and fzhining are both Zhining Fang
 
 Instructions to run application locally on machine:  
 1. Clone Repository
