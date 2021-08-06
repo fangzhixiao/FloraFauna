@@ -43,14 +43,14 @@
     "source-map-support": "^0.5.19",
     "style-loader": "^3.2.1",
     "url-search-params": "^1.1.0",
-    "use-places-autocomplete": "^1.9.4"
+    "use-places-autocomplete": "^1.9.4",
+    "@reach/combobox": "^0.16.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.14.3",
     "@babel/core": "^7.14.3",
     "@babel/preset-env": "^7.14.2",
     "@babel/preset-react": "^7.13.13",
-    "@reach/combobox": "^0.16.1",
     "babel-loader": "^8.2.2",
     "eslint": "^5.16.0",
     "eslint-config-airbnb": "^17.1.1",

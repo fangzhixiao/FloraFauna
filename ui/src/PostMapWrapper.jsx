@@ -1,11 +1,12 @@
 import React from 'react';
-import { Panel, Col } from 'react-bootstrap';
+import { Panel, Row } from 'react-bootstrap';
 import URLSearchParams from 'url-search-params';
 //
 import graphQLFetch from './graphQLFetch.js';
 import store from './store.js';
 import PostSightingFilter from './PostSightingFilter.jsx';
 import withToast from './withToast.jsx';
+import PostMap from './PostMap.jsx';
 
 // eslint-disable-next-line react/prefer-stateless-function
 class PostMapWrapper extends React.Component {
@@ -104,19 +105,19 @@ class PostMapWrapper extends React.Component {
 
     return (
       <React.Fragment>
-        <Col xs={7} sm={6} md={5} lg={4}>
+        <Row xs={7} sm={6} md={5} lg={4}>
           <Panel>
             <Panel.Heading>
-              <Panel.Title>Filter</Panel.Title>
+              <Panel.Title toggle>Filter</Panel.Title>
             </Panel.Heading>
             <Panel.Body>
               <PostSightingFilter urlBase="/posts" />
             </Panel.Body>
           </Panel>
-        </Col>
-        <Col>
-          <h2> THIS IS A PLACEHOLDER FOR A MAP </h2>
-        </Col>
+        </Row>
+        <Row>
+          <PostMap />
+        </Row>
 
       </React.Fragment>
     );
