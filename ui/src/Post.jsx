@@ -166,6 +166,14 @@ class Post extends React.Component {
             <Row><DisplayImages /></Row>
             <Row>
               <br />
+              Sighting at:
+              {' '}
+              {post.spotted.toDateString()}
+              {' '}
+              {post.spotted.toTimeString()}
+            </Row>
+            <Row>
+              <br />
               Author:
               {' '}
               {post.authorId}
