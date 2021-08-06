@@ -7,7 +7,7 @@ enum SightingType {
 
 type Location {
     lat: Float!
-    lon: Float!
+    lng: Float!
 }
 
 type Comment {
@@ -48,7 +48,7 @@ type User {
 
 input LocationInput {
     lat: Float!
-    lon: Float!
+    lng: Float!
 }
 
 "Toned down Posts, used as inputs, without server generated values."
