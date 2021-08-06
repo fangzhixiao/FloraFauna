@@ -10,8 +10,9 @@
 /* global db print */
 /* eslint no-restricted-globals: "off" */
 
+const uuid = require('uuid');
+
 const sightingTypes = ['ANIMAL', 'PLANT'];
-const initialCount = db.posts.count();
 
 for (let i = 0; i < 100; i += 1) {
   const randomCreatedDate = (new Date()) - Math.floor(Math.random() * 60) * 1000 * 60 * 60 * 24;
@@ -19,13 +20,13 @@ for (let i = 0; i < 100; i += 1) {
   const spotted = new Date(randomCreatedDate);
   const randomLat = Math.random() * 360 - 180;
   const randomLon = Math.random() * 360 - 180;
-  const location = { lat: randomLat, lon: randomLon };
+  const location = { lat: randomLat, lng: randomLon };
 
+  const id = uuid.v4();
   const authorId = Math.floor(Math.random() * 50);
   const sightingType = sightingTypes[Math.floor(Math.random() * 2)];
   const title = `Lorem ipsum dolor sit amet, ${i}`;
   const description = 'Lorem ipsun dolor sit amet';
-  const id = initialCount + i + 1;
 
   const post = {
     id, authorId, title, created, sightingType, location, spotted, description,
