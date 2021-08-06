@@ -11,7 +11,7 @@ import Panel from "react-bootstrap/lib/Panel";
 import mapStyles from "./mapStyles.jsx";
 
 
-const markers = [
+const Posts = [
     {
         id: 1,
         name: "A Turkey",
@@ -64,7 +64,7 @@ function PostMap() {
     const onMapLoad = React.useCallback((map) => {
         mapRef.current = map;
         const bounds = new google.maps.LatLngBounds();
-        markers.forEach(({ position }) => bounds.extend(position));
+        Posts.forEach(({ position }) => bounds.extend(position));
         map.fitBounds(bounds);
     }, []);
 
@@ -132,7 +132,7 @@ function PostMap() {
                 >
 
 
-                    {markers.map(({ id, name, position }) => (
+                    {Posts.map(({ id, name, position }) => (
                         <Marker
                             key={id}
                             position={position}
