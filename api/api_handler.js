@@ -44,7 +44,7 @@ async function installHandler(app) {
       setAboutMessage: about.setMessage,
       postAdd: postController.add,
       postUpdate: postController.update,
-      // postDelete: post.delete,
+      postDelete: postController.remove,
       // postRestore: post.restore,
     },
     GraphQLDate,

@@ -29,6 +29,7 @@ class Controller {
     this.get = this.get.bind(this);
     this.list = this.list.bind(this);
     this.update = this.update.bind(this);
+    this.remove = this.remove.bind(this);
   }
 
   async add(_, { post }) {
@@ -105,6 +106,31 @@ class Controller {
     const savedPost = await this.db.collection('posts').findOne({ id });
     return savedPost;
   }
+
+  async remove(_, { id }) {
+    const post = await this.db.collection('posts').findOne({ id });
+    if (!post) return false;
+    post.deleted = new Date();
+    let result = await this.db.collection('deleted_posts').insertOne(post);
+    if (result.insertedId) {
+      result = await this.db.collection('posts').removeOne({ id });
+      return result.deletedCount === 1;
+    }
+    return false;
+  }
+
+  // async function restore(_, { id }) {
+  //   const db = getDb();
+  //   const post = await db.collection('deleted_posts').findOne({ id });
+  //   if (!post) return false;
+  //   post.deleted = new Date();
+  //   let result = await db.collection('posts').insertOne(post);
+  //   if (result.insertedId) {
+  //     result = await db.collection('deleted_posts').removeOne({ id });
+  //     return result.deletedCount === 1;
+  //   }
+  //   return false;
+  // }
 }
 
 // async function add(_, { post }) {
@@ -162,17 +188,17 @@ class Controller {
 // }
 
 
-async function update(_, { id, changes }) {
-  const db = getDb();
-  if (changes.title || changes.sightingType) {
-    const post = await db.collection('posts').findOne({ id });
-    Object.assign(post, changes);
-    validate(post);
-  }
-  await db.collection('posts').updateOne({ id }, { $set: changes });
-  const savedPost = await db.collection('posts').findOne({ id });
-  return savedPost;
-}
+// async function update(_, { id, changes }) {
+//   const db = getDb();
+//   if (changes.title || changes.sightingType) {
+//     const post = await db.collection('posts').findOne({ id });
+//     Object.assign(post, changes);
+//     validate(post);
+//   }
+//   await db.collection('posts').updateOne({ id }, { $set: changes });
+//   const savedPost = await db.collection('posts').findOne({ id });
+//   return savedPost;
+// }
 
 async function remove(_, { id }) {
   const db = getDb();
