@@ -3,13 +3,9 @@ import {
   NavItem, Glyphicon, Modal, Form, FormGroup, FormControl, ControlLabel, Col,
   Button, ButtonToolbar, Tooltip, OverlayTrigger, Alert,
 } from 'react-bootstrap';
-
 // import graphQLFetch from './graphQLFetch.js';
-// import NumInput from './NumInput.jsx';
 import DateInput from './DateInput.jsx';
-// import TextInput from './TextInput.jsx';
 import withToast from './withToast.jsx';
-import UserContext from './UserContext.js';
 
 
 class PostAddNavItem extends React.Component {
@@ -69,24 +65,25 @@ class PostAddNavItem extends React.Component {
     const { invalidFields, date } = this.state;
     if (Object.keys(invalidFields).length !== 0) return; // keep from submitting if validation fails
 
-    const user = this.context; // attempt to save user's name for post
+    // TODO replace hardcoded ID with actual user.id
+    const { user } = this.props; // attempt to save user's name for post
     const form = document.forms.postAdd;
     const post = {
       title: form.title.value,
       sightingType: form.sightingType.value,
-      authorId: user.id,
+      authorId: 1,
       owner: user.name, // schema needs to add this to post and post input types
       description: form.description.value,
       location: form.location.value, // placeholder for now
       created: new Date(new Date().getTime()),
       spotted: date,
-      // images: []
+      images: null,
     };
 
     console.log(post);
     this.hideModal();
 
-    // need to add some code here to handle images
+    // TODO need to add some code here to handle images, need to actually write query for add
 
     // const query = `mutation postAdd($post: PostInputs!) {
     //   postAdd(post: $post) {
@@ -111,7 +108,7 @@ class PostAddNavItem extends React.Component {
 
   render() {
     const { showing } = this.state;
-    const { user: { signedIn } } = this.props;
+    const { user } = this.props;
 
     const { invalidFields, showingValidation } = this.state;
     let validationMessage;
@@ -126,7 +123,7 @@ class PostAddNavItem extends React.Component {
 
     return (
       <React.Fragment>
-        <NavItem disabled={!signedIn} onClick={this.showModal}>
+        <NavItem disabled={!user.signedIn} onClick={this.showModal}>
           <OverlayTrigger
             placement="left"
             delayShow={1000}
@@ -201,5 +198,5 @@ class PostAddNavItem extends React.Component {
     );
   }
 }
-PostAddNavItem.contextType = UserContext;
+
 export default withToast(PostAddNavItem);

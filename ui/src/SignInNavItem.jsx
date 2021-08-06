@@ -8,6 +8,7 @@ import {
 } from 'react-bootstrap';
 
 import withToast from './withToast.jsx';
+import Profile from './Profile.jsx';
 
 class SignInNavItem extends React.Component {
   constructor(props) {
@@ -57,9 +58,13 @@ class SignInNavItem extends React.Component {
       });
       const body = await response.text();
       const result = JSON.parse(body);
-      const { signedIn, givenName } = result;
+      const {
+        signedIn, givenName, name, email,
+      } = result;
       const { onUserChange } = this.props;
-      onUserChange({ signedIn, givenName });
+      onUserChange({
+        signedIn, givenName, name, email,
+      });
     } catch (error) {
       showError(`Error signing into the app: ${error}`);
     }
@@ -76,7 +81,9 @@ class SignInNavItem extends React.Component {
       const auth2 = window.gapi.auth2.getAuthInstance();
       await auth2.signOut();
       const { onUserChange } = this.props;
-      onUserChange({ signedIn: false, givenName: ' ' });
+      onUserChange({
+        signedIn: false, givenName: ' ', name: ' ', email: ' ',
+      });
     } catch (error) {
       showError(`Error signing out: ${error}`);
     }
@@ -102,6 +109,7 @@ class SignInNavItem extends React.Component {
       return (
         <NavDropdown title={user.givenName} id="user">
           <MenuItem onClick={this.signOut}>Sign Out</MenuItem>
+          <Profile user={user} />
         </NavDropdown>
       );
     }

@@ -108,8 +108,8 @@ class PostSightingFilter extends React.Component {
               onChange={this.onChangeSightingType}
             >
               <option value="">(All)</option>
-              <option value="Animal">Animal</option>
-              <option value="Plant">Plant</option>
+              <option value="ANIMAL">Animal</option>
+              <option value="PLANT">Plant</option>
             </FormControl>
           </Panel.Body>
         </Panel>

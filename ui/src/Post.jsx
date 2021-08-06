@@ -104,7 +104,7 @@ class Post extends React.Component {
     const { showing } = this.state;
     const { post } = this.props;
 
-    const { user } = this.context;
+    // const user = this.context;
 
     const { invalidFields, showingValidation, newComment } = this.state;
     let validationMessage;
@@ -116,44 +116,75 @@ class Post extends React.Component {
       );
     }
 
-    function displayImages() {
-      const { title } = post;
-      const images = post.images.map((image, index) => (
+    // TODO: image from DB should be a URL see google doc for reference
+    function DisplayImages() {
+      const { title, images } = post;
+      if (images == null) {
+        return (
+          <div align="center">No Images to Display</div>
+        );
+      }
+      const display = images.map((image, index) => (
         <Carousel.Item>
           {/* eslint-disable-next-line react/no-array-index-key */}
-          <img scr={image} key={index} alt={title} />
+          <img src={image} key={index} alt={title} />
         </Carousel.Item>
       ));
 
       return (
         <Carousel>
-          {images}
+          {display}
         </Carousel>
       );
     }
 
+
     // TODO: Location will need to be converted to town/state?
+    // TODO: enable send comment when functionality is implemented
     return (
       <React.Fragment>
-        <Modal keyboard showing={showing} onHide={this.hideModal}>
+        <Button onClick={this.showModal}>
+          View Post
+        </Button>
+        <Modal keyboard show={showing} onHide={this.hideModal}>
           <Modal.Header closeButton>
             <Modal.Title>{post.title}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Row>
-              <h3>
-                <b> Location: </b>
-                {' '}
-                {post.location}
-              </h3>
+              <b> Location: </b>
+              {' '}
+              Latitude:
+              {' '}
+              {post.location.lat}
+              {' '}
+              Longitude:
+              {' '}
+              {post.location.lon}
             </Row>
-            <Row>{displayImages}</Row>
+            <br />
+            <Row><DisplayImages /></Row>
             <Row>
+              <br />
+              Sighting at:
+              {' '}
+              {post.spotted.toDateString()}
+              {' '}
+              {post.spotted.toTimeString()}
+            </Row>
+            <Row>
+              <br />
+              Author:
+              {' '}
               {post.authorId}
             </Row>
             <Row>
+              Sighting Description:
+              {' '}
               {post.description}
             </Row>
+            <br />
+            <Row>Comment Placeholder</Row>
           </Modal.Body>
           <Modal.Footer>
             <FormGroup>
@@ -170,7 +201,7 @@ class Post extends React.Component {
               </Col>
               <Col sm={3}>
                 <Button
-                  disabled={!user.signedIn}
+                  disabled
                   bsStyle="primary"
                   type="submit"
                   onClick={this.addComment}
