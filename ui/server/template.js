@@ -2,7 +2,7 @@ import serialize from 'serialize-javascript';
 
 export default function template(body, initialData, userData) {
   return `<!DOCTYPE HTML>
-<html>
+<html lang="">
   <head>
     <meta charset="utf-8">
     <title>Pro MERN Stack</title>
@@ -10,6 +10,7 @@ export default function template(body, initialData, userData) {
     <link rel="stylesheet" href="/react-datetime.css" >
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
+    </script>
     <script src="https://apis.google.com/js/api:client.js"></script>
     <style>
       table.table-hover tr {cursor: pointer;}
