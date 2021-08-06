@@ -6,6 +6,9 @@ import usePlacesAutocomplete, {
     getGeocode,
     getLatLng,
 } from "use-places-autocomplete";
+import PostSightingFilter from "./PostSightingFilter.jsx";
+import Panel from "react-bootstrap/lib/Panel";
+import mapStyles from "./mapStyles.jsx";
 
 const containerStyle = {
     width: '80vw',
@@ -20,7 +23,11 @@ const center = {
 };
 
 
-
+const options = {
+    styles: mapStyles,
+    disableDefaultUI: true,
+    zoomControl: true,
+};
 
 
 function PostMap() {
@@ -56,24 +63,37 @@ function PostMap() {
 
     return (
 
+        <React-Fragment>
+            <Panel>
+                <Panel.Heading>
+                    <Panel.Title>Filter</Panel.Title>
+                </Panel.Heading>
+                <Panel.Body>
+                    <PostSightingFilter urlBase="/map" />
+                </Panel.Body>
+            </Panel>
+
+            <div>
+
+                <Locate panTo={panTo} />
+                <Search panTo={panTo} />
+
+                <GoogleMap
+                    mapContainerStyle={containerStyle}
+                    center={center}
+                    zoom={10}
+                    onLoad={onMapLoad}
+                    onClick={onMapClick}
+                    options={options}
+                >
+                    { /* Child components, such as markers, info windows, etc. */ }
+                    <></>
+                </GoogleMap>
+            </div>
+        </React-Fragment>
 
 
-        <div>
 
-            <Locate panTo={panTo} />
-            <Search panTo={panTo} />
-
-        <GoogleMap
-            mapContainerStyle={containerStyle}
-            center={center}
-            zoom={10}
-            onLoad={onMapLoad}
-            onClick={onMapClick}
-        >
-            { /* Child components, such as markers, info windows, etc. */ }
-            <></>
-        </GoogleMap>
-        </div>
     )
 }
 
