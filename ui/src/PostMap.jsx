@@ -63,7 +63,8 @@ function PostMap() {
 
     return (
 
-        <React-Fragment>
+        <div>
+            <div>
             <Panel>
                 <Panel.Heading>
                     <Panel.Title>Filter</Panel.Title>
@@ -72,11 +73,14 @@ function PostMap() {
                     <PostSightingFilter urlBase="/map" />
                 </Panel.Body>
             </Panel>
+        </div>
 
             <div>
 
+                <div>
                 <Locate panTo={panTo} />
                 <Search panTo={panTo} />
+                </div>
 
                 <GoogleMap
                     mapContainerStyle={containerStyle}
@@ -90,8 +94,8 @@ function PostMap() {
                     <></>
                 </GoogleMap>
             </div>
-        </React-Fragment>
 
+</div>
 
 
     )
@@ -101,7 +105,7 @@ function PostMap() {
 function Locate({ panTo }) {
     return (
         <button
-            className="locate"
+
             onClick={() => {
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
@@ -147,7 +151,7 @@ function Search({ panTo }) {
             const { lat, lng } = await getLatLng(results[0]);
             panTo({ lat, lng });
         } catch (error) {
-            console.log("😱 Error: ", error);
+            console.log("Error: ", error);
         }
     };
 
@@ -158,7 +162,7 @@ function Search({ panTo }) {
                     value={value}
                     onChange={handleInput}
                     disabled={!ready}
-                    placeholder="Search your location"
+                    placeholder="Search  location"
                 />
                 <ComboboxPopover>
                     <ComboboxList>
