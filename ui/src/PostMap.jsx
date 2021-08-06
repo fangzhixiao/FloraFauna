@@ -171,8 +171,8 @@ function Search({ panTo }) {
                     disabled={!ready}
                     placeholder="Search  location"
                 />
-                <ComboboxPopover >
-                    <ComboboxList style={{position:"absolute", left :"10%"}}>
+                <ComboboxPopover  style={{backgroundColor :"white"}}>
+                    <ComboboxList style={{position:"absolute", left :"10%",padding :"0.5rem", backgroundColor : "white"}}>
 
                         {status === "OK" &&
                         data.map(({ id, description }) => (
