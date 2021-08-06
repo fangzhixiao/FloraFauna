@@ -48,7 +48,7 @@ function PostMap() {
 
     const panTo = React.useCallback(({ lat, lng }) => {
         mapRef.current.panTo({ lat, lng });
-        mapRef.current.setZoom(14);
+        mapRef.current.setZoom(16);
     }, []);
 
 
@@ -78,9 +78,15 @@ function PostMap() {
             <div>
 
                 <div>
-                <Locate panTo={panTo} />
-                <Search panTo={panTo} />
+                    <Locate panTo={panTo} />
                 </div>
+
+
+                <div>
+                    <Search panTo={panTo} />
+                </div>
+
+
 
                 <GoogleMap
                     mapContainerStyle={containerStyle}
@@ -105,7 +111,7 @@ function PostMap() {
 function Locate({ panTo }) {
     return (
         <button
-
+            style={{fontSize:50}}
             onClick={() => {
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
@@ -118,6 +124,7 @@ function Locate({ panTo }) {
                 );
             }}
         >
+            Find me
         </button>
     );
 }
@@ -156,7 +163,7 @@ function Search({ panTo }) {
     };
 
     return (
-        <div className="search">
+        <div >
             <Combobox onSelect={handleSelect}>
                 <ComboboxInput
                     value={value}
@@ -164,8 +171,9 @@ function Search({ panTo }) {
                     disabled={!ready}
                     placeholder="Search  location"
                 />
-                <ComboboxPopover>
-                    <ComboboxList>
+                <ComboboxPopover >
+                    <ComboboxList style={{position:"absolute", left :"10%"}}>
+
                         {status === "OK" &&
                         data.map(({ id, description }) => (
                             <ComboboxOption key={id} value={description} />
