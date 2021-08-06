@@ -33,6 +33,8 @@ async function installHandler(app) {
     db: database,
     s3Client: new s3.S3Client({ region: 'us-west-2' }),
   });
+
+  // TODO: wrap appropriate functions in mustbeSignedIn
   const resolvers = {
     Query: {
       about: about.getMessage,
@@ -45,7 +47,7 @@ async function installHandler(app) {
       postAdd: postController.add,
       postUpdate: postController.update,
       postDelete: postController.remove,
-      // postRestore: post.restore,
+      postRestore: postController.restore,
     },
     GraphQLDate,
   };
