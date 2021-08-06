@@ -10,7 +10,7 @@ Zhiqi Lin lin.zhiq@northeastern.edu
 Application should run in http://ui.promernstack.com:8000 on the web
 
 
-![Alt text]()
+![Alt text](https://github.ccs.neu.edu/NEU-CS5610-SU21/TeamOrb-FloraFauna/blob/jiatian/ite1.png)
 
 In front-end, we implemented google map api to render maps. The filter is on the top of the website, and there is a "Find me" Button, when clicking, it will locate to your 
 location, and there is a search field, which I import "use-places-autocomplete" package, you can search location there, and it will give you some hint there also.
