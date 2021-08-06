@@ -9,9 +9,7 @@ export default function template(body, initialData, userData) {
     <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css" >
     <link rel="stylesheet" href="/react-datetime.css" >
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script async
-    src="https://maps.googleapis.com/maps/api/js?v=quarterly
-        &key=AIzaSyBV9Y-4AxWr-ZK-oLrs0Gn7mV-AJglIlPQ&callback=initMap">
+    
     </script>
     <script src="https://apis.google.com/js/api:client.js"></script>
     <style>

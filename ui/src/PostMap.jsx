@@ -1,5 +1,5 @@
 import React from 'react'
-import { GoogleMap, useJsApiLoader , useLoadScript} from '@react-google-maps/api';
+import { Marker, InfoWindow,GoogleMap, useJsApiLoader , useLoadScript} from '@react-google-maps/api';
 import withToast from './withToast.jsx';
 import {Combobox, ComboboxInput, ComboboxList, ComboboxOption, ComboboxPopover} from "@reach/combobox";
 import usePlacesAutocomplete, {
@@ -9,6 +9,31 @@ import usePlacesAutocomplete, {
 import PostSightingFilter from "./PostSightingFilter.jsx";
 import Panel from "react-bootstrap/lib/Panel";
 import mapStyles from "./mapStyles.jsx";
+
+const markers = [
+    {
+        id: 1,
+        name: "Chicago, Illinois",
+        position: { lat: 41.881832, lng: -87.623177 }
+    },
+    {
+        id: 2,
+        name: "Denver, Colorado",
+        position: { lat: 39.739235, lng: -104.99025 }
+    },
+    {
+        id: 3,
+        name: "Los Angeles, California",
+        position: { lat: 34.052235, lng: -118.243683 }
+    },
+    {
+        id: 4,
+        name: "New York, New York",
+        position: { lat: 40.712776, lng: -74.005974 }
+    }
+];
+
+
 
 const containerStyle = {
     width: '80vw',
@@ -38,9 +63,6 @@ function PostMap() {
         libraries,
     })
 
-
-
-
     const mapRef = React.useRef();
     const onMapLoad = React.useCallback((map) => {
         mapRef.current = map;
@@ -51,14 +73,14 @@ function PostMap() {
         mapRef.current.setZoom(16);
     }, []);
 
-
-
     const onMapClick = React.useCallback((e) => {
         console.log(e);
     }, []);
 
     if (loadError) return  "Error";
     if (!isLoaded) return "loding";
+
+
 
 
     return (
@@ -96,8 +118,8 @@ function PostMap() {
                     onClick={onMapClick}
                     options={options}
                 >
-                    { /* Child components, such as markers, info windows, etc. */ }
-                    <></>
+
+
                 </GoogleMap>
             </div>
 
