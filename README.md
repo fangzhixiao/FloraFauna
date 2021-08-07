@@ -56,17 +56,17 @@ displaying images, user specific profiles, and post commenting.
     * Time Filter needs to be refactored to a range of times in the next iteration. 
 * Additional New Components (Responsible Member: Zhining Fang) : 
     * Add a post(Modal) - Modal that currently pops up on clicking the + button on the navigation bar.
-      ![Add a Post](readme_images/ite1_addPost.png)
+      ![Add a Post](readme_images/ite1_ui_addPost.png)
       * Next iteration will refactor such that user can select a location on the map first, then
         be prompted to create a new post in the modal.
     * Edit a post (refactored from IssueEdit) - User can access this page by going to their profile where a list of posts 
       displays as a table. After clicking the edit button, a new tab will be opened to the edit page
       of the selected post. Post update query is also in place but untested. Will be fully 
       functional for Iteration 2.
-      ![Edit a Post](readme_images/ite1_editPost.png)
+      ![Edit a Post](readme_images/ite1_ui_editPost.png)
     * View user profile (display list of user posts, Modal) - if logged in, user can view profile by
       clicking their name and clicking the view profile button.
-      ![User Profile](readme_images/ite1_userProfile.png)
+      ![User Profile](readme_images/ite1_ui_userProfile.png)
       * Currently, the profile displays user Name and Email and all available posts (including ones 
         the user did not make). Iteration 2 will display only posts that belong to the currently 
         logged-in user. Code with query and calls to the backend are already set up, is just 
@@ -76,7 +76,7 @@ displaying images, user specific profiles, and post commenting.
       available, the date and time of the sighting, the name of the user who posted and a 
       description if available. There is a disabled button for comments as a placeholder for sending 
       comments to the post.
-      ![View a Post](readme_images/ite1_post.png)
+      ![View a Post](readme_images/ite1_ui_post.png)
       * Images do not currently work. Backend has set up a process for images involving MongoDB and 
         AWS S3 for image hosting. Will be completed in Iteration 2.
       * Comments do not display currently. Iteration 2 will display comments appropriately and users
