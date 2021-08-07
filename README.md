@@ -1,6 +1,6 @@
 # FloraFauna
 ----
-Link to deployment: _____
+Link to deployment: https://florafauna-ui.herokuapp.com/posts
 
 Students:  
 Jiatian Wang wang.jiati@northeastern.edu  
@@ -39,7 +39,7 @@ displaying images, user specific profiles, and post commenting.
 ![Graphql Playground screenshot 3](readme_images/ite1_api_3.png)
 
 #### UI Functionality:
-* Refactored Page code to accommodate map and new filter panel. 
+* Refactored Page code from issue tracker to accommodate map and new filter panel. 
     * Responsible Members: Jiatian Wang and Zhining Fang
     * Styled map from Google Maps API, populated with placeholder markers for Iteration 1. User can 
       search for a location to display on the map.

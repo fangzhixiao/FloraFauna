@@ -110,7 +110,7 @@ class PostMapWrapper extends React.Component {
             <Panel.Heading>
               <Panel.Title toggle>Filter</Panel.Title>
             </Panel.Heading>
-            <Panel.Body>
+            <Panel.Body collapsible>
               <PostSightingFilter urlBase="/posts" />
             </Panel.Body>
           </Panel>
