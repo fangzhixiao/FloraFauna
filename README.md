@@ -66,7 +66,7 @@ displaying images, user specific profiles, and post commenting.
       ![Edit a Post](readme_images/ite1_ui_editPost.png)
     * View user profile (display list of user posts, Modal) - if logged in, user can view profile by
       clicking their name and clicking the view profile button.
-      ![User Profile](readme_images/ite1_ui_userProfile.png)
+      ![User Profile](readme_images/ite1_ui_userprofile.png)
       * Currently, the profile displays user Name and Email and all available posts (including ones 
         the user did not make). Iteration 2 will display only posts that belong to the currently 
         logged-in user. Code with query and calls to the backend are already set up, is just 
