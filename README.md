@@ -40,28 +40,33 @@ displaying images, user specific profiles, and post commenting.
 
 #### UI Functionality:
 * Refactored Page code from issue tracker to accommodate map and new filter panel. 
+  ![Page ScreenShot with Map and Filter](readme_images/ite1_ui_homepage.png)
     * Responsible Members: Jiatian Wang and Zhining Fang
     * Styled map from Google Maps API, populated with placeholder markers for Iteration 1. User can 
-      search for a location to display on the map.
+      search for a location to display on the map -- currently cannot search for markers.
       * Iteration 2 will have appropriate post markers read from MongoDB
     * Filter panel has collapsible filter options
+      ![Filter Expanded](readme_images/ite1_ui_filter_expanded.png)
       * Filter is not currently functional, will be once the map is connected to backend API.
         * Query to get posts is written and tested on graphQL playground but untested in front end.
       * Additional goal for Iteration 2 is to add additional filters for posts that have images vs 
         no images.
     * Date/Time filter implements a third party calendar component
         * link: https://github.com/arqex/react-datetime
-    * Time Filter needs to be refactored to a range of times. 
+    * Time Filter needs to be refactored to a range of times in the next iteration. 
 * Additional New Components (Responsible Member: Zhining Fang) : 
     * Add a post(Modal) - Modal that currently pops up on clicking the + button on the navigation bar.
+      ![Add a Post](readme_images/ite1_addPost.png)
       * Next iteration will refactor such that user can select a location on the map first, then
         be prompted to create a new post in the modal.
     * Edit a post (refactored from IssueEdit) - User can access this page by going to their profile where a list of posts 
       displays as a table. After clicking the edit button, a new tab will be opened to the edit page
       of the selected post. Post update query is also in place but untested. Will be fully 
       functional for Iteration 2.
+      ![Edit a Post](readme_images/ite1_editPost.png)
     * View user profile (display list of user posts, Modal) - if logged in, user can view profile by
       clicking their name and clicking the view profile button.
+      ![User Profile](readme_images/ite1_userProfile.png)
       * Currently, the profile displays user Name and Email and all available posts (including ones 
         the user did not make). Iteration 2 will display only posts that belong to the currently 
         logged-in user. Code with query and calls to the backend are already set up, is just 
@@ -71,6 +76,7 @@ displaying images, user specific profiles, and post commenting.
       available, the date and time of the sighting, the name of the user who posted and a 
       description if available. There is a disabled button for comments as a placeholder for sending 
       comments to the post.
+      ![View a Post](readme_images/ite1_post.png)
       * Images do not currently work. Backend has set up a process for images involving MongoDB and 
         AWS S3 for image hosting. Will be completed in Iteration 2.
       * Comments do not display currently. Iteration 2 will display comments appropriately and users
