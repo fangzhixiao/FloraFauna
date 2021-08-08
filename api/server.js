@@ -9,6 +9,8 @@ app.use(cookieParser());
 app.use('/auth', auth.routes);
 
 const port = process.env.API_SERVER_PORT || 3000;
+// TODO for DEPLOYMENT
+// const port = process.env.PORT || 3000;
 
 (async function start() {
   installHandler(app);
