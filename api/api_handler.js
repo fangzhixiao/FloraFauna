@@ -60,9 +60,6 @@ async function installHandler(app) {
       console.log(error);
       return error;
     },
-    // TODO for DEPLOYMENT
-    // playground: true,
-    // introspection: true,
   });
 
   server.applyMiddleware({ app, path: '/graphql', cors });
