@@ -76,23 +76,21 @@ class Controller {
   async list(_, {
     sightingType, search, authorId, spotted, minHour, maxHour,
   }) {
+    console.log('new query')
     const filter = {};
     if (sightingType) filter.sightingType = sightingType;
     if (search) filter.$text = { $search: search };
     if (authorId) filter.authorId = authorId;
 
-    const posts = this.db.collection('posts').find(filter).toArray();
+    const posts = await this.db.collection('posts').find(filter).toArray();
     if (spotted) {
       const filtered = posts.filter(post => post.spotted.getFullYear() === spotted.getFullYear()
         && post.spotted.getMonth() === spotted.getMonth()
-        && post.spotted.getDate() === spotted.getDate());
+        && post.spotted.getDate() === spotted.getDate()
+      );
       return filtered;
     }
-    if (minHour && maxHour) {
-      const filtered = posts.filter(post => post.spotted.getHours() > minHour.getHours()
-          && post.spotted.getHours() < maxHour.getHours());
-      return filtered;
-    }
+
     return posts;
   }
 
