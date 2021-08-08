@@ -3,7 +3,7 @@ import {
   NavItem, Glyphicon, Modal, Form, FormGroup, FormControl, ControlLabel, Col,
   Button, ButtonToolbar, Tooltip, OverlayTrigger, Alert,
 } from 'react-bootstrap';
-// import graphQLFetch from './graphQLFetch.js';
+import graphQLFetch from './graphQLFetch.js';
 import DateInput from './DateInput.jsx';
 import withToast from './withToast.jsx';
 
@@ -66,44 +66,42 @@ class PostAddNavItem extends React.Component {
     if (Object.keys(invalidFields).length !== 0) return; // keep from submitting if validation fails
 
     // TODO replace hardcoded ID with actual user.id
-    const { user } = this.props; // attempt to save user's name for post
     const form = document.forms.postAdd;
     const post = {
       title: form.title.value,
       sightingType: form.sightingType.value,
       authorId: 1,
-      owner: user.name, // schema needs to add this to post and post input types
       description: form.description.value,
-      location: form.location.value, // placeholder for now
+      location: {
+        lat: form.latitude.value,
+        lng: form.longitude.value,
+      }, // placeholder for now
       created: new Date(new Date().getTime()),
       spotted: date,
-      images: null,
+      images: [],
     };
 
-    console.log(post);
-    this.hideModal();
-
-    // TODO need to add some code here to handle images, need to actually write query for add
-
-    // const query = `mutation postAdd($post: PostInputs!) {
-    //   postAdd(post: $post) {
-    //     id
-    //     title
-    //     sightingType
-    //     authorId
-    //     owner
-    //     created
-    //     spotted
-    //     images
-    //     description
-    //   }
-    //  }`;
-    // const { showSuccess, showError } = this.props;
-    // const data = await graphQLFetch(query, { post }, showError);
-    // if (data) {
-    //   this.hideModal();
-    //   showSuccess('Added new post successfully');
-    // }
+    const query = `mutation postAdd($post: PostInput!) {
+      postAdd(post: $post) {
+        id
+        title
+        sightingType
+        authorId
+        created
+        spotted
+        imageKeys
+        description
+        location {
+          lat lng
+        }
+      }
+     }`;
+    const { showSuccess, showError } = this.props;
+    const data = await graphQLFetch(query, { post }, showError);
+    if (data) {
+      this.hideModal();
+      showSuccess('Added new post successfully');
+    }
   }
 
   render() {
@@ -145,8 +143,8 @@ class PostAddNavItem extends React.Component {
               <FormGroup>
                 <ControlLabel>Sighting Type</ControlLabel>
                 <FormControl name="sightingType" componentClass="select" placeholder="Animal">
-                  <option value="Animal">Animal</option>
-                  <option value="Plant">Plant</option>
+                  <option value="ANIMAL">Animal</option>
+                  <option value="PLANT">Plant</option>
                 </FormControl>
               </FormGroup>
               <FormGroup controlId="formControlsFile">
@@ -163,8 +161,12 @@ class PostAddNavItem extends React.Component {
                 />
               </FormGroup>
               <FormGroup>
-                <ControlLabel>Location</ControlLabel>
-                <FormControl name="location" />
+                <ControlLabel>Latitude</ControlLabel>
+                <FormControl name="latitude" />
+              </FormGroup>
+              <FormGroup>
+                <ControlLabel>Longitude</ControlLabel>
+                <FormControl name="longitude" />
               </FormGroup>
               <FormGroup validationState={invalidFields.spotted ? 'error' : null}>
                 <ControlLabel>Date Spotted</ControlLabel>

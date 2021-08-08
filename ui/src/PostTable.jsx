@@ -5,7 +5,6 @@ import {
   Button, Glyphicon, Tooltip, OverlayTrigger, Table,
 } from 'react-bootstrap';
 
-import UserContext from './UserContext.js';
 import Post from './Post.jsx';
 
 class PostRowPlain extends React.Component {
@@ -13,9 +12,6 @@ class PostRowPlain extends React.Component {
     const {
       post, deletePost, index,
     } = this.props;
-
-    const user = this.context;
-    const disabled = !user.signedIn;
 
     const editTooltip = (
       <Tooltip id="close-tooltip" placement="top">Edit Post</Tooltip>
@@ -50,7 +46,7 @@ class PostRowPlain extends React.Component {
           </LinkContainer>
           {' '}
           <OverlayTrigger delayShow={1000} overlay={deleteTooltip}>
-            <Button disabled={disabled} bsSize="xsmall" onClick={onDelete}>
+            <Button bsSize="xsmall" onClick={onDelete}>
               <Glyphicon glyph="trash" />
             </Button>
           </OverlayTrigger>
@@ -62,9 +58,7 @@ class PostRowPlain extends React.Component {
   }
 }
 
-PostRowPlain.contextType = UserContext;
 const PostRow = withRouter(PostRowPlain);
-delete PostRow.contextType;
 
 export default function PostTable({ posts, deletePost }) {
   const postRows = posts.map((post, index) => (

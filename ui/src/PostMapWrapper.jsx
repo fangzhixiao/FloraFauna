@@ -86,7 +86,6 @@ class PostMapWrapper extends React.Component {
     }
   }
 
-  // TODO: currently loads a list, will need to load marker data when map is active
   async loadData() {
     const { location: { search }, match, showError } = this.props;
     const data = await PostMapWrapper.fetchData(match, search, showError);
@@ -100,8 +99,6 @@ class PostMapWrapper extends React.Component {
   render() {
     const { posts } = this.state;
     if (posts == null) return null;
-    // eslint-disable-next-line no-console
-    console.log(posts);
 
     return (
       <React.Fragment>

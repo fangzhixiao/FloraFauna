@@ -118,7 +118,7 @@ class PostEdit extends React.Component {
     // location from PostUpdateInputs -- I think we should put in there only inputs that are
     // allowed to be modifiable.
     const {
-      id, created, spotted, location, ...changes
+      id, created, spotted, authorId, location, imageKeys, ...changes
     } = post;
     const { showSuccess, showError } = this.props;
     const data = await graphQLFetch(
@@ -219,7 +219,7 @@ class PostEdit extends React.Component {
                   {' '}
                   Longitude:
                   {' '}
-                  {post.location.lon}
+                  {post.location.lng}
                 </FormControl.Static>
               </Col>
             </FormGroup>
