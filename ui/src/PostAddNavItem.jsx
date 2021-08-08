@@ -78,7 +78,7 @@ class PostAddNavItem extends React.Component {
       }, // placeholder for now
       created: new Date(new Date().getTime()),
       spotted: date,
-      images: [],
+      imageKeys: [],
     };
 
     const query = `mutation postAdd($post: PostInput!) {

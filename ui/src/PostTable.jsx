@@ -5,6 +5,7 @@ import {
   Button, Glyphicon, Tooltip, OverlayTrigger, Table,
 } from 'react-bootstrap';
 
+import UserContext from './UserContext.js';
 import Post from './Post.jsx';
 
 class PostRowPlain extends React.Component {
@@ -26,6 +27,8 @@ class PostRowPlain extends React.Component {
       deletePost(index);
     }
 
+    const user = this.context;
+
     const tableRow = (
       <tr>
         <td>
@@ -38,14 +41,14 @@ class PostRowPlain extends React.Component {
         <td>{post.spotted.toLocaleTimeString()}</td>
         <td>
           <LinkContainer to="/">
-            <OverlayTrigger delayShow={1000} overlay={editTooltip}>
+            <OverlayTrigger disabled={!user.signedIn} delayShow={1000} overlay={editTooltip}>
               <Button bsSize="xsmall" onClick={() => { window.open(`/edit/${post.id}`, '_blank'); }}>
                 <Glyphicon glyph="edit" />
               </Button>
             </OverlayTrigger>
           </LinkContainer>
           {' '}
-          <OverlayTrigger delayShow={1000} overlay={deleteTooltip}>
+          <OverlayTrigger disabled={!user.signedIn} delayShow={1000} overlay={deleteTooltip}>
             <Button bsSize="xsmall" onClick={onDelete}>
               <Glyphicon glyph="trash" />
             </Button>
@@ -58,7 +61,9 @@ class PostRowPlain extends React.Component {
   }
 }
 
+PostRowPlain.contextType = UserContext;
 const PostRow = withRouter(PostRowPlain);
+delete PostRow.contextType;
 
 export default function PostTable({ posts, deletePost }) {
   const postRows = posts.map((post, index) => (

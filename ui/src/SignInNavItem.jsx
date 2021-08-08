@@ -9,6 +9,7 @@ import {
 
 import withToast from './withToast.jsx';
 import Profile from './Profile.jsx';
+import UserContext from './UserContext.js';
 
 class SignInNavItem extends React.Component {
   constructor(props) {
@@ -109,7 +110,9 @@ class SignInNavItem extends React.Component {
       return (
         <NavDropdown title={user.givenName} id="user">
           <MenuItem onClick={this.signOut}>Sign Out</MenuItem>
-          <Profile user={user} />
+          <UserContext.Provider value={user}>
+            <Profile user={user} />
+          </UserContext.Provider>
         </NavDropdown>
       );
     }

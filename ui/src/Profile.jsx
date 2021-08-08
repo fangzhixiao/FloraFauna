@@ -138,10 +138,10 @@ class Profile extends React.Component {
   render() {
     const { posts, showing } = this.state;
     if (posts == null) return null;
-    const { user } = this.props;
+    const user = this.context;
 
 
-    // TODO: Location will need to be converted to town/state?
+    // TODO: nice to have: Location as town/state
     return (
       <React.Fragment>
         <Button onClick={this.showModal}>
