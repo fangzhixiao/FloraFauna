@@ -1,7 +1,7 @@
 {
-  "name": "cs5610book-ui",
+  "name": "FloraFauna-ui",
   "version": "1.0.0",
-  "description": "Pro MERN Stack (2nd Edition) - UI",
+  "description": "FloraFauna Sighting map project - UI",
   "main": "index.js",
   "scripts": {
     "#start": "UI server. HMR is enabled in dev mode.",

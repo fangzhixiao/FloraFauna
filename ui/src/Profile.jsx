@@ -49,7 +49,7 @@ class Profile extends React.Component {
         location {
           lat lng
           }
-        imageKeys
+        imageUrls
         description 
         comments {
           commenter content created
@@ -125,8 +125,8 @@ class Profile extends React.Component {
   }
 
 
-  showModal() {
-    this.loadData();
+  async showModal() {
+    await this.loadData();
     this.setState({ showing: true });
   }
 

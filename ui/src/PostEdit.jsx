@@ -31,8 +31,11 @@ class PostEdit extends React.Component {
         location {
           lat lng
         }
-        imageKeys
+        imageUrls
         description
+        comments {
+        commenter content created
+      }
       }
     }`;
 
@@ -109,16 +112,17 @@ class PostEdit extends React.Component {
         location {
           lat lng
          }
-        imageKeys
+        imageUrls
         description
+        comments {
+        commenter content created
+      }
       }
     }`;
 
     // TODO: For post updates -- would users be allowed to change location data? May need to remove
-    // location from PostUpdateInputs -- I think we should put in there only inputs that are
-    // allowed to be modifiable.
     const {
-      id, created, spotted, authorId, location, ...changes
+      id, created, spotted, authorId, location, imageUrls, ...changes
     } = post;
     const { showSuccess, showError } = this.props;
     const data = await graphQLFetch(
@@ -232,15 +236,9 @@ class PostEdit extends React.Component {
                   value={post.sightingType}
                   onChange={this.onChange}
                 >
-                  <option value="Animal">Animal</option>
-                  <option value="Plant">Plant</option>
+                  <option value="ANIMAL">Animal</option>
+                  <option value="PLANT">Plant</option>
                 </FormControl>
-              </Col>
-            </FormGroup>
-            <FormGroup>
-              <Col componentClass={ControlLabel} sm={3}>Images</Col>
-              <Col sm={9}>
-                <FormControl type="file" />
               </Col>
             </FormGroup>
             <FormGroup>

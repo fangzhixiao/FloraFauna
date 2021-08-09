@@ -31,7 +31,7 @@ type Post {
     created: GraphQLDate!
     spotted: GraphQLDate!
     location: Location!
-    imageKeys:[String]
+    imageUrls:[String]
     description: String
     comments: [Comment]
 }
@@ -62,7 +62,7 @@ input PostInput {
     created: GraphQLDate!
     spotted: GraphQLDate!
     location: LocationInput!
-    imageKeys:[String]
+    images:[String]
     description: String
 }
 
@@ -74,7 +74,6 @@ input PostUpdateInput {
     sightingType: SightingType
     spotted: GraphQLDate
     location: LocationInput
-    imageKeys: [String]
     description: String
     comments: [CommentInput]
 }

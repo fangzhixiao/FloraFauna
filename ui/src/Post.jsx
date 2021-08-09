@@ -15,7 +15,7 @@ class Post extends React.Component {
     const { post } = props;
     this.state = {
       showing: false,
-      comments: post.comments,
+      post,
       invalidFields: {},
       showingValidation: false,
       newComment: '',
@@ -65,7 +65,7 @@ class Post extends React.Component {
   async addComment(e) { // submit comment
     e.preventDefault();
     this.showValidation();
-    const { invalidFields, newComment } = this.state;
+    const { invalidFields, newComment, post } = this.state;
     if (Object.keys(invalidFields).length !== 0) return;
     const user = this.context;
 
@@ -75,12 +75,10 @@ class Post extends React.Component {
       created: new Date(new Date().getTime()),
     };
 
-    const { post } = this.props;
-
     if (post.comments == null) {
       post.comments = [];
-      post.comments.push(comment);
     }
+    post.comments = [...post.comments, comment];
 
     const query = `mutation postUpdate(
       $id: String!
@@ -98,7 +96,7 @@ class Post extends React.Component {
     }`;
 
     const {
-      id, created, spotted, authorId, location, ...changes
+      id, created, spotted, authorId, location, imageUrls, ...changes
     } = post;
     const { showSuccess, showError } = this.props;
     const data = await graphQLFetch(
@@ -106,22 +104,19 @@ class Post extends React.Component {
     );
     if (data) {
       this.setState((prevState) => {
-        if (prevState.comments == null) {
-          const c = [];
-          c.push(comment);
-          return c;
-        }
-        const newList = [...prevState.comments];
-        newList.push(comment);
-        return { comments: newList };
+        const updatedPost = prevState.post;
+        // if (updatedPost.comments == null) {
+        //   updatedPost.comments = [];
+        // }
+        // updatedPost.comments = [...updatedPost.comments, comment];
+        return { post: updatedPost };
       });
       showSuccess('Comment added successfully');
     }
   }
 
   render() {
-    const { showing, comments } = this.state;
-    const { post } = this.props;
+    const { showing, post } = this.state;
     const user = this.context;
 
     const { invalidFields, showingValidation, newComment } = this.state;
@@ -136,16 +131,16 @@ class Post extends React.Component {
 
     // TODO: image from DB should be a URL see google doc for reference
     function DisplayImages() {
-      const { title, imageKeys } = post;
-      if (imageKeys == null) {
+      const { title, imageUrls } = post;
+      if (imageUrls == null || imageUrls.length === 0) {
         return (
           <div align="center">No Images to Display</div>
         );
       }
-      const display = imageKeys.map((image, index) => (
+      const display = imageUrls.map((image, index) => (
         <Carousel.Item>
           {/* eslint-disable-next-line react/no-array-index-key */}
-          <img src={imageKeys} key={index} alt={title} />
+          <img src={image} key={index} alt={title} />
         </Carousel.Item>
       ));
 
@@ -157,13 +152,13 @@ class Post extends React.Component {
     }
 
     function DisplayComments() {
-      if (comments == null) {
+      if (post.comments == null) {
         return (
           <div align="center">This post has no comments...</div>
         );
       }
 
-      const commentList = comments.map((comment) => {
+      const commentList = post.comments.map((comment) => {
         const { commenter, created, content } = comment;
         return (
           <ListGroupItem key={`${commenter}${created}`}>

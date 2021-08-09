@@ -48,7 +48,7 @@ class PostMapWrapper extends React.Component {
       location {
         lat lng
         }
-      imageKeys
+      imageUrls
       description 
       comments {
         commenter content created

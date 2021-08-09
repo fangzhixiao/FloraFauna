@@ -13,6 +13,7 @@ class PostAddNavItem extends React.Component {
     super(props);
     this.state = {
       showing: false,
+      uploadedImages: [],
       invalidFields: {},
       showingValidation: false,
       date: '',
@@ -25,6 +26,7 @@ class PostAddNavItem extends React.Component {
     this.showValidation = this.showValidation.bind(this);
     this.onValidityChange = this.onValidityChange.bind(this);
     this.onChangeDate = this.onChangeDate.bind(this);
+    this.onFileChange = this.onFileChange.bind(this);
   }
 
   onValidityChange(event, valid) {
@@ -42,14 +44,13 @@ class PostAddNavItem extends React.Component {
     this.setState({ date: value });
   }
 
-  showModal() {
-    this.setState({ showing: true });
+  // adds each uploaded file to the list of files
+  onFileChange(e) {
+    e.preventDefault();
+    const { files } = e.target;
+    const { uploadedImages } = this.state;
+    this.setState({ uploadedImages: [...uploadedImages, files[0]] });
   }
-
-  hideModal() {
-    this.setState({ showing: false });
-  }
-
 
   showValidation() {
     this.setState({ showingValidation: true });
@@ -59,6 +60,40 @@ class PostAddNavItem extends React.Component {
     this.setState({ showingValidation: false });
   }
 
+  showModal() {
+    this.setState({ showing: true });
+  }
+
+  hideModal() {
+    this.setState({ showing: false });
+  }
+
+  // onFileDelete()
+
+  // TODO: encode images into base64 (async) and push to db
+  // https://pqina.nl/blog/convert-a-file-to-a-base64-string-with-javascript/
+  handleUpload() {
+    const { uploadedImages } = this.state;
+    const base64Strings = [];
+    if (uploadedImages != null || uploadedImages.length >= 1) {
+      uploadedImages.forEach((image) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64String = reader.result
+            .replace('data:', '')
+            .replace(/^.+,/, '');
+          console.log(base64String);
+          base64Strings.push(base64String);
+        };
+        reader.readAsDataURL(image);
+      });
+    }
+    return base64Strings;
+  }
+
+  // TODO: having problems with images pushing -- could not load credentials from any providers
+  // Maybe have to config it:
+  // https://stackoverflow.com/questions/56152697/could-not-load-credentials-from-any-providers-when-attempting-upload-to-aws-s3
   async handleSubmit(e) {
     e.preventDefault();
     this.showValidation();
@@ -71,15 +106,17 @@ class PostAddNavItem extends React.Component {
       title: form.title.value,
       sightingType: form.sightingType.value,
       authorId: 1,
-      description: form.description.value,
+      created: new Date(new Date().getTime()),
+      spotted: date,
       location: {
         lat: form.latitude.value,
         lng: form.longitude.value,
-      }, // placeholder for now
-      created: new Date(new Date().getTime()),
-      spotted: date,
-      imageKeys: [],
+      },
+      images: [],
+      description: form.description.value,
     };
+
+    this.handleUpload();
 
     const query = `mutation postAdd($post: PostInput!) {
       postAdd(post: $post) {
@@ -89,7 +126,7 @@ class PostAddNavItem extends React.Component {
         authorId
         created
         spotted
-        imageKeys
+        imageUrls
         description
         location {
           lat lng
@@ -110,6 +147,8 @@ class PostAddNavItem extends React.Component {
 
     const { invalidFields, showingValidation } = this.state;
     let validationMessage;
+
+    const { uploadedImages } = this.state;
 
     if (Object.keys(invalidFields).length !== 0 && showingValidation) {
       validationMessage = (
@@ -149,7 +188,14 @@ class PostAddNavItem extends React.Component {
               </FormGroup>
               <FormGroup controlId="formControlsFile">
                 <ControlLabel>Sighting image upload</ControlLabel>
-                <FormControl type="file" />
+                <FormControl type="file" accept=".jpg,.jpeg,.png" onChange={this.onFileChange} />
+                {uploadedImages.map((img, index) => {
+                  const fileName = img.name;
+                  return (
+                    // eslint-disable-next-line react/no-array-index-key
+                    <p key={`${fileName}${img.lastModified}${index}`}>{fileName}</p>
+                  );
+                })}
               </FormGroup>
               <FormGroup>
                 <ControlLabel>Sighting Description</ControlLabel>
