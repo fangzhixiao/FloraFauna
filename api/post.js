@@ -1,6 +1,6 @@
 const uuid = require('uuid');
 const s3 = require('@aws-sdk/client-s3');
-const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
+const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 const { UserInputError } = require('apollo-server-express');
 
 /**
@@ -63,16 +63,20 @@ class Controller {
     newPost.imageKeys = keys;
 
     const result = await this.db.collection('posts').insertOne(newPost);
-    const savedPost = await this.get(this, {id: result.ops[0].id});
+    const savedPost = await this.get(this, { id: result.ops[0].id });
     return savedPost;
   }
 
   async get(_, { id }) {
     const post = await this.db.collection('posts').findOne({ id });
-    const imageUrls = []
+    const imageUrls = [];
+
+    if (post.imageKeys == null) {
+      return post;
+    }
 
     for (const imageKey of post.imageKeys) {
-      const url = await getSignedUrl(this.s3Client, new s3.GetObjectCommand( {
+      const url = await getSignedUrl(this.s3Client, new s3.GetObjectCommand({
         Bucket: 'florafauna-images',
         Key: imageKey,
       }), { expiresIn: 3600 });
@@ -88,7 +92,7 @@ class Controller {
   async list(_, {
     sightingType, search, authorId, spotted, minHour, maxHour,
   }) {
-    console.log('new query')
+    console.log('new query');
     const filter = {};
     if (sightingType) filter.sightingType = sightingType;
     if (search) filter.$text = { $search: search };
@@ -98,8 +102,7 @@ class Controller {
     if (spotted) {
       const filtered = posts.filter(post => post.spotted.getFullYear() === spotted.getFullYear()
         && post.spotted.getMonth() === spotted.getMonth()
-        && post.spotted.getDate() === spotted.getDate()
-      );
+        && post.spotted.getDate() === spotted.getDate());
       return filtered;
     }
 

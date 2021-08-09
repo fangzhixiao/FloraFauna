@@ -10,12 +10,15 @@ import UserContext from './UserContext.js';
 
 class Post extends React.Component {
   // props in this case would be passing in the post object from clicking on a map marker
+
   constructor(props) {
     super(props);
-    const { post } = props;
+    const { post } = this.props;
     this.state = {
       showing: false,
       post,
+      // eslint-disable-next-line react/no-unused-state
+      imageURLs: null,
       invalidFields: {},
       showingValidation: false,
       newComment: '',
@@ -45,7 +48,38 @@ class Post extends React.Component {
     });
   }
 
-  showModal() {
+  async loadData() {
+    const { showError } = this.props;
+    const { post } = this.state;
+    const { id } = post;
+    const query = `query post($id: String!){
+      post(id: $id){
+        id
+        title
+        sightingType
+        authorId
+        created 
+        spotted
+        location {
+          lat lng
+          }
+        imageUrls
+        description 
+        comments {
+          commenter content created
+          }
+        }
+      }`;
+
+    const data = await graphQLFetch(query, { id }, showError);
+    if (data) {
+      console.log(data.post.imageUrls);
+      this.setState({ imageUrls: data.post.imageUrls });
+    }
+  }
+
+  async showModal() {
+    await this.loadData();
     this.setState({ showing: true });
   }
 
@@ -117,6 +151,7 @@ class Post extends React.Component {
 
   render() {
     const { showing, post } = this.state;
+    const { imageUrls } = this.state;
     const user = this.context;
 
     const { invalidFields, showingValidation, newComment } = this.state;
@@ -131,21 +166,20 @@ class Post extends React.Component {
 
     // TODO: image from DB should be a URL see google doc for reference
     function DisplayImages() {
-      const { title, imageUrls } = post;
       if (imageUrls == null || imageUrls.length === 0) {
         return (
           <div align="center">No Images to Display</div>
         );
       }
       const display = imageUrls.map((image, index) => (
-        <Carousel.Item>
+        <Carousel.Item align="center">
           {/* eslint-disable-next-line react/no-array-index-key */}
-          <img src={image} key={index} alt={title} />
+          <img src={image} key={index} alt={post.title} />
         </Carousel.Item>
       ));
 
       return (
-        <Carousel>
+        <Carousel slide={false}>
           {display}
         </Carousel>
       );
@@ -182,7 +216,6 @@ class Post extends React.Component {
         </ListGroup>
       );
     }
-
 
     // TODO: Location will need to be converted to town/state?
     // TODO: enable send comment when functionality is implemented
