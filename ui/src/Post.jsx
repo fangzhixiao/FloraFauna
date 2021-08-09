@@ -1,6 +1,7 @@
 import React from 'react';
 import {
-  Modal, FormGroup, FormControl, ControlLabel, Alert, Col, Button, Carousel, Row,
+  Modal, FormGroup, FormControl, ControlLabel, Alert,
+  Col, Button, Carousel, Row, ListGroup, ListGroupItem,
 } from 'react-bootstrap';
 import withToast from './withToast.jsx';
 import graphQLFetch from './graphQLFetch.js';
@@ -14,7 +15,7 @@ class Post extends React.Component {
     const { post } = props;
     this.state = {
       showing: false,
-      comments: post.comments,
+      post,
       invalidFields: {},
       showingValidation: false,
       newComment: '',
@@ -64,7 +65,7 @@ class Post extends React.Component {
   async addComment(e) { // submit comment
     e.preventDefault();
     this.showValidation();
-    const { comments, invalidFields, newComment } = this.state;
+    const { invalidFields, newComment, post } = this.state;
     if (Object.keys(invalidFields).length !== 0) return;
     const user = this.context;
 
@@ -74,7 +75,10 @@ class Post extends React.Component {
       created: new Date(new Date().getTime()),
     };
 
-    const { post } = this.props;
+    if (post.comments == null) {
+      post.comments = [];
+    }
+    post.comments = [...post.comments, comment];
 
     const query = `mutation postUpdate(
       $id: String!
@@ -85,26 +89,35 @@ class Post extends React.Component {
         changes: $changes
       ) {
         id
-        comments        
+        comments {
+          commenter content created
+        }        
       }
     }`;
 
-    const { id, ...changes } = post;
+    const {
+      id, created, spotted, authorId, location, imageUrls, ...changes
+    } = post;
     const { showSuccess, showError } = this.props;
     const data = await graphQLFetch(
       query, { changes, id }, showError,
     );
     if (data) {
-      this.setState({ comments: [...comments, comment] });
+      this.setState((prevState) => {
+        const updatedPost = prevState.post;
+        // if (updatedPost.comments == null) {
+        //   updatedPost.comments = [];
+        // }
+        // updatedPost.comments = [...updatedPost.comments, comment];
+        return { post: updatedPost };
+      });
       showSuccess('Comment added successfully');
     }
   }
 
   render() {
-    const { showing } = this.state;
-    const { post } = this.props;
-
-    // const user = this.context;
+    const { showing, post } = this.state;
+    const user = this.context;
 
     const { invalidFields, showingValidation, newComment } = this.state;
     let validationMessage;
@@ -117,18 +130,17 @@ class Post extends React.Component {
     }
 
     // TODO: image from DB should be a URL see google doc for reference
-    // TODO:
     function DisplayImages() {
-      const { title, imageKeys } = post;
-      if (imageKeys == null) {
+      const { title, imageUrls } = post;
+      if (imageUrls == null || imageUrls.length === 0) {
         return (
           <div align="center">No Images to Display</div>
         );
       }
-      const display = imageKeys.map((image, index) => (
+      const display = imageUrls.map((image, index) => (
         <Carousel.Item>
           {/* eslint-disable-next-line react/no-array-index-key */}
-          <img src={imageKeys} key={index} alt={title} />
+          <img src={image} key={index} alt={title} />
         </Carousel.Item>
       ));
 
@@ -136,6 +148,38 @@ class Post extends React.Component {
         <Carousel>
           {display}
         </Carousel>
+      );
+    }
+
+    function DisplayComments() {
+      if (post.comments == null) {
+        return (
+          <div align="center">This post has no comments...</div>
+        );
+      }
+
+      const commentList = post.comments.map((comment) => {
+        const { commenter, created, content } = comment;
+        return (
+          <ListGroupItem key={`${commenter}${created}`}>
+            <Row>
+              <Col lg={5}>
+                {commenter}
+              </Col>
+              <Col lg={5}>
+                {created.toLocaleString()}
+              </Col>
+            </Row>
+            <Row>
+              {content}
+            </Row>
+          </ListGroupItem>
+        );
+      });
+      return (
+        <ListGroup>
+          {commentList}
+        </ListGroup>
       );
     }
 
@@ -185,7 +229,7 @@ class Post extends React.Component {
               {post.description}
             </Row>
             <br />
-            <Row>Comment Placeholder</Row>
+            <Row><DisplayComments /></Row>
           </Modal.Body>
           <Modal.Footer>
             <FormGroup>
@@ -202,7 +246,7 @@ class Post extends React.Component {
               </Col>
               <Col sm={3}>
                 <Button
-                  disabled
+                  disabled={!user.signedIn}
                   bsStyle="primary"
                   type="submit"
                   onClick={this.addComment}

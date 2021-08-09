@@ -14,9 +14,6 @@ class PostRowPlain extends React.Component {
       post, deletePost, index,
     } = this.props;
 
-    const user = this.context;
-    const disabled = !user.signedIn;
-
     const editTooltip = (
       <Tooltip id="close-tooltip" placement="top">Edit Post</Tooltip>
     );
@@ -30,6 +27,8 @@ class PostRowPlain extends React.Component {
       deletePost(index);
     }
 
+    const user = this.context;
+
     const tableRow = (
       <tr>
         <td>
@@ -42,15 +41,15 @@ class PostRowPlain extends React.Component {
         <td>{post.spotted.toLocaleTimeString()}</td>
         <td>
           <LinkContainer to="/">
-            <OverlayTrigger delayShow={1000} overlay={editTooltip}>
+            <OverlayTrigger disabled={!user.signedIn} delayShow={1000} overlay={editTooltip}>
               <Button bsSize="xsmall" onClick={() => { window.open(`/edit/${post.id}`, '_blank'); }}>
                 <Glyphicon glyph="edit" />
               </Button>
             </OverlayTrigger>
           </LinkContainer>
           {' '}
-          <OverlayTrigger delayShow={1000} overlay={deleteTooltip}>
-            <Button disabled={disabled} bsSize="xsmall" onClick={onDelete}>
+          <OverlayTrigger disabled={!user.signedIn} delayShow={1000} overlay={deleteTooltip}>
+            <Button bsSize="xsmall" onClick={onDelete}>
               <Glyphicon glyph="trash" />
             </Button>
           </OverlayTrigger>

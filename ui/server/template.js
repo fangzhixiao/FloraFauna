@@ -5,7 +5,7 @@ export default function template(body, initialData, userData) {
 <html lang="">
   <head>
     <meta charset="utf-8">
-    <title>Pro MERN Stack</title>
+    <title>Flora Fauna Sighting Map</title>
     <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css" >
     <link rel="stylesheet" href="/react-datetime.css" >
     <meta name="viewport" content="width=device-width, initial-scale=1.0">

@@ -31,14 +31,6 @@ class Profile extends React.Component {
     if (posts == null) this.loadData();
   }
 
-  // componentDidUpdate(prevProps) {
-  //   const { match: { params: { id: prevId } } } = prevProps;
-  //   const { match: { params: { id } } } = this.props;
-  //   if (id !== prevId) {
-  //     this.loadData();
-  //   }
-  // }
-
   async loadData() {
     // const { user } = this.props;
     const { showError } = this.props;
@@ -57,7 +49,7 @@ class Profile extends React.Component {
         location {
           lat lng
           }
-        imageKeys
+        imageUrls
         description 
         comments {
           commenter content created
@@ -74,15 +66,15 @@ class Profile extends React.Component {
   }
 
   async deletePost(index) {
-    const query = `mutation postDelete($id: Int!) {
-      postDelete(id: $id)
-    }`;
-
-    const { posts } = this.state;
     const {
       showSuccess,
       showError,
     } = this.props;
+    const query = `mutation postDelete($id: String!) {
+      postDelete(id: $id)
+    }`;
+
+    const { posts } = this.state;
     const { id, title } = posts[index];
     const data = await graphQLFetch(query, { id }, showError);
     if (data && data.postDelete) {
@@ -100,13 +92,14 @@ class Profile extends React.Component {
         </span>
       );
       showSuccess(undoMessage);
+      // TODO post deletes successfully and list displays successfully, but toast isn't popping up?
     } else {
       await this.loadData();
     }
   }
 
   async restorePost(id, title) {
-    const query = `mutation postRestore($id: Int!) {
+    const query = `mutation postRestore($id: String!) {
       postRestore(id: $id)
     }`;
     const { showSuccess, showError } = this.props;
@@ -118,7 +111,8 @@ class Profile extends React.Component {
   }
 
 
-  showModal() {
+  async showModal() {
+    await this.loadData();
     this.setState({ showing: true });
   }
 
@@ -126,14 +120,13 @@ class Profile extends React.Component {
     this.setState({ showing: false });
   }
 
-
   render() {
     const { posts, showing } = this.state;
     if (posts == null) return null;
-    const { user } = this.props;
+    const user = this.context;
 
 
-    // TODO: Location will need to be converted to town/state?
+    // TODO: nice to have: Location as town/state
     return (
       <React.Fragment>
         <Button onClick={this.showModal}>
@@ -180,5 +173,4 @@ class Profile extends React.Component {
 
 Profile.contextType = UserContext;
 const ProfileWithToast = withToast(Profile);
-ProfileWithToast.fetchData = Profile.fetchData;
 export default ProfileWithToast;

@@ -3,7 +3,7 @@ import {
   NavItem, Glyphicon, Modal, Form, FormGroup, FormControl, ControlLabel, Col,
   Button, ButtonToolbar, Tooltip, OverlayTrigger, Alert,
 } from 'react-bootstrap';
-// import graphQLFetch from './graphQLFetch.js';
+import graphQLFetch from './graphQLFetch.js';
 import DateInput from './DateInput.jsx';
 import withToast from './withToast.jsx';
 
@@ -13,6 +13,7 @@ class PostAddNavItem extends React.Component {
     super(props);
     this.state = {
       showing: false,
+      uploadedImages: [],
       invalidFields: {},
       showingValidation: false,
       date: '',
@@ -25,6 +26,7 @@ class PostAddNavItem extends React.Component {
     this.showValidation = this.showValidation.bind(this);
     this.onValidityChange = this.onValidityChange.bind(this);
     this.onChangeDate = this.onChangeDate.bind(this);
+    this.onFileChange = this.onFileChange.bind(this);
   }
 
   onValidityChange(event, valid) {
@@ -42,14 +44,13 @@ class PostAddNavItem extends React.Component {
     this.setState({ date: value });
   }
 
-  showModal() {
-    this.setState({ showing: true });
+  // adds each uploaded file to the list of files
+  onFileChange(e) {
+    e.preventDefault();
+    const { files } = e.target;
+    const { uploadedImages } = this.state;
+    this.setState({ uploadedImages: [...uploadedImages, files[0]] });
   }
-
-  hideModal() {
-    this.setState({ showing: false });
-  }
-
 
   showValidation() {
     this.setState({ showingValidation: true });
@@ -59,6 +60,40 @@ class PostAddNavItem extends React.Component {
     this.setState({ showingValidation: false });
   }
 
+  showModal() {
+    this.setState({ showing: true });
+  }
+
+  hideModal() {
+    this.setState({ showing: false });
+  }
+
+  // onFileDelete()
+
+  // TODO: encode images into base64 (async) and push to db
+  // https://pqina.nl/blog/convert-a-file-to-a-base64-string-with-javascript/
+  handleUpload() {
+    const { uploadedImages } = this.state;
+    const base64Strings = [];
+    if (uploadedImages != null || uploadedImages.length >= 1) {
+      uploadedImages.forEach((image) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64String = reader.result
+            .replace('data:', '')
+            .replace(/^.+,/, '');
+          console.log(base64String);
+          base64Strings.push(base64String);
+        };
+        reader.readAsDataURL(image);
+      });
+    }
+    return base64Strings;
+  }
+
+  // TODO: having problems with images pushing -- could not load credentials from any providers
+  // Maybe have to config it:
+  // https://stackoverflow.com/questions/56152697/could-not-load-credentials-from-any-providers-when-attempting-upload-to-aws-s3
   async handleSubmit(e) {
     e.preventDefault();
     this.showValidation();
@@ -66,44 +101,44 @@ class PostAddNavItem extends React.Component {
     if (Object.keys(invalidFields).length !== 0) return; // keep from submitting if validation fails
 
     // TODO replace hardcoded ID with actual user.id
-    const { user } = this.props; // attempt to save user's name for post
     const form = document.forms.postAdd;
     const post = {
       title: form.title.value,
       sightingType: form.sightingType.value,
       authorId: 1,
-      owner: user.name, // schema needs to add this to post and post input types
-      description: form.description.value,
-      location: form.location.value, // placeholder for now
       created: new Date(new Date().getTime()),
       spotted: date,
-      images: null,
+      location: {
+        lat: form.latitude.value,
+        lng: form.longitude.value,
+      },
+      images: ['iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAEnQAABJ0BfDRroQAAAAZQTFRF/wAA////QR00EQAAABBJREFUeJxjKGCAwHowZAAAHIEDPlhUAEAAAAAASUVORK5CYII='],
+      description: form.description.value,
     };
 
-    console.log(post);
-    this.hideModal();
+    this.handleUpload();
 
-    // TODO need to add some code here to handle images, need to actually write query for add
-
-    // const query = `mutation postAdd($post: PostInputs!) {
-    //   postAdd(post: $post) {
-    //     id
-    //     title
-    //     sightingType
-    //     authorId
-    //     owner
-    //     created
-    //     spotted
-    //     images
-    //     description
-    //   }
-    //  }`;
-    // const { showSuccess, showError } = this.props;
-    // const data = await graphQLFetch(query, { post }, showError);
-    // if (data) {
-    //   this.hideModal();
-    //   showSuccess('Added new post successfully');
-    // }
+    const query = `mutation postAdd($post: PostInput!) {
+      postAdd(post: $post) {
+        id
+        title
+        sightingType
+        authorId
+        created
+        spotted
+        imageUrls
+        description
+        location {
+          lat lng
+        }
+      }
+     }`;
+    const { showSuccess, showError } = this.props;
+    const data = await graphQLFetch(query, { post }, showError);
+    if (data) {
+      this.hideModal();
+      showSuccess('Added new post successfully');
+    }
   }
 
   render() {
@@ -112,6 +147,8 @@ class PostAddNavItem extends React.Component {
 
     const { invalidFields, showingValidation } = this.state;
     let validationMessage;
+
+    const { uploadedImages } = this.state;
 
     if (Object.keys(invalidFields).length !== 0 && showingValidation) {
       validationMessage = (
@@ -145,13 +182,20 @@ class PostAddNavItem extends React.Component {
               <FormGroup>
                 <ControlLabel>Sighting Type</ControlLabel>
                 <FormControl name="sightingType" componentClass="select" placeholder="Animal">
-                  <option value="Animal">Animal</option>
-                  <option value="Plant">Plant</option>
+                  <option value="ANIMAL">Animal</option>
+                  <option value="PLANT">Plant</option>
                 </FormControl>
               </FormGroup>
               <FormGroup controlId="formControlsFile">
                 <ControlLabel>Sighting image upload</ControlLabel>
-                <FormControl type="file" />
+                <FormControl type="file" accept=".jpg,.jpeg,.png" onChange={this.onFileChange} />
+                {uploadedImages.map((img, index) => {
+                  const fileName = img.name;
+                  return (
+                    // eslint-disable-next-line react/no-array-index-key
+                    <p key={`${fileName}${img.lastModified}${index}`}>{fileName}</p>
+                  );
+                })}
               </FormGroup>
               <FormGroup>
                 <ControlLabel>Sighting Description</ControlLabel>
@@ -163,8 +207,12 @@ class PostAddNavItem extends React.Component {
                 />
               </FormGroup>
               <FormGroup>
-                <ControlLabel>Location</ControlLabel>
-                <FormControl name="location" />
+                <ControlLabel>Latitude</ControlLabel>
+                <FormControl name="latitude" />
+              </FormGroup>
+              <FormGroup>
+                <ControlLabel>Longitude</ControlLabel>
+                <FormControl name="longitude" />
               </FormGroup>
               <FormGroup validationState={invalidFields.spotted ? 'error' : null}>
                 <ControlLabel>Date Spotted</ControlLabel>
