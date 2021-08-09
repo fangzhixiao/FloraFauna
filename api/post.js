@@ -1,5 +1,6 @@
 const uuid = require('uuid');
 const s3 = require('@aws-sdk/client-s3');
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { UserInputError } = require('apollo-server-express');
 
 /**
@@ -31,7 +32,6 @@ class Controller {
     this.restore = this.restore.bind(this);
   }
 
-  // TODO: uploading to S3 not implemented
   async add(_, { post }) {
     validate(post);
 
@@ -56,19 +56,31 @@ class Controller {
         }));
     }
 
+    delete post.images;
     const newPost = Object.assign({}, post);
     newPost.created = new Date();
     newPost.id = uuid.v4();
     newPost.imageKeys = keys;
 
     const result = await this.db.collection('posts').insertOne(newPost);
-    const savedPost = await this.db.collection('posts').findOne({ _id: result.insertedId });
-
+    const savedPost = await this.get(this, {id: result.ops[0].id});
     return savedPost;
   }
 
   async get(_, { id }) {
     const post = await this.db.collection('posts').findOne({ id });
+    const imageUrls = []
+
+    for (const imageKey of post.imageKeys) {
+      const url = await getSignedUrl(this.s3Client, new s3.GetObjectCommand( {
+        Bucket: 'florafauna-images',
+        Key: imageKey,
+      }), { expiresIn: 3600 });
+      imageUrls.push(url);
+    }
+    console.log(imageUrls);
+    post.imageUrls = imageUrls;
+    delete post.imageKeys;
     return post;
   }
 
