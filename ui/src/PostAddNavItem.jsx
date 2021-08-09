@@ -112,7 +112,7 @@ class PostAddNavItem extends React.Component {
         lat: form.latitude.value,
         lng: form.longitude.value,
       },
-      images: [],
+      images: ['iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAEnQAABJ0BfDRroQAAAAZQTFRF/wAA////QR00EQAAABBJREFUeJxjKGCAwHowZAAAHIEDPlhUAEAAAAAASUVORK5CYII='],
       description: form.description.value,
     };
 

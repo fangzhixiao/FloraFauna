@@ -65,19 +65,6 @@ class Profile extends React.Component {
     }
   }
 
-  showToast(message, success) {
-    const {
-      showSuccess,
-      showError,
-    } = this.props;
-
-    if (success) {
-      showSuccess(message);
-    } else {
-      showError(message);
-    }
-  }
-
   async deletePost(index) {
     const {
       showSuccess,
@@ -104,7 +91,6 @@ class Profile extends React.Component {
           </Button>
         </span>
       );
-      this.hideModal();
       showSuccess(undoMessage);
       // TODO post deletes successfully and list displays successfully, but toast isn't popping up?
     } else {
@@ -133,7 +119,6 @@ class Profile extends React.Component {
   hideModal() {
     this.setState({ showing: false });
   }
-
 
   render() {
     const { posts, showing } = this.state;
