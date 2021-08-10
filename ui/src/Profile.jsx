@@ -24,6 +24,7 @@ class Profile extends React.Component {
     this.showModal = this.showModal.bind(this);
     this.hideModal = this.hideModal.bind(this);
     this.deletePost = this.deletePost.bind(this);
+    this.restorePost = this.restorePost.bind(this);
   }
 
   componentDidMount() {
@@ -92,12 +93,14 @@ class Profile extends React.Component {
         </span>
       );
       showSuccess(undoMessage);
+      console.log(undoMessage);
       // TODO post deletes successfully and list displays successfully, but toast isn't popping up?
     } else {
       await this.loadData();
     }
   }
 
+  // write own show error/success alerts just for this page?
   async restorePost(id, title) {
     const query = `mutation postRestore($id: String!) {
       postRestore(id: $id)
@@ -109,7 +112,6 @@ class Profile extends React.Component {
       await this.loadData();
     }
   }
-
 
   async showModal() {
     await this.loadData();
@@ -163,7 +165,6 @@ class Profile extends React.Component {
                 deletePost={this.deletePost}
               />
             </Col>
-
           </Modal.Body>
         </Modal>
       </React.Fragment>

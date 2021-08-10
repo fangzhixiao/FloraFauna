@@ -7,6 +7,7 @@ import {
 
 import UserContext from './UserContext.js';
 import Post from './Post.jsx';
+import withToast from './withToast.jsx';
 
 class PostRowPlain extends React.Component {
   render() {
@@ -65,7 +66,7 @@ PostRowPlain.contextType = UserContext;
 const PostRow = withRouter(PostRowPlain);
 delete PostRow.contextType;
 
-export default function PostTable({ posts, deletePost }) {
+function PostTable({ posts, deletePost }) {
   const postRows = posts.map((post, index) => (
     <PostRow
       key={post.id}
@@ -94,3 +95,5 @@ export default function PostTable({ posts, deletePost }) {
     </Table>
   );
 }
+const TableWithToast = withToast(PostTable);
+export default TableWithToast;

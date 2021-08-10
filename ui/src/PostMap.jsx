@@ -75,7 +75,7 @@ function PostMap() {
   }, []);
 
   if (loadError) return 'Error';
-  if (!isLoaded) return 'loding';
+  if (!isLoaded) return 'Loading';
 
 
   const handleActiveMarker = (marker) => {

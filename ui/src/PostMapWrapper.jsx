@@ -106,7 +106,7 @@ class PostMapWrapper extends React.Component {
 
     return (
       <React.Fragment>
-        <Row xs={7} sm={6} md={5} lg={4}>
+        <div align="center">
           <Panel>
             <Panel.Heading>
               <Panel.Title toggle>Filter</Panel.Title>
@@ -115,10 +115,10 @@ class PostMapWrapper extends React.Component {
               <PostSightingFilter urlBase="/posts" />
             </Panel.Body>
           </Panel>
-        </Row>
-        <Row>
+        </div>
+        <div>
           <PostMap />
-        </Row>
+        </div>
 
       </React.Fragment>
     );
