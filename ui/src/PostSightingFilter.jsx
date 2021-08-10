@@ -46,7 +46,7 @@ class PostSightingFilter extends React.Component {
   onChangeDate(e) {
     let dateString;
     try {
-      dateString = e.format('YYYY-MM-DD');
+      dateString = e.format('MMMM DD, YYYY');
       if (dateString) {
         this.setState({ date: dateString, changed: true });
       }
@@ -94,6 +94,11 @@ class PostSightingFilter extends React.Component {
       sightingType, date, time, changed,
     } = this.state;
 
+    let dateView = new Date(date);
+    if (dateView.toString() === 'Invalid Date') {
+      dateView = '';
+    }
+
     return (
       <Col>
         <Panel>
@@ -124,7 +129,7 @@ class PostSightingFilter extends React.Component {
               {date}
             </ControlLabel>
             <Datetime
-              value={date}
+              value={dateView}
               timeFormat={false}
               input={false}
               onChange={this.onChangeDate}
