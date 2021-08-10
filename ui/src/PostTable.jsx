@@ -36,9 +36,9 @@ class PostRowPlain extends React.Component {
         </td>
         <td>{post.title}</td>
         <td>{post.sightingType}</td>
-        <td>{post.created.toLocaleDateString()}</td>
-        <td>{post.spotted.toLocaleDateString()}</td>
-        <td>{post.spotted.toLocaleTimeString()}</td>
+        <td>{post.created.toDateString()}</td>
+        <td>{post.spotted.toDateString()}</td>
+        <td>{post.spotted.toTimeString()}</td>
         <td>
           <LinkContainer to="/">
             <OverlayTrigger disabled={!user.signedIn} delayShow={1000} overlay={editTooltip}>
