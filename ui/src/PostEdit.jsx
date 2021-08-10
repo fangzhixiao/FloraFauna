@@ -17,6 +17,7 @@ import TextInput from './TextInput.jsx';
 import withToast from './withToast.jsx';
 import store from './store.js';
 import UserContext from './UserContext.js';
+import DateInput from './DateInput.jsx';
 
 class PostEdit extends React.Component {
   static async fetchData(match, search, showError) {
@@ -54,6 +55,7 @@ class PostEdit extends React.Component {
       showingValidation: false,
     };
     this.onChange = this.onChange.bind(this);
+    this.onChangeDate = this.onChangeDate.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.onValidityChange = this.onValidityChange.bind(this);
     this.dismissValidation = this.dismissValidation.bind(this);
@@ -81,6 +83,13 @@ class PostEdit extends React.Component {
     }));
   }
 
+  onChangeDate(event) {
+    const date = event.format('MMMM DD YYYY, HH:mm:ss');
+    this.setState(prevState => ({
+      post: { ...prevState.post, spotted: date },
+    }));
+  }
+
   onValidityChange(event, valid) {
     const { name } = event.target;
     this.setState((prevState) => {
@@ -95,6 +104,8 @@ class PostEdit extends React.Component {
     this.showValidation();
     const { post, invalidFields } = this.state;
     if (Object.keys(invalidFields).length !== 0) return;
+
+    console.log(post.spotted);
 
     const query = `mutation postUpdate(
       $id: String!
@@ -122,7 +133,7 @@ class PostEdit extends React.Component {
 
     // TODO: For post updates -- would users be allowed to change location data? May need to remove
     const {
-      id, created, spotted, authorId, location, imageUrls, ...changes
+      id, created, authorId, location, imageUrls, ...changes
     } = post;
     const { showSuccess, showError } = this.props;
     const data = await graphQLFetch(
@@ -205,13 +216,12 @@ class PostEdit extends React.Component {
             </FormGroup>
             <FormGroup>
               <Col componentClass={ControlLabel} sm={3}>Spotted</Col>
-              <Col sm={9}>
-                <FormControl.Static>
-                  {post.spotted.toDateString()}
-                  {' '}
-                  {post.spotted.toTimeString()}
-                </FormControl.Static>
-              </Col>
+              <DateInput
+                name="spotted"
+                value={post.spotted}
+                input={false}
+                onChange={this.onChangeDate}
+              />
             </FormGroup>
             <FormGroup>
               <Col componentClass={ControlLabel} sm={3}>Location</Col>

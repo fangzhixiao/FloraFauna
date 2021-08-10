@@ -8,24 +8,26 @@ import PostSightingFilter from './PostSightingFilter.jsx';
 import withToast from './withToast.jsx';
 import PostMap from './PostMap.jsx';
 
+const TIME_INTERVALS = new Map();
+TIME_INTERVALS.set('Early AM', { minHour: '00', maxHour: '06' });
+TIME_INTERVALS.set('Morning', { minHour: '06', maxHour: '12' });
+TIME_INTERVALS.set('Afternoon', { minHour: '12', maxHour: '18' });
+TIME_INTERVALS.set('Evening', { minHour: '18', maxHour: '00' });
+
 // eslint-disable-next-line react/prefer-stateless-function
 class PostMapWrapper extends React.Component {
   static async fetchData(match, search, showError) {
     const params = new URLSearchParams(search);
     const vars = { hasSelection: false, selectedId: 0 };
     if (params.get('sightingType')) vars.sightingType = params.get('sightingType');
-    if (params.get('date')) vars.date = params.get('date');
+    if (params.get('date')) vars.spotted = params.get('date');
+
+    if (params.get('time')) {
+      const interval = TIME_INTERVALS.get(params.get('time'));
+      vars.minHour = interval.minHour;
+      vars.maxHour = interval.maxHour;
+    }
     // TODO: Add hasImages based on images
-    // if (params.get('time')) vars.time = params.get('time');
-
-    // const { params: { id } } = match;
-    // const idInt = parseInt(id, 10);
-    // if (!Number.isNaN(idInt)) {
-    //   vars.hasSelection = true;
-    //   vars.selectedId = idInt;
-    // }
-
-    // TODO: figure out how to use graphQL date to filter by time (without consideration for time)
 
     const query = `query postList(
       $sightingType: SightingType
@@ -99,6 +101,8 @@ class PostMapWrapper extends React.Component {
   render() {
     const { posts } = this.state;
     if (posts == null) return null;
+
+    console.log(posts);
 
     return (
       <React.Fragment>
