@@ -71,18 +71,16 @@ class Controller {
     const post = await this.db.collection('posts').findOne({ id });
     const imageUrls = [];
 
-    if (post.imageKeys == null) {
-      return post;
+    if (post.imageKeys != null) {
+      for (const imageKey of post.imageKeys) {
+        const url = await getSignedUrl(this.s3Client, new s3.GetObjectCommand({
+          Bucket: 'florafauna-images',
+          Key: imageKey,
+        }), { expiresIn: 3600 });
+        imageUrls.push(url);
+      }
     }
 
-    for (const imageKey of post.imageKeys) {
-      const url = await getSignedUrl(this.s3Client, new s3.GetObjectCommand({
-        Bucket: 'florafauna-images',
-        Key: imageKey,
-      }), { expiresIn: 3600 });
-      imageUrls.push(url);
-    }
-    console.log(imageUrls);
     post.imageUrls = imageUrls;
     delete post.imageKeys;
     return post;
