@@ -7,6 +7,23 @@ import graphQLFetch from './graphQLFetch.js';
 import DateInput from './DateInput.jsx';
 import withToast from './withToast.jsx';
 
+function readFile(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      const base64String = reader.result
+        .replace('data:', '')
+        .replace(/^.+,/, '');
+      resolve(base64String);
+    };
+
+    reader.onerror = reject;
+
+    reader.readAsDataURL(file);
+  });
+}
+
 
 class PostAddNavItem extends React.Component {
   constructor(props) {
@@ -68,27 +85,28 @@ class PostAddNavItem extends React.Component {
     this.setState({ showing: false });
   }
 
-  // onFileDelete()
-
   // TODO: encode images into base64 (async) and push to db
   // https://pqina.nl/blog/convert-a-file-to-a-base64-string-with-javascript/
-  handleUpload() {
+  // eslint-disable-next-line consistent-return
+  async handleUpload() {
     const { uploadedImages } = this.state;
-    const base64Strings = [];
+    const arr = [];
     if (uploadedImages != null || uploadedImages.length >= 1) {
-      uploadedImages.forEach((image) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          const base64String = reader.result
-            .replace('data:', '')
-            .replace(/^.+,/, '');
-          console.log(base64String);
-          base64Strings.push(base64String);
-        };
-        reader.readAsDataURL(image);
-      });
+      // await Promise.all(uploadedImages.map(async (image) => {
+      //   const encoded = await readFile(image);
+      //   console.log(encoded);
+      //   this.setState({ imageBaseEncoded: [...imageBaseEncoded, encoded] });
+      // }));
+      // eslint-disable-next-line no-restricted-syntax
+      for (const image of uploadedImages) {
+        // eslint-disable-next-line no-await-in-loop
+        const encoded = await readFile(image);
+        arr.push(encoded);
+        // this.setState({ imageBaseEncoded: [...imageBaseEncoded, encoded] });
+      }
+      console.log(arr);
+      return arr;
     }
-    return base64Strings;
   }
 
   // TODO: having problems with images pushing -- could not load credentials from any providers
@@ -97,8 +115,10 @@ class PostAddNavItem extends React.Component {
   async handleSubmit(e) {
     e.preventDefault();
     this.showValidation();
-    const { invalidFields, date } = this.state;
+    const { invalidFields, date, imageBaseEncoded } = this.state;
     if (Object.keys(invalidFields).length !== 0) return; // keep from submitting if validation fails
+
+    const encodedImages = await this.handleUpload();
 
     // TODO replace hardcoded ID with actual user.id
     const form = document.forms.postAdd;
@@ -112,11 +132,12 @@ class PostAddNavItem extends React.Component {
         lat: form.latitude.value,
         lng: form.longitude.value,
       },
-      images: ['iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAEnQAABJ0BfDRroQAAAAZQTFRF/wAA////QR00EQAAABBJREFUeJxjKGCAwHowZAAAHIEDPlhUAEAAAAAASUVORK5CYII='],
+      images: encodedImages,
       description: form.description.value,
     };
 
-    this.handleUpload();
+
+    console.log(post.images);
 
     const query = `mutation postAdd($post: PostInput!) {
       postAdd(post: $post) {
