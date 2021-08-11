@@ -137,6 +137,8 @@ function PostMap() {
                             key={id}
                             position={position}
                             onClick={() => handleActiveMarker(id)}
+
+
                         >
                             {activeMarker === id ? (
                                 <InfoWindow onCloseClick={() => setActiveMarker(null)}>
