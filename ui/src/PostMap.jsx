@@ -91,7 +91,7 @@ function PostMap(props) {
 
   return (
 
-    <div key={props.posts}>
+    <div>
 
       <div>
 
