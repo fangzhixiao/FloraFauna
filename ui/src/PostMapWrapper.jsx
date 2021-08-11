@@ -1,5 +1,5 @@
 import React from 'react';
-import { Panel, Row } from 'react-bootstrap';
+import { Panel } from 'react-bootstrap';
 import URLSearchParams from 'url-search-params';
 //
 import graphQLFetch from './graphQLFetch.js';
