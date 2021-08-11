@@ -11,7 +11,7 @@
 /* global db print */
 /* eslint no-restricted-globals: "off" */
 
-const uuid = require('uuid');
+
 
 db.posts.deleteMany({});
 db.deleted_posts.deleteMany({});
@@ -20,7 +20,7 @@ const postsDB = [
   {
     title: 'A Turkey',
     authorId: 1,
-    id: uuid.v4(),
+    id: 123,
     created: new Date('2019-01-15'),
     spotted: new Date('2019-01-14'),
     location: {
@@ -32,13 +32,13 @@ const postsDB = [
   },
   {
     title: 'A Poppy',
-    id: uuid.v4(),
+    id: 345,
     authorId: 2,
     created: new Date('2019-05-20'),
     spotted: new Date('2019-05-14'),
     location: {
-      lat: 49.341146910114595,
-      lng: -79.0917251720235,
+      lat: 42.421661,
+      lng: -71.090344,
     },
     sightingType: 'PLANT',
     description: 'I saw a poppy',

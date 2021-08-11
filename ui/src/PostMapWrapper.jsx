@@ -1,5 +1,5 @@
 import React from 'react';
-import { Panel, Row } from 'react-bootstrap';
+import {Button, Panel, Row} from 'react-bootstrap';
 import URLSearchParams from 'url-search-params';
 //
 import graphQLFetch from './graphQLFetch.js';
@@ -57,17 +57,22 @@ class PostMapWrapper extends React.Component {
   }`;
 
     const data = await graphQLFetch(query, vars, showError);
+    console.log(data);
     return data;
   }
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     const posts = store.initialData || { postList: [] };
-    delete store.initialData;
 
+    delete store.initialData;
     this.state = {
       posts,
+      refresh : false,
     };
+
+    this.onClick = this.onClick.bind(this);
+
   }
 
   componentDidMount() {
@@ -84,6 +89,18 @@ class PostMapWrapper extends React.Component {
     if (prevSearch !== search || prevId !== id) {
       this.loadData();
     }
+
+    const {refresh} = this.state;
+
+    if (refresh === true) {
+      this.loadData();
+      this.setState({refresh: false});
+    }
+
+  }
+
+  onClick(e){
+    this.setState({refresh:true});
   }
 
   async loadData() {
@@ -112,8 +129,15 @@ class PostMapWrapper extends React.Component {
             </Panel.Body>
           </Panel>
         </Row>
+
         <Row>
-          <PostMap />
+          <Button onClick={this.onClick}>
+            refresh
+          </Button>
+        </Row>
+
+        <Row>
+          <PostMap posts = {posts} />
         </Row>
 
       </React.Fragment>

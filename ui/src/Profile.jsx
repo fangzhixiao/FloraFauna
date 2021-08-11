@@ -20,7 +20,6 @@ class Profile extends React.Component {
       posts: null,
       showing: false,
     };
-
     this.showModal = this.showModal.bind(this);
     this.hideModal = this.hideModal.bind(this);
     this.deletePost = this.deletePost.bind(this);
