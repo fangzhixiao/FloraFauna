@@ -12,7 +12,7 @@ import usePlacesAutocomplete, {
 } from 'use-places-autocomplete';
 import withToast from './withToast.jsx';
 import mapStyles from './mapStyles.jsx';
-
+import graphQLFetch from "./graphQLFetch";
 
 const containerStyle = {
   width: '80vw',
@@ -35,19 +35,20 @@ const options = {
 
 
 function PostMap(props) {
-  const [data, setData] = useState([]);
 
-  const { posts } = props;
 
-  useEffect(() => {
-    const fetchData = () => {
-      if (posts) {
-        setData(posts);
-        console.log(data);
-      }
-    };
-    fetchData();
-  }, []);
+  const [data,setData] = React.useState([]);
+
+  const {posts} = props;
+
+    React.useEffect(() => {
+        const fetchData =  () => {
+          if(posts.postList) {
+            setData(posts.postList);
+          }
+        };
+        fetchData();
+    }, [posts]);
 
   const { isLoaded, loadError } = useLoadScript({
     id: 'google-map-script',
@@ -63,7 +64,6 @@ function PostMap(props) {
   const onMapLoad = React.useCallback((map) => {
     mapRef.current = map;
   }, []);
-
 
   const panTo = React.useCallback(({ lat, lng }) => {
     mapRef.current.panTo({ lat, lng });
@@ -115,14 +115,13 @@ function PostMap(props) {
         >
 
 
-          {data.map(({
-            id, title, location, description,
-          }) => (
+          {data.map(({ id,title, location, description }) => (
             <Marker
               key={id}
               position={location}
               title={title}
               onClick={() => handleActiveMarker(id)}
+
             >
               {activeMarker === id ? (
                 <InfoWindow onCloseClick={() => setActiveMarker(null)}>

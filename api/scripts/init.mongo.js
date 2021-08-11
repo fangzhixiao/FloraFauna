@@ -11,7 +11,7 @@
 /* global db print */
 /* eslint no-restricted-globals: "off" */
 
-const uuid = require('uuid');
+
 
 db.posts.deleteMany({});
 db.deleted_posts.deleteMany({});
@@ -20,10 +20,16 @@ const postsDB = [
   {
     title: 'A Turkey',
     authorId: 1,
+<<<<<<< HEAD
+    id: 123,
+    created: new Date('2019-01-15'),
+    spotted: new Date('2019-01-14'),
+=======
     id: uuid.v4(),
     spottedUTC: "2017-05-15T09:10:23Z",
     createdUTC: "2017-08-15T09:10:23Z",
     timezone: "UTC+9",
+>>>>>>> d69ce73b2f93caa915e5999c09391e9c6c8a26e5
     location: {
       lat: 42.341146910114595,
       lng: -71.0917251720235,
@@ -33,14 +39,14 @@ const postsDB = [
   },
   {
     title: 'A Poppy',
-    id: uuid.v4(),
+    id: 345,
     authorId: 2,
     spottedUTC: "2018-01-15T09:10:23Z",
     createdUTC: "2019-08-15T09:10:23Z",
     timezone: "UTC-8",
     location: {
-      lat: 49.341146910114595,
-      lng: -79.0917251720235,
+      lat: 42.421661,
+      lng: -71.090344,
     },
     sightingType: 'PLANT',
     description: 'I saw a poppy',

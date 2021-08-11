@@ -65,11 +65,12 @@ class PostMapWrapper extends React.Component {
   }`;
 
     const data = await graphQLFetch(query, vars, showError);
+    console.log(data);
     return data;
   }
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     const posts = store.initialData || { postList: [] };
     delete store.initialData;
 
@@ -79,6 +80,7 @@ class PostMapWrapper extends React.Component {
     };
 
     this.onClick = this.onClick.bind(this);
+
   }
 
   componentDidMount() {
@@ -103,7 +105,7 @@ class PostMapWrapper extends React.Component {
     }
   }
 
-  onClick() {
+  onClick(e) {
     this.setState({ refresh: true });
   }
 
@@ -139,7 +141,7 @@ class PostMapWrapper extends React.Component {
           <Button onClick={this.onClick}>Refresh</Button>
         </div>
         <div>
-          <PostMap posts={posts.postList} />
+          <PostMap posts={posts} />
         </div>
 
       </React.Fragment>

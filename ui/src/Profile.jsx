@@ -22,7 +22,6 @@ class Profile extends React.Component {
       alertMessage: '',
       alertColor: '',
     };
-
     this.showModal = this.showModal.bind(this);
     this.hideModal = this.hideModal.bind(this);
     this.deletePost = this.deletePost.bind(this);
