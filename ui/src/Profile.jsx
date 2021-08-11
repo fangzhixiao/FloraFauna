@@ -45,15 +45,16 @@ class Profile extends React.Component {
         title
         sightingType
         authorId
-        created 
-        spotted
+        createdUTC 
+        spottedUTC
+        timezone
         location {
           lat lng
           }
         imageUrls
         description 
         comments {
-          commenter content created
+          commenter content createdUTC
         }
       }
     }`;

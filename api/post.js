@@ -2,7 +2,7 @@ const uuid = require('uuid');
 const s3 = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 const { UserInputError } = require('apollo-server-express');
-const { DateTime, Settings} = require('luxon');
+const { DateTime, Settings } = require('luxon');
 /**
  * These are functions related to post objects in the database.
  */
@@ -104,22 +104,22 @@ class Controller {
     if (authorId) filter.authorId = authorId;
 
     const posts = await this.db.collection('posts').find(filter).toArray();
-    if (dateUTC || minTimeUTC ){
+    if (dateUTC || minTimeUTC) {
       const filteredPosts = [];
       for (const post of posts) {
-        const spottedUTC = DateTime.fromISO(post.spottedUTC, { zone: "UTC" });
+        const spottedUTC = DateTime.fromISO(post.spottedUTC, { zone: 'UTC' });
         const spottedRezoned = spottedUTC.setZone(post.timezone);
 
-        if (dateUTC && !DateTime.fromISO(dateUTC, { zone: "UTC"}).hasSame(spottedRezoned, 'day')) {
+        if (dateUTC && !DateTime.fromISO(dateUTC, { zone: 'UTC' }).hasSame(spottedRezoned, 'day')) {
           continue;
         }
         if (minTimeUTC && maxTimeUTC) {
-          const min = parseInt(DateTime.fromISO(minTimeUTC, {zone: "UTC"}).toFormat("HHmmss"));
-          const max = parseInt(DateTime.fromISO(maxTimeUTC, {zone: "UTC"}).toFormat("HHmmss"));
-          const t = parseInt(spottedRezoned.toFormat("HHmmss"));
-          console.log("min: ", min);
-          console.log("max: ", max);
-          console.log("t: ", t);
+          const min = parseInt(DateTime.fromISO(minTimeUTC, { zone: 'UTC' }).toFormat('HHmmss'));
+          const max = parseInt(DateTime.fromISO(maxTimeUTC, { zone: 'UTC' }).toFormat('HHmmss'));
+          const t = parseInt(spottedRezoned.toFormat('HHmmss'));
+          console.log('min: ', min);
+          console.log('max: ', max);
+          console.log('t: ', t);
           if (t < min || t > max) {
             continue;
           }

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Col } from 'react-bootstrap';
 import Datetime from 'react-datetime';
 import moment from 'moment';
 
@@ -19,7 +20,7 @@ export default class DateInput extends React.Component {
   onChange(e) {
     let dateString;
     try {
-      dateString = e.format('MMMM DD YYYY, HH:mm:ss');
+      dateString = e.format('MMMM DD, YYYY hh:mm:ss a');
       if (dateString) {
         this.setState({ value: dateString });
         const { onChange } = this.props;
@@ -45,12 +46,16 @@ export default class DateInput extends React.Component {
     return (
       <div>
         {formattedDate}
-        <Datetime
-          {...props}
-          value={displayValue}
-          onChange={this.onChange}
-          isValidDate={isValidDate}
-        />
+        <div align="center">
+
+            <Datetime
+              {...props}
+              value={displayValue}
+              onChange={this.onChange}
+              isValidDate={isValidDate}
+            />
+
+        </div>
       </div>
     );
   }

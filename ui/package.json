@@ -44,7 +44,8 @@
     "style-loader": "^3.2.1",
     "url-search-params": "^1.1.0",
     "use-places-autocomplete": "^1.9.4",
-    "@reach/combobox": "^0.16.1"
+    "@reach/combobox": "^0.16.1",
+    "luxon": "^2.0.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.14.3",

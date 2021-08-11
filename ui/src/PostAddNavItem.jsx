@@ -6,6 +6,7 @@ import {
 import graphQLFetch from './graphQLFetch.js';
 import withToast from './withToast.jsx';
 import DateInput from './DateInput.jsx';
+import { DateTime } from 'luxon';
 
 // This function wraps file reader in a promise and translates the file into base64 for upload.
 function readFile(file) {
@@ -33,6 +34,7 @@ class PostAddNavItem extends React.Component {
       showing: false,
       uploadedImages: [],
       date: new Date(new Date().getTime()),
+      timezone: '',
     };
 
     this.showModal = this.showModal.bind(this);
@@ -44,7 +46,14 @@ class PostAddNavItem extends React.Component {
 
   onChangeDate(e) {
     // e is a Moment object so just format it.
-    this.setState({ date: e.format('MMMM DD YYYY, HH:mm:ss') });
+    const formattedDate = e.format('MMMM DD YYYY, HH:mm:ss');
+    const dateISO = (new Date(formattedDate)).toISOString();
+    console.log(dateISO);
+    const dateTimeObj = DateTime.fromISO(dateISO);
+    console.log(dateTimeObj);
+    const timezone = `UTC${dateTimeObj.offset / 60}`;
+    const date = dateTimeObj.toUTC().toString();
+    this.setState({ date, timezone });
   }
 
   // adds each uploaded file to the list of files
@@ -84,7 +93,7 @@ class PostAddNavItem extends React.Component {
   // Handles submission of inputs for adding a new post.
   async handleSubmit(e) {
     e.preventDefault();
-    const { date } = this.state;
+    const { date, timezone } = this.state;
 
     const encodedImages = await this.handleUpload(); // base64 encoded images
 
@@ -93,8 +102,8 @@ class PostAddNavItem extends React.Component {
       title: form.title.value,
       sightingType: form.sightingType.value,
       authorId: 1, // TODO replace hardcoded ID with actual user.id
-      created: new Date(new Date().getTime()),
-      spotted: date,
+      spottedUTC: date,
+      timezone,
       location: {
         lat: form.latitude.value,
         lng: form.longitude.value,
@@ -109,8 +118,9 @@ class PostAddNavItem extends React.Component {
         title
         sightingType
         authorId
-        created
-        spotted
+        createdUTC
+        spottedUTC
+        timezone
         imageUrls
         description
         location {

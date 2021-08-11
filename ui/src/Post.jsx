@@ -58,15 +58,16 @@ class Post extends React.Component {
         title
         sightingType
         authorId
-        created 
-        spotted
+        createdUTC 
+        spottedUTC
+        timezone
         location {
           lat lng
           }
         imageUrls
         description 
         comments {
-          commenter content created
+          commenter content createdUTC
           }
         }
       }`;
@@ -106,7 +107,7 @@ class Post extends React.Component {
     const comment = {
       commenter: user.givenName,
       content: newComment,
-      created: new Date(new Date().getTime()),
+      createdUTC: new Date(new Date().getTime()),
     };
 
     if (post.comments == null) {
@@ -246,9 +247,7 @@ class Post extends React.Component {
               <br />
               Sighting at:
               {' '}
-              {post.spotted.toDateString()}
-              {' '}
-              {post.spotted.toTimeString()}
+              {post.spottedUTC.toString()}
             </Row>
             <Row>
               <br />

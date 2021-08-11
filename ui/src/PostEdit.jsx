@@ -12,6 +12,7 @@ import {
   Button,
   Alert,
 } from 'react-bootstrap';
+import { DateTime } from 'luxon';
 import graphQLFetch from './graphQLFetch.js';
 import TextInput from './TextInput.jsx';
 import withToast from './withToast.jsx';
@@ -27,8 +28,9 @@ class PostEdit extends React.Component {
         title
         sightingType
         authorId
-        created
-        spotted
+        createdUTC
+        spottedUTC
+        timezone
         location {
           lat lng
         }
@@ -84,9 +86,13 @@ class PostEdit extends React.Component {
   }
 
   onChangeDate(event) {
-    const date = event.format('MMMM DD YYYY, HH:mm:ss');
+    // date string formatted from moment (used by dateTime module)
+    const dateFromCal = event.format('MMMM DD YYYY, HH:mm:ss');
+    const dateISO = (new Date(dateFromCal)).toISOString();
+    const dateTimeObj = DateTime.fromISO(dateISO);
+    const date = dateTimeObj.toUTC().toString(); // format that DB needs
     this.setState(prevState => ({
-      post: { ...prevState.post, spotted: date },
+      post: { ...prevState.post, spottedUTC: date },
     }));
   }
 
@@ -105,7 +111,7 @@ class PostEdit extends React.Component {
     const { post, invalidFields } = this.state;
     if (Object.keys(invalidFields).length !== 0) return;
 
-    console.log(post.spotted);
+    console.log(post.spottedUTC);
 
     const query = `mutation postUpdate(
       $id: String!
@@ -118,8 +124,10 @@ class PostEdit extends React.Component {
         id
         title
         sightingType
-        created
-        spotted
+        authorId
+        createdUTC
+        spottedUTC
+        timezone
         location {
           lat lng
          }
@@ -133,7 +141,7 @@ class PostEdit extends React.Component {
 
     // TODO: For post updates -- would users be allowed to change location data? May need to remove
     const {
-      id, created, authorId, location, imageUrls, ...changes
+      id, createdUTC, timezone, authorId, location, imageUrls, ...changes
     } = post;
     const { showSuccess, showError } = this.props;
     const data = await graphQLFetch(
@@ -184,6 +192,17 @@ class PostEdit extends React.Component {
 
     const user = this.context;
 
+    const timeZone = post.timezone;
+    // convert to given timezone
+    const spottedDateTime = DateTime.fromISO(post.spottedUTC, { zone: 'UTC' })
+      .setZone(timeZone);
+    const createdDateTime = DateTime.fromISO(post.createdUTC, { zone: 'UTC' })
+      .setZone(timeZone);
+
+    const spotted = spottedDateTime.toLocaleString(DateTime.DATETIME_FULL);
+    const created = createdDateTime.toLocaleString(DateTime.DATETIME_FULL);
+
+
     return (
       <Panel>
         <Panel.Heading>
@@ -208,17 +227,15 @@ class PostEdit extends React.Component {
               <Col componentClass={ControlLabel} sm={3}>Created</Col>
               <Col sm={9}>
                 <FormControl.Static>
-                  {post.created.toDateString()}
-                  {' '}
-                  {post.created.toTimeString()}
+                  {post.createdUTC.toString()}
                 </FormControl.Static>
               </Col>
             </FormGroup>
             <FormGroup>
-              <Col componentClass={ControlLabel} sm={3}>Spotted</Col>
+              <Col componentClass={ControlLabel} sm={3}>SpottedUTC</Col>
               <DateInput
-                name="spotted"
-                value={post.spotted}
+                name="spottedUTC"
+                value={post.spottedUTC}
                 input={false}
                 onChange={this.onChangeDate}
               />

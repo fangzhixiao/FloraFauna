@@ -7,14 +7,36 @@ Jiatian Wang wang.jiati@northeastern.edu
 Zhiqi Lin lin.zhiq@northeastern.edu  
 Zhining Fang fang.zhi@northeastern.edu
 * user fang.zhi and fzhining are both Zhining Fang
+* Zhining is in charge of merging, maintaining deploy repos, and deploying to Heroku.
 
 Instructions to run application locally on machine:  
 1. Clone Repository
 2. In API Directory and UI Directory, run npm install to install dependencies.
 3. To run application, run npm start in API directory. In a new terminal and in the UI directory, 
    run npm run watch-server-hmr. In another terminal, run npm start.
-Application should run in http://ui.promernstack.com:8000 on the web
+4. For AWS CLI and S3: First you need the AWS Secret Key ID and Access Key ID -- ask group if don't 
+   have it, since each AWS account can only have up to 2 sets; Then in the api directory run npm ci.
+   If on Windows go to https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-windows.html 
+   and download the MSI and run it to download the aws-cli. Then in the terminal run "aws configure"
+   and give the appropriate access key id and secret key id. Region is us-west-2; default output
+   format is "json". 
    
+Application should run in http://ui.promernstack.com:8000 locally. 
+
+---
+### Project Iteration 2
+
+#### API Functionality: Responsible Member: Zhiqi Lin
+* Updated GraphQL schema to accommodate timezone information for time filtering.
+  * Integrated luxon for time related functions
+* Implemented image upload and image source get functionality with AWS S3.
+    * Images are sent to the back end as base64 encoded strings;
+    * S3 assigns images a key which are used to return URLs to the frontend when a post
+    gets the image.
+      
+#### UI Functionality:
+
+
 ---
 ### Project Iteration 1
 
