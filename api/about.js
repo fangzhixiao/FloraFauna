@@ -1,6 +1,6 @@
 const { mustBeSignedIn } = require('./auth.js');
 
-let aboutMessage = 'FloraFaunt API v1.0';
+let aboutMessage = 'FloraFauna API v1.0';
 function setMessage(_, { message }) {
   aboutMessage = message;
   return aboutMessage;

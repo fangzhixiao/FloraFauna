@@ -13,26 +13,26 @@ type Location {
 type Comment {
     commenter: String!
     content:String!
-    created: GraphQLDate!
+    createdUTC: String!
 }
 
-# "TODO: Need to add comment input in schema"
 input CommentInput {
     commenter: String!
     content:String!
-    created: GraphQLDate!
+    createdUTC: String!
 }
 
 type Post {
     _id: ID!
-    id: Int!
+    id: String!
     title: String!
     sightingType: SightingType!
     authorId: Int!
-    created: GraphQLDate!
-    spotted: GraphQLDate!
+    createdUTC: String!
+    spottedUTC: String!
+    timezone: String!
     location: Location!
-    images:[String]
+    imageUrls:[String]
     description: String
     comments: [Comment]
 }
@@ -43,7 +43,6 @@ type User {
     signedIn: Boolean!
     givenName: String
     email: String
-    postIds: [Int]
 }
 
 input LocationInput {
@@ -51,15 +50,18 @@ input LocationInput {
     lng: Float!
 }
 
-"Toned down Posts, used as inputs, without server generated values."
-input PostInputs {
-    _id: ID!
-    id: Int!
+input UserInput {
+    givenName: String
+    email: String
+}
+
+"Toned down Posts, used as inputs, without server generated values. ISO 8601 "
+input PostInput {
     title: String!
     sightingType: SightingType!
     authorId: Int!
-    created: GraphQLDate!
-    spotted: GraphQLDate!
+    spottedUTC: String!
+    timezone: String!
     location: LocationInput!
     images:[String]
     description: String
@@ -68,35 +70,36 @@ input PostInputs {
 """Inputs for postUpdate: all are optional. Whichever is specified will be set to the given value,
 undefined fields will remain unmmodified."""
 
-# "TODO: Need to add comments to this part of schema"
-input PostUpdateInputs {
+input PostUpdateInput {
     title: String
     sightingType: SightingType
-    spotted: GraphQLDate!
-    location: LocationInput!
-    images: [String]
+    spottedUTC: String!
+    location: LocationInput
     description: String
     comments: [CommentInput]
 }
 
 ##### Top level declarations
 # Query and Mutation define the entry point of every GraphQL query
-# "TODO need to add more to postList for filter purposes"
 type Query {
     about: String!
-    user: User!
     postList(
         sightingType: SightingType
         search: String
         authorId: Int
+        dateUTC: String
+        minTimeUTC: String
+        maxTimeUTC: String
     ): [Post!]!
-    post(id: Int!): Post!
+    post(id: String!): Post!
+    user: User!
 }
 
 type Mutation {
     setAboutMessage(message: String!): String
-    postAdd(post: PostInputs!): Post!
-    postUpdate(id: Int!, changes: PostUpdateInputs!): Post!
-    postDelete(id: Int!): Boolean!
-    postRestore(id: Int!): Boolean!
+    userFind(user: UserInput): User!
+    postAdd(post: PostInput!): Post!
+    postUpdate(id: String!, changes: PostUpdateInput!): Post!
+    postDelete(id: String!): Boolean!
+    postRestore(id: String!): Boolean!
 }

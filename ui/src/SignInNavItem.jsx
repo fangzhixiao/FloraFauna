@@ -8,6 +8,8 @@ import {
 } from 'react-bootstrap';
 
 import withToast from './withToast.jsx';
+import Profile from './Profile.jsx';
+import UserContext from './UserContext.js';
 
 class SignInNavItem extends React.Component {
   constructor(props) {
@@ -57,9 +59,13 @@ class SignInNavItem extends React.Component {
       });
       const body = await response.text();
       const result = JSON.parse(body);
-      const { signedIn, givenName } = result;
+      const {
+        signedIn, givenName, name, email,
+      } = result;
       const { onUserChange } = this.props;
-      onUserChange({ signedIn, givenName });
+      onUserChange({
+        signedIn, givenName, name, email,
+      });
     } catch (error) {
       showError(`Error signing into the app: ${error}`);
     }
@@ -76,7 +82,9 @@ class SignInNavItem extends React.Component {
       const auth2 = window.gapi.auth2.getAuthInstance();
       await auth2.signOut();
       const { onUserChange } = this.props;
-      onUserChange({ signedIn: false, givenName: ' ' });
+      onUserChange({
+        signedIn: false, givenName: ' ', name: ' ', email: ' ',
+      });
     } catch (error) {
       showError(`Error signing out: ${error}`);
     }
@@ -102,6 +110,9 @@ class SignInNavItem extends React.Component {
       return (
         <NavDropdown title={user.givenName} id="user">
           <MenuItem onClick={this.signOut}>Sign Out</MenuItem>
+          <UserContext.Provider value={user}>
+            <Profile user={user} />
+          </UserContext.Provider>
         </NavDropdown>
       );
     }
@@ -117,7 +128,12 @@ class SignInNavItem extends React.Component {
             <Modal.Title> Sign In </Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <Button block bsStyle="primary" onClick={this.signIn}>
+            <Button
+              block
+              disabled={disabled}
+              bsStyle="primary"
+              onClick={this.signIn}
+            >
               <img
                 src="https://developers.google.com/identity/images/btn_google_signin_light_normal_web.png"
                 alt="Sign In"

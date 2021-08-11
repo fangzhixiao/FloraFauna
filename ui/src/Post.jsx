@@ -1,6 +1,7 @@
 import React from 'react';
 import {
-  Modal, FormGroup, FormControl, ControlLabel, Alert, Col, Button, Carousel, Row,
+  Modal, FormGroup, FormControl, ControlLabel, Alert,
+  Col, Button, Carousel, Row, ListGroup, ListGroupItem,
 } from 'react-bootstrap';
 import withToast from './withToast.jsx';
 import graphQLFetch from './graphQLFetch.js';
@@ -9,12 +10,15 @@ import UserContext from './UserContext.js';
 
 class Post extends React.Component {
   // props in this case would be passing in the post object from clicking on a map marker
+
   constructor(props) {
     super(props);
-    const { post } = props;
+    const { post } = this.props;
     this.state = {
       showing: false,
-      comments: post.comments,
+      post,
+      // eslint-disable-next-line react/no-unused-state
+      imageURLs: null,
       invalidFields: {},
       showingValidation: false,
       newComment: '',
@@ -44,7 +48,38 @@ class Post extends React.Component {
     });
   }
 
-  showModal() {
+  async loadData() {
+    const { showError } = this.props;
+    const { post } = this.state;
+    const { id } = post;
+    const query = `query post($id: String!){
+      post(id: $id){
+        id
+        title
+        sightingType
+        authorId
+        created 
+        spotted
+        location {
+          lat lng
+          }
+        imageUrls
+        description 
+        comments {
+          commenter content created
+          }
+        }
+      }`;
+
+    const data = await graphQLFetch(query, { id }, showError);
+    if (data) {
+      console.log(data.post.imageUrls);
+      this.setState({ imageUrls: data.post.imageUrls });
+    }
+  }
+
+  async showModal() {
+    await this.loadData();
     this.setState({ showing: true });
   }
 
@@ -64,7 +99,7 @@ class Post extends React.Component {
   async addComment(e) { // submit comment
     e.preventDefault();
     this.showValidation();
-    const { comments, invalidFields, newComment } = this.state;
+    const { invalidFields, newComment, post } = this.state;
     if (Object.keys(invalidFields).length !== 0) return;
     const user = this.context;
 
@@ -74,37 +109,50 @@ class Post extends React.Component {
       created: new Date(new Date().getTime()),
     };
 
-    const { post } = this.props;
+    if (post.comments == null) {
+      post.comments = [];
+    }
+    post.comments = [...post.comments, comment];
 
     const query = `mutation postUpdate(
-      $id: Int!
-      $changes: PostUpdateInputs!
+      $id: String!
+      $changes: PostUpdateInput!
     ) {
       postUpdate(
         id: $id
         changes: $changes
       ) {
         id
-        comments        
+        comments {
+          commenter content created
+        }        
       }
     }`;
 
-    const { id, ...changes } = post;
+    const {
+      id, created, spotted, authorId, location, imageUrls, ...changes
+    } = post;
     const { showSuccess, showError } = this.props;
     const data = await graphQLFetch(
-      query, { changes, id: parseInt(id, 10) }, showError,
+      query, { changes, id }, showError,
     );
     if (data) {
-      this.setState({ comments: [...comments, comment] });
-      showSuccess('Updated issue successfully');
+      this.setState((prevState) => {
+        const updatedPost = prevState.post;
+        // if (updatedPost.comments == null) {
+        //   updatedPost.comments = [];
+        // }
+        // updatedPost.comments = [...updatedPost.comments, comment];
+        return { post: updatedPost };
+      });
+      showSuccess('Comment added successfully');
     }
   }
 
   render() {
-    const { showing } = this.state;
-    const { post } = this.props;
-
-    const { user } = this.context;
+    const { showing, post } = this.state;
+    const { imageUrls } = this.state;
+    const user = this.context;
 
     const { invalidFields, showingValidation, newComment } = this.state;
     let validationMessage;
@@ -116,44 +164,105 @@ class Post extends React.Component {
       );
     }
 
-    function displayImages() {
-      const { title } = post;
-      const images = post.images.map((image, index) => (
-        <Carousel.Item>
+    // TODO: image from DB should be a URL see google doc for reference
+    function DisplayImages() {
+      if (imageUrls == null || imageUrls.length === 0) {
+        return (
+          <div align="center">No Images to Display</div>
+        );
+      }
+      const display = imageUrls.map((image, index) => (
+        <Carousel.Item align="center">
           {/* eslint-disable-next-line react/no-array-index-key */}
-          <img scr={image} key={index} alt={title} />
+          <img src={image} key={index} alt={post.title} />
         </Carousel.Item>
       ));
 
       return (
-        <Carousel>
-          {images}
+        <Carousel slide={false}>
+          {display}
         </Carousel>
       );
     }
 
+    function DisplayComments() {
+      if (post.comments == null) {
+        return (
+          <div align="center">This post has no comments...</div>
+        );
+      }
+
+      const commentList = post.comments.map((comment) => {
+        const { commenter, created, content } = comment;
+        return (
+          <ListGroupItem key={`${commenter}${created}`}>
+            <Row>
+              <Col lg={5}>
+                {commenter}
+              </Col>
+              <Col lg={5}>
+                {created.toLocaleString()}
+              </Col>
+            </Row>
+            <Row>
+              {content}
+            </Row>
+          </ListGroupItem>
+        );
+      });
+      return (
+        <ListGroup>
+          {commentList}
+        </ListGroup>
+      );
+    }
+
     // TODO: Location will need to be converted to town/state?
+    // TODO: enable send comment when functionality is implemented
     return (
       <React.Fragment>
-        <Modal keyboard showing={showing} onHide={this.hideModal}>
+        <Button onClick={this.showModal}>
+          View Post
+        </Button>
+        <Modal keyboard show={showing} onHide={this.hideModal}>
           <Modal.Header closeButton>
             <Modal.Title>{post.title}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Row>
-              <h3>
-                <b> Location: </b>
-                {' '}
-                {post.location}
-              </h3>
+              <b> Location: </b>
+              {' '}
+              Latitude:
+              {' '}
+              {post.location.lat}
+              {' '}
+              Longitude:
+              {' '}
+              {post.location.lng}
             </Row>
-            <Row>{displayImages}</Row>
+            <br />
+            <Row><DisplayImages /></Row>
             <Row>
+              <br />
+              Sighting at:
+              {' '}
+              {post.spotted.toDateString()}
+              {' '}
+              {post.spotted.toTimeString()}
+            </Row>
+            <Row>
+              <br />
+              Author:
+              {' '}
               {post.authorId}
             </Row>
             <Row>
+              Sighting Description:
+              {' '}
               {post.description}
             </Row>
+            <br />
+            <Row><DisplayComments /></Row>
           </Modal.Body>
           <Modal.Footer>
             <FormGroup>
