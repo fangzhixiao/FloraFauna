@@ -2,7 +2,6 @@ const fs = require('fs');
 require('dotenv').config();
 const { ApolloServer } = require('apollo-server-express');
 const s3 = require('@aws-sdk/client-s3');
-const GraphQLDate = require('./graphql_date.js');
 const about = require('./about.js');
 const auth = require('./auth.js');
 const db = require('./db.js');
@@ -49,7 +48,6 @@ async function installHandler(app) {
       postDelete: postController.remove,
       postRestore: postController.restore,
     },
-    GraphQLDate,
   };
 
   const server = new ApolloServer({

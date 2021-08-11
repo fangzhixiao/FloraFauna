@@ -2,7 +2,7 @@ const uuid = require('uuid');
 const s3 = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 const { UserInputError } = require('apollo-server-express');
-
+const { DateTime, Settings} = require('luxon');
 /**
  * These are functions related to post objects in the database.
  */
@@ -15,6 +15,13 @@ function validate(post) {
   if (post.sightingType !== 'PLANT' && post.sightingType !== 'ANIMAL') {
     errors.push('Field "sightingType" must be "PLANT" or "ANIMAL"');
   }
+  if (!DateTime.local().setZone(post.timezone).isValid) {
+    errors.push(DateTime.local().setZone(post.timezone).invalidReason);
+  }
+  if (!DateTime.fromISO(post.spottedUTC).isValid) {
+    errors.push(DateTime.fromISO(post.spottedUTC).invalidReason);
+  }
+
   if (errors.length > 0) {
     throw new UserInputError('Invalid input(s)', { errors });
   }
@@ -58,7 +65,8 @@ class Controller {
 
     delete post.images;
     const newPost = Object.assign({}, post);
-    newPost.created = new Date();
+    newPost.createdUTC = DateTime.utc().toString();
+    newPost.spottedUTC = DateTime.fromISO(post.spottedUTC, { zone: 'utc' }).toString();
     newPost.id = uuid.v4();
     newPost.imageKeys = keys;
 
@@ -86,9 +94,8 @@ class Controller {
     return post;
   }
 
-  // TODO: filtering based on spotted and minHour maxHour not implemented
   async list(_, {
-    sightingType, search, authorId, spotted, minHour, maxHour,
+    sightingType, search, authorId, dateUTC, minTimeUTC, maxTimeUTC,
   }) {
     console.log('new query');
     const filter = {};
@@ -97,13 +104,30 @@ class Controller {
     if (authorId) filter.authorId = authorId;
 
     const posts = await this.db.collection('posts').find(filter).toArray();
-    if (spotted) {
-      const filtered = posts.filter(post => post.spotted.getFullYear() === spotted.getFullYear()
-        && post.spotted.getMonth() === spotted.getMonth()
-        && post.spotted.getDate() === spotted.getDate());
-      return filtered;
-    }
+    if (dateUTC || minTimeUTC ){
+      const filteredPosts = [];
+      for (const post of posts) {
+        const spottedUTC = DateTime.fromISO(post.spottedUTC, { zone: "UTC" });
+        const spottedRezoned = spottedUTC.setZone(post.timezone);
 
+        if (dateUTC && !DateTime.fromISO(dateUTC, { zone: "UTC"}).hasSame(spottedRezoned, 'day')) {
+          continue;
+        }
+        if (minTimeUTC && maxTimeUTC) {
+          const min = parseInt(DateTime.fromISO(minTimeUTC, {zone: "UTC"}).toFormat("HHmmss"));
+          const max = parseInt(DateTime.fromISO(maxTimeUTC, {zone: "UTC"}).toFormat("HHmmss"));
+          const t = parseInt(spottedRezoned.toFormat("HHmmss"));
+          console.log("min: ", min);
+          console.log("max: ", max);
+          console.log("t: ", t);
+          if (t < min || t > max) {
+            continue;
+          }
+        }
+        filteredPosts.push(post);
+      }
+      return filteredPosts;
+    }
     return posts;
   }
 
