@@ -13,13 +13,13 @@ type Location {
 type Comment {
     commenter: String!
     content:String!
-    created: GraphQLDate!
+    createdUTC: String!
 }
 
 input CommentInput {
     commenter: String!
     content:String!
-    created: GraphQLDate!
+    createdUTC: String!
 }
 
 type Post {
@@ -28,8 +28,9 @@ type Post {
     title: String!
     sightingType: SightingType!
     authorId: Int!
-    created: GraphQLDate!
-    spotted: GraphQLDate!
+    createdUTC: String!
+    spottedUTC: String!
+    timezone: String!
     location: Location!
     imageUrls:[String]
     description: String
@@ -54,13 +55,13 @@ input UserInput {
     email: String
 }
 
-"Toned down Posts, used as inputs, without server generated values."
+"Toned down Posts, used as inputs, without server generated values. ISO 8601 "
 input PostInput {
     title: String!
     sightingType: SightingType!
     authorId: Int!
-    created: GraphQLDate!
-    spotted: GraphQLDate!
+    spottedUTC: String!
+    timezone: String!
     location: LocationInput!
     images:[String]
     description: String
@@ -72,7 +73,7 @@ undefined fields will remain unmmodified."""
 input PostUpdateInput {
     title: String
     sightingType: SightingType
-    spotted: GraphQLDate
+    spottedUTC: String!
     location: LocationInput
     description: String
     comments: [CommentInput]
@@ -86,9 +87,9 @@ type Query {
         sightingType: SightingType
         search: String
         authorId: Int
-        spotted: GraphQLDate
-        minHour: GraphQLDate
-        maxHour: GraphQLDate
+        dateUTC: String
+        minTimeUTC: String
+        maxTimeUTC: String
     ): [Post!]!
     post(id: String!): Post!
     user: User!
