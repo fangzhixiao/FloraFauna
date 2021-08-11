@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
 import {
   Marker, InfoWindow, GoogleMap, useLoadScript,
@@ -12,21 +12,6 @@ import usePlacesAutocomplete, {
 } from 'use-places-autocomplete';
 import withToast from './withToast.jsx';
 import mapStyles from './mapStyles.jsx';
-
-
-const Posts = [
-  {
-    id: 1,
-    name: 'A Turkey',
-    position: { lat: 42.341146910114595, lng: -71.0917251720235 },
-  },
-  {
-    id: 2,
-    name: 'A Poppy',
-    position: { lat: 49.341146910114595, lng: -79.0917251720235 },
-  },
-
-];
 
 
 const containerStyle = {
@@ -49,7 +34,21 @@ const options = {
 };
 
 
-function PostMap() {
+function PostMap(props) {
+  const [data, setData] = useState([]);
+
+  const { posts } = props;
+
+  useEffect(() => {
+    const fetchData = () => {
+      if (posts) {
+        setData(posts);
+        console.log(data);
+      }
+    };
+    fetchData();
+  }, []);
+
   const { isLoaded, loadError } = useLoadScript({
     id: 'google-map-script',
     version: '1.00',
@@ -65,10 +64,12 @@ function PostMap() {
     mapRef.current = map;
   }, []);
 
+
   const panTo = React.useCallback(({ lat, lng }) => {
     mapRef.current.panTo({ lat, lng });
     mapRef.current.setZoom(16);
   }, []);
+
 
   const onMapClick = React.useCallback((e) => {
     console.log(e);
@@ -90,7 +91,7 @@ function PostMap() {
 
   return (
 
-    <div>
+    <div key={props.posts}>
 
       <div>
 
@@ -114,15 +115,18 @@ function PostMap() {
         >
 
 
-          {Posts.map(({ id, name, position }) => (
+          {data.map(({
+            id, title, location, description,
+          }) => (
             <Marker
               key={id}
-              position={position}
+              position={location}
+              title={title}
               onClick={() => handleActiveMarker(id)}
             >
               {activeMarker === id ? (
                 <InfoWindow onCloseClick={() => setActiveMarker(null)}>
-                  <div>{name}</div>
+                  <div>{description}</div>
                 </InfoWindow>
               ) : null}
             </Marker>
@@ -198,7 +202,7 @@ function Search({ panTo }) {
           value={value}
           onChange={handleInput}
           disabled={!ready}
-          placeholder="Search  location"
+          placeholder="Search for locations"
         />
         <ComboboxPopover style={{ backgroundColor: 'white' }}>
           <ComboboxList style={{
@@ -207,9 +211,9 @@ function Search({ panTo }) {
           >
 
             {status === 'OK'
-                        && data.map(({ id, description }) => (
-                          <ComboboxOption key={id} value={description} />
-                        ))}
+            && data.map(({ id, description }) => (
+              <ComboboxOption key={id} value={description} />
+            ))}
           </ComboboxList>
         </ComboboxPopover>
       </Combobox>

@@ -1,8 +1,7 @@
 import React from 'react';
 import {
-  Button,
-  Modal,
-  Col, Panel,
+  Button, Modal,
+  Col, Panel, Overlay, Popover, Glyphicon,
 } from 'react-bootstrap';
 import withToast from './withToast.jsx';
 import graphQLFetch from './graphQLFetch.js';
@@ -19,12 +18,18 @@ class Profile extends React.Component {
     this.state = {
       posts: null,
       showing: false,
+      showAlert: 'invisible',
+      alertMessage: '',
+      alertColor: '',
     };
 
     this.showModal = this.showModal.bind(this);
     this.hideModal = this.hideModal.bind(this);
     this.deletePost = this.deletePost.bind(this);
     this.restorePost = this.restorePost.bind(this);
+    this.showError = this.showError.bind(this);
+    this.showSuccess = this.showSuccess.bind(this);
+    this.closeAlert = this.closeAlert.bind(this);
   }
 
   componentDidMount() {
@@ -33,8 +38,6 @@ class Profile extends React.Component {
   }
 
   async loadData() {
-    // const { user } = this.props;
-    const { showError } = this.props;
     const query = `query postList(
       $authorId: Int
       ) {
@@ -59,7 +62,7 @@ class Profile extends React.Component {
       }
     }`;
 
-    const data = await graphQLFetch(query, {}, showError);
+    const data = await graphQLFetch(query, {}, this.showError);
     if (data) {
       this.setState({
         posts: data.postList,
@@ -68,17 +71,14 @@ class Profile extends React.Component {
   }
 
   async deletePost(index) {
-    const {
-      showSuccess,
-      showError,
-    } = this.props;
     const query = `mutation postDelete($id: String!) {
       postDelete(id: $id)
     }`;
 
-    const { posts } = this.state;
+    const { posts, showAlert } = this.state;
     const { id, title } = posts[index];
-    const data = await graphQLFetch(query, { id }, showError);
+    if (showAlert === 'block') this.setState('none');
+    const data = await graphQLFetch(query, { id }, this.showError);
     if (data && data.postDelete) {
       this.setState((prevState) => {
         const newList = [...prevState.posts];
@@ -88,13 +88,18 @@ class Profile extends React.Component {
       const undoMessage = (
         <span>
           {`Deleted post ${id}:${title} successfully.`}
-          <Button bsStyle="link" onClick={() => this.restorePost(id, title)}>
+          <Button
+            bsStyle="link"
+            onClick={() => {
+              this.restorePost(id, title);
+              this.closeAlert();
+            }}
+          >
             UNDO
           </Button>
         </span>
       );
-      showSuccess(undoMessage);
-      console.log(undoMessage);
+      this.showSuccess(undoMessage);
       // TODO post deletes successfully and list displays successfully, but toast isn't popping up?
     } else {
       await this.loadData();
@@ -106,12 +111,35 @@ class Profile extends React.Component {
     const query = `mutation postRestore($id: String!) {
       postRestore(id: $id)
     }`;
-    const { showSuccess, showError } = this.props;
-    const data = await graphQLFetch(query, { id }, showError);
+    const data = await graphQLFetch(query, { id }, this.showError);
     if (data) {
-      showSuccess(`Post ${id}:${title} restored successfully.`);
+      this.showSuccess(`Post ${id}:${title} restored successfully.`);
       await this.loadData();
     }
+  }
+
+  showError(message) {
+    this.setState({
+      showAlert: 'visible',
+      alertColor: '#D9534FFF',
+      alertMessage: message,
+    });
+  }
+
+  showSuccess(message) {
+    this.setState({
+      showAlert: 'visible',
+      alertColor: '#5CB85CFF',
+      alertMessage: message,
+    });
+  }
+
+  closeAlert() {
+    this.setState({
+      showAlert: 'invisible',
+      alertColor: '#fff',
+      alertMessage: '',
+    });
   }
 
   async showModal() {
@@ -127,6 +155,7 @@ class Profile extends React.Component {
     const { posts, showing } = this.state;
     if (posts == null) return null;
     const user = this.context;
+    const { showAlert, alertColor, alertMessage } = this.state;
 
 
     // TODO: nice to have: Location as town/state
@@ -167,6 +196,22 @@ class Profile extends React.Component {
               />
             </Col>
           </Modal.Body>
+          <Modal.Footer >
+            <div
+              className={showAlert}
+              style={{
+                position: 'fixed',
+                backgroundColor: { alertColor },
+              }}
+            >
+              {alertMessage}
+              <Button bsSize="xsmall" onClick={this.closeAlert}>
+                <Glyphicon glyph="remove" />
+              </Button>
+            </div>
+            <br />
+          </Modal.Footer>
+
         </Modal>
       </React.Fragment>
     );

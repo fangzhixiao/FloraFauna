@@ -37,7 +37,7 @@ class PostEdit extends React.Component {
         imageUrls
         description
         comments {
-        commenter content created
+        commenter content createdUTC
       }
       }
     }`;
@@ -134,7 +134,7 @@ class PostEdit extends React.Component {
         imageUrls
         description
         comments {
-        commenter content created
+        commenter content createdUTC
       }
       }
     }`;
@@ -194,12 +194,9 @@ class PostEdit extends React.Component {
 
     const timeZone = post.timezone;
     // convert to given timezone
-    const spottedDateTime = DateTime.fromISO(post.spottedUTC, { zone: 'UTC' })
+    const createdDateTime = DateTime.fromISO(new Date(post.createdUTC).toISOString(),
+      { zone: 'UTC' })
       .setZone(timeZone);
-    const createdDateTime = DateTime.fromISO(post.createdUTC, { zone: 'UTC' })
-      .setZone(timeZone);
-
-    const spotted = spottedDateTime.toLocaleString(DateTime.DATETIME_FULL);
     const created = createdDateTime.toLocaleString(DateTime.DATETIME_FULL);
 
 
@@ -227,7 +224,7 @@ class PostEdit extends React.Component {
               <Col componentClass={ControlLabel} sm={3}>Created</Col>
               <Col sm={9}>
                 <FormControl.Static>
-                  {post.createdUTC.toString()}
+                  {created}
                 </FormControl.Static>
               </Col>
             </FormGroup>

@@ -73,7 +73,7 @@ undefined fields will remain unmmodified."""
 input PostUpdateInput {
     title: String
     sightingType: SightingType
-    spottedUTC: String!
+    spottedUTC: String
     location: LocationInput
     description: String
     comments: [CommentInput]

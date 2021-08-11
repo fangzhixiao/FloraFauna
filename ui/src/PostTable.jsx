@@ -30,9 +30,12 @@ class PostRowPlain extends React.Component {
 
     const timeZone = post.timezone;
     // convert to given timezone
-    const spottedDateTime = DateTime.fromISO(post.spottedUTC, { zone: 'UTC' })
+
+    const spottedDateTime = DateTime.fromISO(new Date(post.spottedUTC).toISOString(),
+      { zone: 'UTC' })
       .setZone(timeZone);
-    const createdDateTime = DateTime.fromISO(post.createdUTC, { zone: 'UTC' })
+    const createdDateTime = DateTime.fromISO(new Date(post.createdUTC).toISOString(),
+      { zone: 'UTC' })
       .setZone(timeZone);
 
     const spotted = spottedDateTime.toLocaleString(DateTime.DATETIME_MED);
@@ -48,8 +51,8 @@ class PostRowPlain extends React.Component {
         </td>
         <td>{post.title}</td>
         <td>{post.sightingType}</td>
-        <td>{created.toString()}</td>
-        <td>{spotted.toString()}</td>
+        <td>{created}</td>
+        <td>{spotted}</td>
         <td>
           <LinkContainer to="/">
             <OverlayTrigger disabled={!user.signedIn} delayShow={1000} overlay={editTooltip}>

@@ -30,11 +30,14 @@ function readFile(file) {
 class PostAddNavItem extends React.Component {
   constructor(props) {
     super(props);
+    const dateTimeObj = DateTime.now();
+    const timezone = `UTC${dateTimeObj.offset / 60}`;
+    const date = dateTimeObj.toUTC().toString();
     this.state = {
       showing: false,
       uploadedImages: [],
-      date: new Date(new Date().getTime()),
-      timezone: '',
+      date,
+      timezone,
     };
 
     this.showModal = this.showModal.bind(this);
@@ -48,9 +51,7 @@ class PostAddNavItem extends React.Component {
     // e is a Moment object so just format it.
     const formattedDate = e.format('MMMM DD YYYY, HH:mm:ss');
     const dateISO = (new Date(formattedDate)).toISOString();
-    console.log(dateISO);
     const dateTimeObj = DateTime.fromISO(dateISO);
-    console.log(dateTimeObj);
     const timezone = `UTC${dateTimeObj.offset / 60}`;
     const date = dateTimeObj.toUTC().toString();
     this.setState({ date, timezone });

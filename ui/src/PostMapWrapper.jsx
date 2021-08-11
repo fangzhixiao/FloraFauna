@@ -1,5 +1,5 @@
 import React from 'react';
-import { Panel } from 'react-bootstrap';
+import { Panel, Button } from 'react-bootstrap';
 import URLSearchParams from 'url-search-params';
 //
 import graphQLFetch from './graphQLFetch.js';
@@ -9,10 +9,10 @@ import withToast from './withToast.jsx';
 import PostMap from './PostMap.jsx';
 
 const TIME_INTERVALS = new Map();
-TIME_INTERVALS.set('Early AM', { minHour: '00', maxHour: '06' });
-TIME_INTERVALS.set('Morning', { minHour: '06', maxHour: '12' });
-TIME_INTERVALS.set('Afternoon', { minHour: '12', maxHour: '18' });
-TIME_INTERVALS.set('Evening', { minHour: '18', maxHour: '00' });
+TIME_INTERVALS.set('Early AM', { minTimeUTC: '00:00:00', maxTimeUTC: '05:59:59' });
+TIME_INTERVALS.set('Morning', { minTimeUTC: '06:00:00', maxTimeUTC: '11:59:59' });
+TIME_INTERVALS.set('Afternoon', { minTimeUTC: '12:00:00', maxTimeUTC: '17:59:59' });
+TIME_INTERVALS.set('Evening', { minTimeUTC: '18:00:00', maxTimeUTC: '23:59:59' });
 
 // eslint-disable-next-line react/prefer-stateless-function
 class PostMapWrapper extends React.Component {
@@ -20,40 +20,46 @@ class PostMapWrapper extends React.Component {
     const params = new URLSearchParams(search);
     const vars = { hasSelection: false, selectedId: 0 };
     if (params.get('sightingType')) vars.sightingType = params.get('sightingType');
-    if (params.get('date')) vars.spotted = params.get('date');
+    if (params.get('date')) {
+      const date = new Date(params.get('date'));
+      if (date !== 'Invalid Date') {
+        vars.dateUTC = date.toISOString(); // backend reads ISO strings
+      }
+    }
 
     if (params.get('time')) {
       const interval = TIME_INTERVALS.get(params.get('time'));
-      vars.minHour = interval.minHour;
-      vars.maxHour = interval.maxHour;
+      vars.minTimeUTC = interval.minTimeUTC;
+      vars.maxTimeUTC = interval.maxTimeUTC;
     }
     // TODO: Add hasImages based on images
 
     const query = `query postList(
       $sightingType: SightingType
-      $spotted: GraphQLDate
-      $minHour: GraphQLDate
-      $maxHour: GraphQLDate
+      $dateUTC: String
+      $minTimeUTC: String
+      $maxTimeUTC: String
     ) {
       postList(
         sightingType: $sightingType
-        spotted: $spotted
-        minHour: $minHour
-        maxHour: $maxHour
+        dateUTC: $dateUTC
+        minTimeUTC: $minTimeUTC
+        maxTimeUTC: $maxTimeUTC
     ) {
       id
       title
       sightingType
       authorId
-      created 
-      spotted
+      createdUTC 
+      spottedUTC
+      timezone
       location {
         lat lng
         }
       imageUrls
       description 
       comments {
-        commenter content created
+        commenter content createdUTC
       }
     }
   }`;
@@ -69,7 +75,10 @@ class PostMapWrapper extends React.Component {
 
     this.state = {
       posts,
+      refresh: false,
     };
+
+    this.onClick = this.onClick.bind(this);
   }
 
   componentDidMount() {
@@ -86,6 +95,16 @@ class PostMapWrapper extends React.Component {
     if (prevSearch !== search || prevId !== id) {
       this.loadData();
     }
+    const { refresh } = this.state;
+    if (refresh === true) {
+      this.loadData();
+      // eslint-disable-next-line react/no-did-update-set-state
+      this.setState({ refresh: false });
+    }
+  }
+
+  onClick() {
+    this.setState({ refresh: true });
   }
 
   async loadData() {
@@ -117,7 +136,10 @@ class PostMapWrapper extends React.Component {
           </Panel>
         </div>
         <div>
-          <PostMap />
+          <Button onClick={this.onClick}>Refresh</Button>
+        </div>
+        <div>
+          <PostMap posts={posts.postList} />
         </div>
 
       </React.Fragment>

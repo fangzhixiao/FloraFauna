@@ -36,7 +36,7 @@ export default class DateInput extends React.Component {
     const { ...props } = this.props;
 
     let displayValue = new Date(value);
-    let formattedDate = moment(displayValue).format('MMMM DD, YYYY hh:mm:ss a');
+    let formattedDate = moment(displayValue).format('MMMM DD, YYYY, hh:mm a');
 
     if (displayValue.toString() === 'Invalid Date') {
       displayValue = '';
