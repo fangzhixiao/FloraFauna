@@ -35,17 +35,6 @@ const options = {
 
 function PostMap(props) {
   const { posts } = props;
-
-  // useEffect(() => {
-  //   const fetchData = () => {
-  //     if (posts.postList) {
-  //       console.log(posts.postList);
-  //       setData(posts.postList);
-  //     }
-  //   };
-  //   fetchData();
-  // }, [posts]);
-
   const { isLoaded, loadError } = useLoadScript({
     id: 'google-map-script',
     version: '1.00',
@@ -76,10 +65,11 @@ function PostMap(props) {
 
 
   const handleActiveMarker = (marker) => {
-    if (marker.id === activeMarker.id) {
+    if (activeMarker == null) {
+      return;
+    } if (marker.id === activeMarker.id) {
       return;
     }
-
     setActiveMarker(marker.id);
     panTo(marker.position);
   };
@@ -123,7 +113,7 @@ function PostMap(props) {
                 onClick={() => handleActiveMarker({ id, position: location })}
               >
                 {activeMarker === id ? (
-                  <InfoWindow onCloseClick={() => setActiveMarker(null)}>
+                  <InfoWindow onCloseClick={() => setActiveMarker([])}>
                     <div>{description}</div>
                   </InfoWindow>
                 ) : null}
