@@ -27,8 +27,6 @@ Instructions to run application locally on machine:
 
 ### Project Iteration 2
 
-TL;DR:
-
 #### API Functionality: Responsible Member: Zhiqi Lin
 * Connected the app to S3 for image storage.
     * Set up bucket and accounts for all team members and heroku to get credentials on S3.
@@ -45,9 +43,12 @@ TL;DR:
 
 
 #### UI Functionality: 
-* Landing Page: Map + Filter: Responsible Members: Zhining Fang and Jiatian Wang
-    * Map is populated with markers read from the database. On clicking the marker, the description 
-      is displayed.
+* Landing Page: Map + Filter (PostSightingFilter.jsx, PostMap.jsx, PostMapWrapper.jsx): 
+  Responsible Members: Zhining Fang and Jiatian Wang
+    * Map is populated with markers read from the database. On clicking the marker, an infowindow
+      pops up with some information about the post and a view post button. Users can click the
+      button to view the post, even when not signed in.
+      ![UI Map Marker screenshot](readme_images/ite2_ui_map_info.png)
     * Map will display appropriate markers when the filter is applied. Note that there are 
       combinations of the filter that will not display any markers as posts populated in the
       database may not have that combination of attributes.
@@ -61,7 +62,7 @@ TL;DR:
       ![UI Map screenshot](readme_images/ite2_ui_map.png)
 
 Responsible Member: Zhining Fang
-* Add a Post component:
+* Add a Post component (PostAddNavItem.jsx):
     * Plus button at the navigation bar will show a modal to add a new post. Updated the date input
     to display a calendar/time selector (click the time or date to select time or date). 
       The user cannot select dates in the future. Users can upload images to
@@ -71,16 +72,16 @@ Responsible Member: Zhining Fang
         image list will still be there when the user clicks the plus button again after submitting a 
         post. Will apply a fix in next iteration.
         ![UI Add screenshot](readme_images/ite2_ui_add.png)
-* Edit a Post component:
+* Edit a Post component (PostEdit.jsx):
     * Updated the date input to display a calendar and time selector. No other changes
       ![UI Edit screenshot](readme_images/ite2_ui_edit.png)
-* View a Post component:
+* View a Post component (Post.jsx):
     * When viewing a Post, if signed in, a user can comment on the post and see comments that have
     been made by others
     * Posts will also display images if there are any. If there are multiple images, clicking the
     arrows will display the next image.
       ![UI Post with Comments and Images screenshot](readme_images/ite2_ui_post.png)
-* Profile component:
+* Profile component (Profile.jsx, PostTable.jsx):
     * Can delete posts here, users will be implemented next iteration; after that is implemented
       the post list will show only the user's own posts. On deletion at the bottom of the modal will 
       display the message and user can undo if they wish.
