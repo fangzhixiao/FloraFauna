@@ -66,11 +66,14 @@ class PostAddNavItem extends React.Component {
   }
 
   showModal() {
-    this.setState({ showing: true });
+    const dateTimeObj = DateTime.now();
+    const timezone = `UTC${dateTimeObj.offset / 60}`;
+    const date = dateTimeObj.toUTC().toString();
+    this.setState({ showing: true, timezone, date });
   }
 
   hideModal() {
-    this.setState({ showing: false });
+    this.setState({ showing: false, uploadedImages: [] });
   }
 
   // Runs list of files through base64 reader (readFile()); returns array of translated files
@@ -149,7 +152,7 @@ class PostAddNavItem extends React.Component {
           <OverlayTrigger
             placement="left"
             delayShow={1000}
-            overlay={<Tooltip id="create-issue">Create Issue</Tooltip>}
+            overlay={<Tooltip id="create-issue">New Sighting</Tooltip>}
           >
             <Glyphicon glyph="plus" />
           </OverlayTrigger>

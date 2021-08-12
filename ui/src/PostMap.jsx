@@ -1,8 +1,5 @@
-
-
-import React, { useState, useEffect } from 'react';
-import {Button, ModalHeader, ModalTitle, OverlayTrigger} from 'react-bootstrap';
-
+import React from 'react';
+import { Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import {
   Marker, InfoWindow, GoogleMap, useLoadScript,
 } from '@react-google-maps/api';
@@ -13,66 +10,45 @@ import usePlacesAutocomplete, {
   getGeocode,
   getLatLng,
 } from 'use-places-autocomplete';
+import { DateTime } from 'luxon';
 import withToast from './withToast.jsx';
 import mapStyles from './mapStyles.jsx';
-
-import Tooltip from "react-bootstrap/lib/Tooltip";
-import Modal from "react-bootstrap/lib/Modal";
-
+import Post from './Post.jsx';
 
 const div1 = {
-  width: "300px",
-  margin: "30px ",
-  backgroundColor: "#F0F8FF",
-  minHeight: "200px",
-  boxSizing: "border-box"
+  align: 'center',
+  width: '150px',
+  margin: '10px ',
+  backgroundColor: '#F0F8FF',
+  minHeight: '80px',
+  boxSizing: 'border-box',
 };
 
-const btn1 = {
-  backgroundColor: "#F0F8FF",
-  padding : "20px",
-  fontsize : "28px"
+const div2 = {
+  padding: '3rem',
+  fontsize: '1.5rem',
+    width: '100%',
+  transform :'translateX(-50%)',
+  position: 'absolute',
+  left: '50%',
+  zIndex: '10',
+  maxWidth: '800px',
+
 }
 
 
+const cob1 = {
+  borderStyle: 'groove',
+  padding : '3rem',
+  height: '20px'
+}
 
 
+// determines map size
 const containerStyle = {
   width: '80vw',
   height: '80vh',
 };
-
-const postsDB = [
-  {
-    title: 'A Turkey',
-    authorId: 1,
-    created: new Date('2019-01-15'),
-    spotted: new Date('2019-01-14'),
-    spottedUTC: "2017-05-15T09:10:23Z",
-    createdUTC: "2017-08-15T09:10:23Z",
-    timezone: "UTC+9",
-    location: {
-      lat: 42.341146910114595,
-      lng: -71.0917251720235,
-    },
-    sightingType: 'ANIMAL',
-    description: 'I saw a turkey',
-  },
-  {
-    title: 'A Poppy',
-    id: 345,
-    authorId: 2,
-    spottedUTC: "2018-01-15T09:10:23Z",
-    createdUTC: "2019-08-15T09:10:23Z",
-    timezone: "UTC-8",
-    location: {
-      lat: 42.421661,
-      lng: -71.090344,
-    },
-    sightingType: 'PLANT',
-    description: 'I saw a poppy',
-  },
-];
 
 const libraries = ['places'];
 
@@ -86,12 +62,12 @@ const options = {
   styles: mapStyles,
   disableDefaultUI: true,
   zoomControl: true,
-  scrollwheel: true,
 };
 
 
 function PostMap(props) {
   const { posts } = props;
+
   const { isLoaded, loadError } = useLoadScript({
     id: 'google-map-script',
     version: '1.00',
@@ -100,23 +76,16 @@ function PostMap(props) {
   });
 
   const [activeMarker, setActiveMarker] = React.useState([]);
-  // const [selected, setSelected] = React.useState(null);
 
   const mapRef = React.useRef();
   const onMapLoad = React.useCallback((map) => {
     mapRef.current = map;
   }, []);
 
-
-  const renderTooltip = (props) => (
-      <Tooltip id="button-tooltip" {...props}>
-          Click to view
-      </Tooltip>
-  );
-
   const panTo = React.useCallback(({ lat, lng }) => {
     mapRef.current.panTo({ lat, lng });
-
+    //const zoom = mapRef.current.getZoom();
+    //mapRef.current.setZoom(10);
   }, []);
 
 
@@ -138,63 +107,86 @@ function PostMap(props) {
     panTo(marker.position);
   };
 
+  const convertDate = (date, timezone) => {
+    const timeZone = timezone;
+    const spottedDateTime = DateTime.fromISO(new Date(date).toISOString(),
+        { zone: 'UTC' })
+        .setZone(timeZone);
+
+    return spottedDateTime.toLocaleString(DateTime.DATETIME_MED);
+  };
+
 
   return (
-
-    <div>
 
       <div>
 
         <div>
-          <Locate panTo={panTo} />
+
+          <div>
+            <Locate panTo={panTo} />
+          </div>
+          <div >
+            <Search panTo={panTo} />
+          <GoogleMap
+              mapContainerStyle={containerStyle}
+              center={center}
+              zoom={10}
+              onLoad={onMapLoad}
+              onClick={onMapClick}
+              options={options}
+          >
+
+            {console.log('MAP HERE')}
+            {console.log(posts)}
+            {
+              posts.postList && posts.postList.map(post => (
+                  <Marker
+                      key={post.id}
+                      position={post.location}
+                      title={post.title}
+                      onClick={() => handleActiveMarker({ id: post.id, position: post.location })}
+                  >
+                    {activeMarker === post.id ? (
+                        <InfoWindow onCloseClick={() => setActiveMarker([])}>
+                          <div style={div1}>
+                            <div id="title">
+                              <b>{post.title}</b>
+                            </div>
+                            <div id="sightingType">
+                              {post.sightingType}
+                            </div>
+                            <div id="spottedUTC">
+                              {convertDate(post.spottedUTC, post.timezone)}
+                            </div>
+                            <div>
+                              Address: TBD
+                              {/* Todo : get address based on location to get address */}
+                            </div>
+                            <div align="center">
+                              <br />
+                              <OverlayTrigger
+                                  placement="left"
+                                  delayShow={1000}
+                                  overlay={<Tooltip id="details">details</Tooltip>}
+                              >
+                                <Post post={post} />
+
+                              </OverlayTrigger>
+                              <br />
+                            </div>
+
+                          </div>
+                        </InfoWindow>
+                    ) : null}
+                  </Marker>
+              ))
+            }
+          </GoogleMap>
+          </div>
         </div>
 
-
-        <div>
-          <Search panTo={panTo} />
-        </div>
-
-
-        <GoogleMap
-          mapContainerStyle={containerStyle}
-          center={center}
-          zoom={10}
-          onLoad={onMapLoad}
-          onClick={onMapClick}
-          options={options}
-        >
-
-
-          {console.log('MAP HERE')}
-          {console.log(posts)}
-          {
-             postsDB.map(({
-              id, title, location, description,
-            }) => (
-              <Marker
-                key={id}
-                position={location}
-                title={title}
-                onClick={() => handleActiveMarker({ id, position: location })}
-              >
-                {activeMarker === id ? (
-                  <InfoWindow onCloseClick={() => setActiveMarker([])}>
-                    <div>{description}</div>
-                  </InfoWindow>
-                ) : null}
-              </Marker>
-            ))
-          }
-
-            >
-
-
-
-
-        </GoogleMap>
       </div>
-
-    </div>
 
 
   );
@@ -203,22 +195,21 @@ function PostMap(props) {
 
 function Locate({ panTo }) {
   return (
-    <Button
-      style={{ fontSize: 50 }}
-      onClick={() => {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            panTo({
-              lat: position.coords.latitude,
-              lng: position.coords.longitude,
-            });
-          },
-          () => null,
-        );
-      }}
-    >
-      Find me
-    </Button>
+      <Button
+          onClick={() => {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                  panTo({
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude,
+                  });
+                },
+                () => null,
+            );
+          }}
+      >
+        Find me
+      </Button>
   );
 }
 
@@ -254,29 +245,30 @@ function Search({ panTo }) {
     }
   };
 
-  return (
-    <div>
-      <Combobox onSelect={handleSelect}>
-        <ComboboxInput
-          value={value}
-          onChange={handleInput}
-          disabled={!ready}
-          placeholder="Search for locations"
-        />
-        <ComboboxPopover style={{ backgroundColor: 'white' }}>
-          <ComboboxList style={{
-            position: 'absolute', left: '10%', padding: '0.5rem', backgroundColor: 'white',
-          }}
-          >
 
-            {status === 'OK'
-            && data.map(({ id, description }) => (
-              <ComboboxOption key={id} value={description} />
-            ))}
-          </ComboboxList>
-        </ComboboxPopover>
-      </Combobox>
-    </div>
+  return (
+      <div style={div2}>
+        <Combobox onSelect={handleSelect}  >
+          <ComboboxInput style={cob1}
+              value={value}
+              onChange={handleInput}
+              disabled={!ready}
+              placeholder="Search for locations"
+          />
+          <ComboboxPopover style={{ backgroundColor: 'white' }}>
+            <ComboboxList style={{
+              position: 'absolute', left: '10%', padding: '0.5rem', backgroundColor: 'white',
+            }}
+            >
+
+              {status === 'OK'
+              && data.map(({ id, description }) => (
+                  <ComboboxOption key={id} value={description} />
+              ))}
+            </ComboboxList>
+          </ComboboxPopover>
+        </Combobox>
+      </div>
   );
 }
 
