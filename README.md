@@ -81,7 +81,7 @@ Responsible Member: Zhining Fang
     been made by others
     * Posts will also display images if there are any. If there are multiple images, clicking the
     arrows will display the next image.
-      ![UI Post with Comments and Images screenshot](readme_images/ite2_ui_post.png)
+      ![UI Post with Comments and Images screenshot](readme_images/ite_2_ui_post.png)
 * Profile component (Profile.jsx, PostTable.jsx):
     * Can delete posts here, users will be implemented next iteration; after that is implemented
       the post list will show only the user's own posts. On deletion at the bottom of the modal will 
