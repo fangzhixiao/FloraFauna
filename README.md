@@ -1,6 +1,6 @@
 # FloraFauna
 ----
-Link to UI deployment: https://florafauna-ui.herokuapp.com/posts
+Link to UI deployment: https://florafauna-ui.herokuapp.com/posts  
 Link to API deployment: https://florafauna-api.herokuapp.com/graphql
 
 Students:  
