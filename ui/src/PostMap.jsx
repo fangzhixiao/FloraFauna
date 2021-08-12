@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button } from 'react-bootstrap';
+import {Button, ModalHeader, ModalTitle, OverlayTrigger} from 'react-bootstrap';
 import {
   Marker, InfoWindow, GoogleMap, useLoadScript,
 } from '@react-google-maps/api';
@@ -12,9 +12,55 @@ import usePlacesAutocomplete, {
 } from 'use-places-autocomplete';
 import withToast from './withToast.jsx';
 import mapStyles from './mapStyles.jsx';
-import graphQLFetch from "./graphQLFetch";
+import Tooltip from "react-bootstrap/lib/Tooltip";
+import Modal from "react-bootstrap/lib/Modal";
 
 
+const div1 = {
+  width: "300px",
+  margin: "30px ",
+  backgroundColor: "#F0F8FF",
+  minHeight: "200px",
+  boxSizing: "border-box"
+};
+
+const btn1 = {
+  backgroundColor: "#F0F8FF",
+  padding : "20px",
+  fontsize : "28px"
+}
+
+
+const postsDB = [
+  {
+    title: 'A Turkey',
+    authorId: 1,
+    id: 123,
+    spottedUTC: "2017-05-15T09:10:23Z",
+    createdUTC: "2017-08-15T09:10:23Z",
+    timezone: "UTC+9",
+    location: {
+      lat: 42.341146910114595,
+      lng: -71.0917251720235,
+    },
+    sightingType: 'ANIMAL',
+    description: 'I saw a turkey',
+  },
+  {
+    title: 'A Poppy',
+    id: 345,
+    authorId: 2,
+    spottedUTC: "2018-01-15T09:10:23Z",
+    createdUTC: "2019-08-15T09:10:23Z",
+    timezone: "UTC-8",
+    location: {
+      lat: 49.341146910114595,
+      lng: -79.0917251720235,
+    },
+    sightingType: 'PLANT',
+    description: 'I saw a poppy',
+  },
+];
 
 const containerStyle = {
   width: '80vw',
@@ -67,7 +113,11 @@ function PostMap(props) {
     mapRef.current = map;
   }, []);
 
-
+  const renderTooltip = (props) => (
+      <Tooltip id="button-tooltip" {...props}>
+        Simple tooltip
+      </Tooltip>
+  );
 
   const panTo = React.useCallback(({ lat, lng }) => {
     mapRef.current.panTo({ lat, lng });
@@ -122,41 +172,42 @@ function PostMap(props) {
           onClick={onMapClick}
           options={options}
         >
-
-
-          {data.map(({ id,title, location, description }) => (
-            <Marker
-              key={id}
-              position={location}
-              title={title}
-              onClick={() => handleActiveMarker(id)}
-
-<<<<<<< HEAD
-                    {Posts.map(({ id, name, position }) => (
+                    {postsDB.map(({ id, title,location,sightingType, description
+                    ,timezone,spottedUTC,createdUTC,authorId}) => (
                         <Marker
                             key={id}
-                            position={position}
+                            position={location}
                             onClick={() => handleActiveMarker(id)}
-
-
                         >
                             {activeMarker === id ? (
                                 <InfoWindow onCloseClick={() => setActiveMarker(null)}>
-                                    <div>{name}</div>
+                                    <div style={div1}>
+                                      <div>Title: {title}</div>
+                                      <div>sightingType: {title}</div>
+                                      <div>timezone:{timezone}</div>
+                                      <div>
+                                        address: Todo : get address based on location to get address
+                                      </div>
+                                    <div>
+                                      <OverlayTrigger
+                                          placement="left"
+                                          delayShow={1000}
+                                          overlay={<Tooltip id="details">details</Tooltip>}
+                                      >
+                                        <Button style={btn1}>Click to view</Button>
+
+                                      </OverlayTrigger>
+                                    </div>
+
+                                    </div>
                                 </InfoWindow>
                             ) : null}
                         </Marker>
                     ))}
-=======
+
             >
-              {activeMarker === id ? (
-                <InfoWindow onCloseClick={() => setActiveMarker(null)}>
-                  <div>{description}</div>
-                </InfoWindow>
-              ) : null}
-            </Marker>
-          ))}
->>>>>>> c6f13ac90b7f452244c139f32e9cb2ec9bd79c51
+
+
 
         </GoogleMap>
       </div>
