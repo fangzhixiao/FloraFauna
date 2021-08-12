@@ -4,12 +4,13 @@ Link to UI deployment: https://florafauna-ui.herokuapp.com/posts
 Link to API deployment: https://florafauna-api.herokuapp.com/graphql
 
 Students:  
-Jiatian Wang wang.jiati@northeastern.edu
-* user WJT1156 is Jiatian.  
-Zhiqi Lin lin.zhiq@northeastern.edu  
-Zhining Fang fang.zhi@northeastern.edu  
-* user fang.zhi and fzhining are both Zhining Fang
-* Zhining is in charge of merging, maintaining deploy repos, and deploying to Heroku.  
+* Jiatian Wang wang.jiati@northeastern.edu
+   * user WJT1156  
+* Zhiqi Lin lin.zhiq@northeastern.edu  
+   * user zhiqilin
+* Zhining Fang fang.zhi@northeastern.edu  
+   * users fang.zhi and fzhining are both Zhining
+   * Responsible for merging, maintaining deploy repos, and deploying to Heroku.  
 
 Instructions to run application locally on machine:  
 1. Clone Repository
@@ -48,7 +49,7 @@ Instructions to run application locally on machine:
     * Map is populated with markers read from the database. On clicking the marker, an infowindow
       pops up with some information about the post and a view post button. Users can click the
       button to view the post, even when not signed in.
-      ![UI Map Marker screenshot](readme_images/ite2_ui_map_info.png)
+      ![UI Map Marker screenshot](readme_images/ite_2_ui_map_info.png)
     * Map will display appropriate markers when the filter is applied. Note that there are 
       combinations of the filter that will not display any markers as posts populated in the
       database may not have that combination of attributes.
@@ -59,7 +60,7 @@ Instructions to run application locally on machine:
     * Intended to move add a new post functionality to the map this iteration, however this feature
       will be pushed back to the last iteration. Adding is still done through the header; 
       coordinates will have to be entered manually.
-      ![UI Map screenshot](readme_images/ite2_ui_map.png)
+      ![UI Map screenshot](readme_images/ite_2_ui_map.png)
 
 Responsible Member: Zhining Fang
 * Add a Post component (PostAddNavItem.jsx):
@@ -71,10 +72,10 @@ Responsible Member: Zhining Fang
       * Bug with add post -- there is currently a bug where if the page hasn't been refreshed the
         image list will still be there when the user clicks the plus button again after submitting a 
         post. Will apply a fix in next iteration.
-        ![UI Add screenshot](readme_images/ite2_ui_add.png)
+        ![UI Add screenshot](readme_images/ite_2_ui_add.png)
 * Edit a Post component (PostEdit.jsx):
     * Updated the date input to display a calendar and time selector. No other changes
-      ![UI Edit screenshot](readme_images/ite2_ui_edit.png)
+      ![UI Edit screenshot](readme_images/ite_2_ui_edit.png)
 * View a Post component (Post.jsx):
     * When viewing a Post, if signed in, a user can comment on the post and see comments that have
     been made by others
@@ -85,7 +86,7 @@ Responsible Member: Zhining Fang
     * Can delete posts here, users will be implemented next iteration; after that is implemented
       the post list will show only the user's own posts. On deletion at the bottom of the modal will 
       display the message and user can undo if they wish.
-      ![UI Profile screenshot](readme_images/ite2_profile_delete_undo.png)
+      ![UI Profile screenshot](readme_images/ite_2_profile_delete_undo.png)
     
 Since a lot of the structure of the back end has changed, we spent a lot of time updating the
 frontend to accommodate those changes. Dealing with the date/time and timezone for displaying the
