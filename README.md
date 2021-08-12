@@ -14,7 +14,44 @@ Instructions to run application locally on machine:
 3. To run application, run npm start in API directory. In a new terminal and in the UI directory, 
    run npm run watch-server-hmr. In another terminal, run npm start.
 Application should run in http://ui.promernstack.com:8000 on the web
-   
+
+---
+
+### Project Iteration 2
+
+TL;DR:
+
+#### API Functionality: Responsible Member: Zhiqi Lin
+* Connected the app to S3 for image storage.
+    * Set up bucket and accounts for all team members and heroku to get credentials on S3.
+    * Changed schema to further insulate the front end from the implementation of image storage in the back end. The front end only needs to send base64 encoded strings of the images to the back end and receive pre-signed urls of the images(each url will be valid for 1 hour). The backend is responsible for connecting to the third party service to store the images and retrieve links for display.
+    * For image uploading, the back end receives the images from the front end as base64 Strings, sends the images to S3 bucket with a unique key, and stores the key in MongoDB.
+    * For image retrieval, the back end sends the unique keys to S3 to get the corresponding pre-signed image urls, and sends the list of urls to the front end to display. The urls are pre-signed and expires after 1 hour for better security.
+* Implemented post filtering according to the date and time of the sighting.
+    * Unified the way date and time are stored in the database: the timestamps of sighting and post-creation are both in UTC. The post object has one more property `timezone` that records the local time of where the post was made. This allows for easier time filtering in the back end and displaying time in the front end in a way that makes more sense. All post displays in the frontend will have the local time of the user who created the post, instead of the local time of the user viewing the post.
+    * Note: We used Luxon to handle time. Luxon allows timezone formats in both IANA names ("America/Los_Angeles") and UTC offsets ("UTC-8"). While IANA names allow for better user experience and deals with DST, unfortunately some Luxon functions for IANA names do not work correctly with the node.js version v10.24.1 used by the book project (they do work for v16.6.2). Therefore, we chose to use the UTC offset version to document the timezone of the post.
+
+![Graphql Playground screenshot 1](readme_images/ite2_api_1.png)
+![Graphql Playground screenshot 2](readme_images/ite2_api_2.png)
+![Graphql Playground screenshot 3](readme_images/ite2_api_3.png)
+
+
+#### UI Functionality:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ---
 ### Project Iteration 1
 
@@ -82,4 +119,3 @@ displaying images, user specific profiles, and post commenting.
       * Comments do not display currently. Iteration 2 will display comments appropriately and users
         will be able to actually send comments.
       * Stretch goal: Display longitude/latitude as real locations instead of coordinates.
-    
