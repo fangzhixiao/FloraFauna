@@ -9,6 +9,12 @@ import graphQLFetch from './graphQLFetch.js';
 import TextInput from './TextInput.jsx';
 import UserContext from './UserContext.js';
 
+const btn1 = {
+  backgroundColor: '#F0F8FF',
+  padding: '10px',
+  fontsize: '28px',
+};
+
 class Post extends React.Component {
   // props in this case would be passing in the post object from clicking on a map marker
 
@@ -227,7 +233,7 @@ class Post extends React.Component {
     // TODO: enable send comment when functionality is implemented
     return (
       <React.Fragment>
-        <Button onClick={this.showModal}>
+        <Button style={btn1} onClick={this.showModal}>
           View Post
         </Button>
         <Modal keyboard show={showing} onHide={this.hideModal}>
