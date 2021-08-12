@@ -12,11 +12,11 @@
 /* eslint no-restricted-globals: "off" */
 
 
-
 db.posts.deleteMany({});
 db.deleted_posts.deleteMany({});
 
 const postsDB = [
+<<<<<<< HEAD
   {
     title: 'A Turkey',
     authorId: 1,
@@ -28,24 +28,36 @@ const postsDB = [
     location: {
       lat: 42.341146910114595,
       lng: -71.0917251720235,
+=======
+    {
+        title: 'A Turkey',
+        authorId: 1,
+        id: 123,
+        spottedUTC: "2017-05-15T09:10:23Z",
+        createdUTC: "2017-08-15T09:10:23Z",
+        timezone: "UTC+9",
+        location: {
+            lat: 42.341146910114595,
+            lng: -71.0917251720235,
+        },
+        sightingType: 'ANIMAL',
+        description: 'I saw a turkey',
+>>>>>>> 6f6d299a189376a0d02e438fcbe88ff9882bc216
     },
-    sightingType: 'ANIMAL',
-    description: 'I saw a turkey',
-  },
-  {
-    title: 'A Poppy',
-    id: 345,
-    authorId: 2,
-    spottedUTC: "2018-01-15T09:10:23Z",
-    createdUTC: "2019-08-15T09:10:23Z",
-    timezone: "UTC-8",
-    location: {
-      lat: 42.421661,
-      lng: -71.090344,
+    {
+        title: 'A Poppy',
+        id: 345,
+        authorId: 2,
+        spottedUTC: "2018-01-15T09:10:23Z",
+        createdUTC: "2019-08-15T09:10:23Z",
+        timezone: "UTC-8",
+        location: {
+            lat: 49.341146910114595,
+            lng: -79.0917251720235,
+        },
+        sightingType: 'PLANT',
+        description: 'I saw a poppy',
     },
-    sightingType: 'PLANT',
-    description: 'I saw a poppy',
-  },
 ];
 
 db.posts.insertMany(postsDB);

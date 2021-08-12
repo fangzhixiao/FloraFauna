@@ -1,5 +1,8 @@
-import React from 'react';
-import { Button } from 'react-bootstrap';
+
+
+import React, { useState, useEffect } from 'react';
+import {Button, ModalHeader, ModalTitle, OverlayTrigger} from 'react-bootstrap';
+
 import {
   Marker, InfoWindow, GoogleMap, useLoadScript,
 } from '@react-google-maps/api';
@@ -12,6 +15,27 @@ import usePlacesAutocomplete, {
 } from 'use-places-autocomplete';
 import withToast from './withToast.jsx';
 import mapStyles from './mapStyles.jsx';
+
+import Tooltip from "react-bootstrap/lib/Tooltip";
+import Modal from "react-bootstrap/lib/Modal";
+
+
+const div1 = {
+  width: "300px",
+  margin: "30px ",
+  backgroundColor: "#F0F8FF",
+  minHeight: "200px",
+  boxSizing: "border-box"
+};
+
+const btn1 = {
+  backgroundColor: "#F0F8FF",
+  padding : "20px",
+  fontsize : "28px"
+}
+
+
+
 
 const containerStyle = {
   width: '80vw',
@@ -83,6 +107,13 @@ function PostMap(props) {
     mapRef.current = map;
   }, []);
 
+
+  const renderTooltip = (props) => (
+      <Tooltip id="button-tooltip" {...props}>
+          Click to view
+      </Tooltip>
+  );
+
   const panTo = React.useCallback(({ lat, lng }) => {
     mapRef.current.panTo({ lat, lng });
 
@@ -133,6 +164,7 @@ function PostMap(props) {
           options={options}
         >
 
+
           {console.log('MAP HERE')}
           {console.log(posts)}
           {
@@ -153,6 +185,11 @@ function PostMap(props) {
               </Marker>
             ))
           }
+
+            >
+
+
+
 
         </GoogleMap>
       </div>
