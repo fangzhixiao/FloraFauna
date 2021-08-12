@@ -5,11 +5,11 @@ Link to API deployment: https://florafauna-api.herokuapp.com/graphql
 
 Students:  
 Jiatian Wang wang.jiati@northeastern.edu
-* user WJT1156 is Jiatian. 
+* user WJT1156 is Jiatian.  
 Zhiqi Lin lin.zhiq@northeastern.edu  
-Zhining Fang fang.zhi@northeastern.edu
+Zhining Fang fang.zhi@northeastern.edu  
 * user fang.zhi and fzhining are both Zhining Fang
-* Zhining is in charge of merging, maintaining deploy repos, and deploying to Heroku.
+* Zhining is in charge of merging, maintaining deploy repos, and deploying to Heroku.  
 
 Instructions to run application locally on machine:  
 1. Clone Repository
