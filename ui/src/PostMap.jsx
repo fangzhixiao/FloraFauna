@@ -64,7 +64,8 @@ function PostMap(props) {
 
   const panTo = React.useCallback(({ lat, lng }) => {
     mapRef.current.panTo({ lat, lng });
-    mapRef.current.setZoom(16);
+    //const zoom = mapRef.current.getZoom();
+    //mapRef.current.setZoom(10);
   }, []);
 
 
@@ -77,10 +78,11 @@ function PostMap(props) {
 
 
   const handleActiveMarker = (marker) => {
-    if (marker.id === activeMarker.id) {
+    if (activeMarker == null) {
+      return;
+    } if (marker.id === activeMarker.id) {
       return;
     }
-
     setActiveMarker(marker.id);
     panTo(marker.position);
   };
@@ -131,7 +133,7 @@ function PostMap(props) {
                 onClick={() => handleActiveMarker({ id: post.id, position: post.location })}
               >
                 {activeMarker === post.id ? (
-                  <InfoWindow onCloseClick={() => setActiveMarker(null)}>
+                  <InfoWindow onCloseClick={() => setActiveMarker([])}>
                     <div style={div1}>
                       <div id="title">
                         <b>{post.title}</b>
