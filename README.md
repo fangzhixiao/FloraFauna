@@ -14,27 +14,49 @@ Instructions to run application locally on machine:
 2. In API Directory and UI Directory, run npm install to install dependencies.
 3. To run application, run npm start in API directory. In a new terminal and in the UI directory, 
    run npm run watch-server-hmr. In another terminal, run npm start.
-4. For AWS CLI and S3: First you need the AWS Secret Key ID and Access Key ID -- ask group if don't 
+Application should run in http://ui.promernstack.com:8000 on the web
+4. For AWS CLI and S3: First you need the AWS Secret Key ID and Access Key ID -- ask group if don't
    have it, since each AWS account can only have up to 2 sets; Then in the api directory run npm ci.
-   If on Windows go to https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-windows.html 
+   If on Windows go to https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-windows.html
    and download the MSI and run it to download the aws-cli. Then in the terminal run "aws configure"
    and give the appropriate access key id and secret key id. Region is us-west-2; default output
-   format is "json". 
+   format is "json".
    
-Application should run in http://ui.promernstack.com:8000 locally. 
-
 ---
+
 ### Project Iteration 2
 
+TL;DR:
+
 #### API Functionality: Responsible Member: Zhiqi Lin
-* Updated GraphQL schema to accommodate timezone information for time filtering.
-  * Integrated luxon for time related functions
-* Implemented image upload and image source get functionality with AWS S3.
-    * Images are sent to the back end as base64 encoded strings;
-    * S3 assigns images a key which are used to return URLs to the frontend when a post
-    gets the image.
-      
+* Connected the app to S3 for image storage.
+    * Set up bucket and accounts for all team members and heroku to get credentials on S3.
+    * Changed schema to further insulate the front end from the implementation of image storage in the back end. The front end only needs to send base64 encoded strings of the images to the back end and receive pre-signed urls of the images(each url will be valid for 1 hour). The backend is responsible for connecting to the third party service to store the images and retrieve links for display.
+    * For image uploading, the back end receives the images from the front end as base64 Strings, sends the images to S3 bucket with a unique key, and stores the key in MongoDB.
+    * For image retrieval, the back end sends the unique keys to S3 to get the corresponding pre-signed image urls, and sends the list of urls to the front end to display. The urls are pre-signed and expires after 1 hour for better security.
+* Implemented post filtering according to the date and time of the sighting.
+    * Unified the way date and time are stored in the database: the timestamps of sighting and post-creation are both in UTC. The post object has one more property `timezone` that records the local time of where the post was made. This allows for easier time filtering in the back end and displaying time in the front end in a way that makes more sense. All post displays in the frontend will have the local time of the user who created the post, instead of the local time of the user viewing the post.
+    * Note: We used Luxon to handle time. Luxon allows timezone formats in both IANA names ("America/Los_Angeles") and UTC offsets ("UTC-8"). While IANA names allow for better user experience and deals with DST, unfortunately some Luxon functions for IANA names do not work correctly with the node.js version v10.24.1 used by the book project (they do work for v16.6.2). Therefore, we chose to use the UTC offset version to document the timezone of the post.
+
+![Graphql Playground screenshot 1](readme_images/ite2_api_1.png)
+![Graphql Playground screenshot 2](readme_images/ite2_api_2.png)
+![Graphql Playground screenshot 3](readme_images/ite2_api_3.png)
+
+
 #### UI Functionality:
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ---
