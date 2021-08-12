@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Button } from 'react-bootstrap';
 import {
   Marker, InfoWindow, GoogleMap, useLoadScript,
@@ -34,18 +34,17 @@ const options = {
 
 
 function PostMap(props) {
-  const [data, setData] = useState([]);
-
   const { posts } = props;
 
-  useEffect(() => {
-    const fetchData = () => {
-      if (posts.postList) {
-        setData(posts.postList);
-      }
-    };
-    fetchData();
-  }, [posts]);
+  // useEffect(() => {
+  //   const fetchData = () => {
+  //     if (posts.postList) {
+  //       console.log(posts.postList);
+  //       setData(posts.postList);
+  //     }
+  //   };
+  //   fetchData();
+  // }, [posts]);
 
   const { isLoaded, loadError } = useLoadScript({
     id: 'google-map-script',
@@ -77,11 +76,11 @@ function PostMap(props) {
 
 
   const handleActiveMarker = (marker) => {
-    if (marker === activeMarker) {
+    if (marker.id === activeMarker.id) {
       return;
     }
 
-    setActiveMarker(marker);
+    setActiveMarker(marker.id);
     panTo(marker.position);
   };
 
@@ -111,23 +110,26 @@ function PostMap(props) {
           options={options}
         >
 
-
-          {data.map(({
-            id, title, location, description,
-          }) => (
-            <Marker
-              key={id}
-              position={location}
-              title={title}
-              onClick={() => handleActiveMarker(id)}
-            >
-              {activeMarker === id ? (
-                <InfoWindow onCloseClick={() => setActiveMarker(null)}>
-                  <div>{description}</div>
-                </InfoWindow>
-              ) : null}
-            </Marker>
-          ))}
+          {console.log('MAP HERE')}
+          {console.log(posts)}
+          {
+            posts.postList && posts.postList.map(({
+              id, title, location, description,
+            }) => (
+              <Marker
+                key={id}
+                position={location}
+                title={title}
+                onClick={() => handleActiveMarker({ id, position: location })}
+              >
+                {activeMarker === id ? (
+                  <InfoWindow onCloseClick={() => setActiveMarker(null)}>
+                    <div>{description}</div>
+                  </InfoWindow>
+                ) : null}
+              </Marker>
+            ))
+          }
 
         </GoogleMap>
       </div>

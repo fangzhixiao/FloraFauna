@@ -80,7 +80,6 @@ class PostMapWrapper extends React.Component {
     };
 
     this.onClick = this.onClick.bind(this);
-
   }
 
   componentDidMount() {
@@ -105,7 +104,7 @@ class PostMapWrapper extends React.Component {
     }
   }
 
-  onClick(e) {
+  onClick() {
     this.setState({ refresh: true });
   }
 
@@ -114,7 +113,7 @@ class PostMapWrapper extends React.Component {
     const data = await PostMapWrapper.fetchData(match, search, showError);
     if (data) {
       this.setState({
-        posts: data.postList,
+        posts: data,
       });
     }
   }
@@ -122,8 +121,6 @@ class PostMapWrapper extends React.Component {
   render() {
     const { posts } = this.state;
     if (posts == null) return null;
-
-    console.log(posts);
 
     return (
       <React.Fragment>
