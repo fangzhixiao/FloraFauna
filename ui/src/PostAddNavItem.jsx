@@ -149,7 +149,7 @@ class PostAddNavItem extends React.Component {
           <OverlayTrigger
             placement="left"
             delayShow={1000}
-            overlay={<Tooltip id="create-issue">Create Issue</Tooltip>}
+            overlay={<Tooltip id="create-issue">New Sighting</Tooltip>}
           >
             <Glyphicon glyph="plus" />
           </OverlayTrigger>
