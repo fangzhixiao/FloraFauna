@@ -44,7 +44,7 @@ Instructions to run application locally on machine:
 
 
 #### UI Functionality: 
-* Landing Page: Map + Filter (PostSightingFilter.jsx, PostMap.jsx, PostMapWrapper.jsx): 
+* Landing Page: Map + Filter (PostSightingFilter.jsx, PostMap.jsx, PostMapWrapper.jsx):  
   Responsible Members: Zhining Fang and Jiatian Wang
     * Map is populated with markers read from the database. On clicking the marker, an infowindow
       pops up with some information about the post and a view post button. Users can click the
