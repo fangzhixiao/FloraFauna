@@ -97,7 +97,6 @@ class Controller {
   async list(_, {
     sightingType, search, authorId, dateUTC, minTimeUTC, maxTimeUTC,
   }) {
-    console.log('new query');
     const filter = {};
     if (sightingType) filter.sightingType = sightingType;
     if (search) filter.$text = { $search: search };
