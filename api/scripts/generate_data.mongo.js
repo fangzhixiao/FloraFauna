@@ -16,11 +16,11 @@ const uuid = require('uuid');
 const sightingTypes = ['ANIMAL', 'PLANT'];
 const timezones = ['+', '-'];
 
-for (let i = 0; i < 10; i += 1) {
+for (let i = 0; i < 40; i += 1) {
   const randomCreatedDate = (new Date()) - Math.floor(Math.random() * 60 * 1000 * 60 * 60 * 24);
   const spottedUTC = DateTime.fromJSDate(new Date(randomCreatedDate)).setZone("UTC").toISO();
 
-  const randomLat = Math.random() * 360 - 180;
+  const randomLat = Math.random() * 140 - 70;
   const randomLon = Math.random() * 360 - 180;
   const location = { lat: randomLat, lng: randomLon };
 

@@ -1,5 +1,4 @@
 const Router = require('express');
-const bodyParser = require('body-parser');
 const { OAuth2Client } = require('google-auth-library');
 const jwt = require('jsonwebtoken');
 const { AuthenticationError } = require('apollo-server-express');
@@ -16,7 +15,7 @@ if (!JWT_SECRET) {
 }
 
 const routes = new Router(); // new router that will be exported
-routes.use(bodyParser.json()); // middleware; only JSON doc in endpoints
+routes.use(Router.json()); // middleware; only JSON doc in endpoints
 
 // allows credentials in cookies to be sent for cross origin requests
 const origin = process.env.UI_SERVER_ORIGIN || 'http://localhost:8000';
