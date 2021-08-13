@@ -14,10 +14,11 @@ import SignInNavItem from './SignInNavItem.jsx';
 import Contents from './Contents.jsx';
 import Search from './Search.jsx';
 import UserContext from './UserContext.js';
+import PostContext from './PostContext.js';
 import graphQLFetch from './graphQLFetch.js';
 import store from './store.js';
 
-function NavBar({ user, onUserChange }) {
+function NavBar({ user, onUserChange, onPostsChange }) {
   return (
     <Navbar fluid>
       <Navbar.Header>
@@ -33,8 +34,8 @@ function NavBar({ user, onUserChange }) {
         </Navbar.Form>
       </Col>
       <Nav pullRight>
-        <PostAddNavItem user={user} />
-        <SignInNavItem user={user} onUserChange={onUserChange} />
+        <PostAddNavItem user={user} onPostsChange={onPostsChange} />
+        <SignInNavItem user={user} onUserChange={onUserChange} onPostsChange={onPostsChange} />
 
         <NavDropdown
           id="user-dropdown"
@@ -63,8 +64,16 @@ export default class Page extends React.Component {
     super(props);
     const user = store.userData ? store.userData.user : null;
     delete store.userData;
-    this.state = { user };
+
     this.onUserChange = this.onUserChange.bind(this);
+    this.onPostsChange = this.onPostsChange.bind(this);
+
+    this.state = {
+      user,
+      refresh: false,
+      changeRefresh: this.onPostsChange,
+    };
+
   }
 
   async componentDidMount() {
@@ -79,15 +88,23 @@ export default class Page extends React.Component {
     this.setState({ user });
   }
 
+
+  onPostsChange(refresh) {
+    this.setState({ refresh });
+  }
+
   render() {
-    const { user } = this.state;
+    const { user, refresh, changeRefresh } = this.state;
+    const postContext = { refresh, changeRefresh };
     if (user == null) return null;
     return (
       <div>
-        <NavBar user={user} onUserChange={this.onUserChange} />
+        <NavBar user={user} onUserChange={this.onUserChange} onPostsChange={this.onPostsChange} />
         <Grid fluid>
           <UserContext.Provider value={user}>
-            <Contents />
+            <PostContext.Provider value={postContext}>
+              <Contents />
+            </PostContext.Provider>
           </UserContext.Provider>
         </Grid>
       </div>

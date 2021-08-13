@@ -7,6 +7,7 @@ import store from './store.js';
 import PostSightingFilter from './PostSightingFilter.jsx';
 import withToast from './withToast.jsx';
 import PostMap from './PostMap.jsx';
+import PostContext from './PostContext.js';
 
 const TIME_INTERVALS = new Map();
 TIME_INTERVALS.set('Early AM', { minTimeUTC: '00:00:00', maxTimeUTC: '05:59:59' });
@@ -65,7 +66,6 @@ class PostMapWrapper extends React.Component {
   }`;
 
     const data = await graphQLFetch(query, vars, showError);
-    console.log(data);
     return data;
   }
 
@@ -76,10 +76,9 @@ class PostMapWrapper extends React.Component {
 
     this.state = {
       posts,
-      refresh: false,
     };
 
-    this.onClick = this.onClick.bind(this);
+    // this.onClick = this.onClick.bind(this);
   }
 
   componentDidMount() {
@@ -96,17 +95,18 @@ class PostMapWrapper extends React.Component {
     if (prevSearch !== search || prevId !== id) {
       this.loadData();
     }
-    const { refresh } = this.state;
+    const { refresh, changeRefresh } = this.context;
     if (refresh === true) {
       this.loadData();
-      // eslint-disable-next-line react/no-did-update-set-state
-      this.setState({ refresh: false });
+      changeRefresh(false);
+      // // eslint-disable-next-line react/no-did-update-set-state
+      // this.setState({ refresh: false });
     }
   }
 
-  onClick() {
-    this.setState({ refresh: true });
-  }
+  // onClick() {
+  //   this.setState({ refresh: true });
+  // }
 
   async loadData() {
     const { location: { search }, match, showError } = this.props;
@@ -134,9 +134,9 @@ class PostMapWrapper extends React.Component {
             </Panel.Body>
           </Panel>
         </div>
-        <div>
-          <Button onClick={this.onClick}>Refresh</Button>
-        </div>
+        {/* <div> */}
+        {/*  <Button onClick={this.onClick}>Refresh</Button> */}
+        {/* </div> */}
         <div>
           <PostMap posts={posts} />
         </div>
@@ -146,6 +146,7 @@ class PostMapWrapper extends React.Component {
   }
 }
 
-const PostMapWithToast = withToast(PostMapWrapper);
-PostMapWithToast.fetchData = PostMapWrapper.fetchData;
-export default PostMapWithToast;
+PostMapWrapper.contextType = PostContext;
+const PostMapWrapperWithToast = withToast(PostMapWrapper);
+PostMapWrapperWithToast.fetchData = PostMapWrapper.fetchData;
+export default PostMapWrapperWithToast;

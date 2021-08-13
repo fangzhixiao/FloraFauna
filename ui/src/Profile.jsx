@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   Button, Modal,
-  Col, Panel, Overlay, Popover, Glyphicon,
+  Col, Panel, Glyphicon,
 } from 'react-bootstrap';
 import withToast from './withToast.jsx';
 import graphQLFetch from './graphQLFetch.js';
@@ -75,10 +75,12 @@ class Profile extends React.Component {
     }`;
 
     const { posts, showAlert } = this.state;
+    const { onPostsChange } = this.props;
     const { id, title } = posts[index];
     if (showAlert === 'block') this.setState('none');
     const data = await graphQLFetch(query, { id }, this.showError);
     if (data && data.postDelete) {
+      onPostsChange(true);
       this.setState((prevState) => {
         const newList = [...prevState.posts];
         newList.splice(index, 1);
@@ -99,7 +101,6 @@ class Profile extends React.Component {
         </span>
       );
       this.showSuccess(undoMessage);
-      // TODO post deletes successfully and list displays successfully, but toast isn't popping up?
     } else {
       await this.loadData();
     }
@@ -112,6 +113,8 @@ class Profile extends React.Component {
     }`;
     const data = await graphQLFetch(query, { id }, this.showError);
     if (data) {
+      const {onPostsChange} = this.props;
+      onPostsChange(true);
       this.showSuccess(`Post ${id}:${title} restored successfully.`);
       await this.loadData();
     }
@@ -153,7 +156,7 @@ class Profile extends React.Component {
   render() {
     const { posts, showing } = this.state;
     if (posts == null) return null;
-    const user = this.context;
+    // const user = this.context;
     const { showAlert, alertColor, alertMessage } = this.state;
 
 
@@ -166,27 +169,30 @@ class Profile extends React.Component {
         <Modal keyboard show={showing} onHide={this.hideModal} bsSize="lg">
           <Modal.Header closeButton>
             <Modal.Title>
-              {user.givenName}
-              {' '}
               Profile
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Col>
-              <Panel>
-                <Panel.Heading>
-                  <Panel.Title>User Info</Panel.Title>
-                </Panel.Heading>
-                <Panel.Body>
-                  Name:
-                  {' '}
-                  {user.givenName}
-                  <br />
-                  Email:
-                  {' '}
-                  {user.email}
-                </Panel.Body>
-              </Panel>
+              <UserContext.Consumer>
+                {user => (
+                  <Panel>
+                    <Panel.Heading>
+                      <Panel.Title>User Info</Panel.Title>
+                    </Panel.Heading>
+                    <Panel.Body>
+                      Name:
+                      {' '}
+                      {user.givenName}
+                      <br />
+                      Email:
+                      {' '}
+                      {user.email}
+                    </Panel.Body>
+                  </Panel>
+                )}
+              </UserContext.Consumer>
+
             </Col>
             <Col>
               <PostTable
@@ -195,7 +201,7 @@ class Profile extends React.Component {
               />
             </Col>
           </Modal.Body>
-          <Modal.Footer >
+          <Modal.Footer>
             <div
               className={showAlert}
               style={{
@@ -217,6 +223,6 @@ class Profile extends React.Component {
   }
 }
 
-Profile.contextType = UserContext;
+// Profile.contextType = UserContext;
 const ProfileWithToast = withToast(Profile);
 export default ProfileWithToast;

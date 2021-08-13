@@ -3,10 +3,10 @@ import {
   NavItem, Glyphicon, Modal, Form, FormGroup, FormControl, ControlLabel,
   Button, ButtonToolbar, Tooltip, OverlayTrigger,
 } from 'react-bootstrap';
+import { DateTime } from 'luxon';
 import graphQLFetch from './graphQLFetch.js';
 import withToast from './withToast.jsx';
 import DateInput from './DateInput.jsx';
-import { DateTime } from 'luxon';
 
 // This function wraps file reader in a promise and translates the file into base64 for upload.
 function readFile(file) {
@@ -135,6 +135,8 @@ class PostAddNavItem extends React.Component {
     const { showSuccess, showError } = this.props;
     const data = await graphQLFetch(query, { post }, showError);
     if (data) {
+      const { onPostsChange } = this.props;
+      onPostsChange(true); // set refresh
       this.hideModal();
       showSuccess('Added new post successfully');
     }
