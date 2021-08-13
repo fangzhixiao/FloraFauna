@@ -6,7 +6,7 @@ const about = require('./about.js');
 const auth = require('./auth.js');
 const db = require('./db.js');
 const post = require('./post.js');
-const { mustBeSignedIn } = require('./auth');
+const { mustBeSignedIn } = require('./auth.js');
 
 function getContext({ req }) {
   const user = auth.getUser(req);
@@ -33,7 +33,6 @@ async function installHandler(app) {
     s3Client: new s3.S3Client({ region: 'us-west-2' }),
   });
 
-  // TODO: wrap appropriate functions in mustbeSignedIn
   const resolvers = {
     Query: {
       about: about.getMessage,
@@ -43,10 +42,10 @@ async function installHandler(app) {
     },
     Mutation: {
       setAboutMessage: about.setMessage,
-      postAdd: postController.add,
-      postUpdate: postController.update,
-      postDelete: postController.remove,
-      postRestore: postController.restore,
+      postAdd: mustBeSignedIn(postController.add),
+      postUpdate: mustBeSignedIn(postController.update),
+      postDelete: mustBeSignedIn(postController.remove),
+      postRestore: mustBeSignedIn(postController.restore),
     },
   };
 
