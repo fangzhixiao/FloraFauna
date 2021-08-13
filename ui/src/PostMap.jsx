@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import {Button, ModalHeader, ModalTitle, OverlayTrigger} from 'react-bootstrap';
+import React from 'react';
+import { Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import {
   Marker, InfoWindow, GoogleMap, useLoadScript,
 } from '@react-google-maps/api';
@@ -10,58 +10,21 @@ import usePlacesAutocomplete, {
   getGeocode,
   getLatLng,
 } from 'use-places-autocomplete';
+import { DateTime } from 'luxon';
 import withToast from './withToast.jsx';
 import mapStyles from './mapStyles.jsx';
-import Tooltip from "react-bootstrap/lib/Tooltip";
-import Modal from "react-bootstrap/lib/Modal";
-
+import Post from './Post.jsx';
 
 const div1 = {
-  width: "300px",
-  margin: "30px ",
-  backgroundColor: "#F0F8FF",
-  minHeight: "200px",
-  boxSizing: "border-box"
+  align: 'center',
+  width: '150px',
+  margin: '10px ',
+  backgroundColor: '#F0F8FF',
+  minHeight: '80px',
+  boxSizing: 'border-box',
 };
 
-const btn1 = {
-  backgroundColor: "#F0F8FF",
-  padding : "20px",
-  fontsize : "28px"
-}
-
-
-const postsDB = [
-  {
-    title: 'A Turkey',
-    authorId: 1,
-    id: 123,
-    spottedUTC: "2017-05-15T09:10:23Z",
-    createdUTC: "2017-08-15T09:10:23Z",
-    timezone: "UTC+9",
-    location: {
-      lat: 42.341146910114595,
-      lng: -71.0917251720235,
-    },
-    sightingType: 'ANIMAL',
-    description: 'I saw a turkey',
-  },
-  {
-    title: 'A Poppy',
-    id: 345,
-    authorId: 2,
-    spottedUTC: "2018-01-15T09:10:23Z",
-    createdUTC: "2019-08-15T09:10:23Z",
-    timezone: "UTC-8",
-    location: {
-      lat: 49.341146910114595,
-      lng: -79.0917251720235,
-    },
-    sightingType: 'PLANT',
-    description: 'I saw a poppy',
-  },
-];
-
+// determines map size
 const containerStyle = {
   width: '80vw',
   height: '80vh',
@@ -83,20 +46,7 @@ const options = {
 
 
 function PostMap(props) {
-
-
-  const [data,setData] = React.useState([]);
-
-  const {posts} = props;
-
-    React.useEffect(() => {
-        const fetchData =  () => {
-          if(posts.postList) {
-            setData(posts.postList);
-          }
-        };
-        fetchData();
-    }, [posts]);
+  const { posts } = props;
 
   const { isLoaded, loadError } = useLoadScript({
     id: 'google-map-script',
@@ -106,22 +56,16 @@ function PostMap(props) {
   });
 
   const [activeMarker, setActiveMarker] = React.useState([]);
-  // const [selected, setSelected] = React.useState(null);
 
   const mapRef = React.useRef();
   const onMapLoad = React.useCallback((map) => {
     mapRef.current = map;
   }, []);
 
-  const renderTooltip = (props) => (
-      <Tooltip id="button-tooltip" {...props}>
-        Simple tooltip
-      </Tooltip>
-  );
-
   const panTo = React.useCallback(({ lat, lng }) => {
     mapRef.current.panTo({ lat, lng });
-    mapRef.current.setZoom(16);
+    //const zoom = mapRef.current.getZoom();
+    //mapRef.current.setZoom(10);
   }, []);
 
 
@@ -130,18 +74,26 @@ function PostMap(props) {
   }, []);
 
   if (loadError) return 'Error';
-  if (!isLoaded) return 'loding';
-
-
+  if (!isLoaded) return 'Loading';
 
 
   const handleActiveMarker = (marker) => {
-    if (marker === activeMarker) {
+    if (activeMarker == null) {
+      return;
+    } if (marker.id === activeMarker.id) {
       return;
     }
-
-    setActiveMarker(marker);
+    setActiveMarker(marker.id);
     panTo(marker.position);
+  };
+
+  const convertDate = (date, timezone) => {
+    const timeZone = timezone;
+    const spottedDateTime = DateTime.fromISO(new Date(date).toISOString(),
+      { zone: 'UTC' })
+      .setZone(timeZone);
+
+    return spottedDateTime.toLocaleString(DateTime.DATETIME_MED);
   };
 
 
@@ -154,9 +106,6 @@ function PostMap(props) {
         <div>
           <Locate panTo={panTo} />
         </div>
-
-
-
 
 
         <div>
@@ -172,42 +121,52 @@ function PostMap(props) {
           onClick={onMapClick}
           options={options}
         >
-                    {postsDB.map(({ id, title,location,sightingType, description
-                    ,timezone,spottedUTC,createdUTC,authorId}) => (
-                        <Marker
-                            key={id}
-                            position={location}
-                            onClick={() => handleActiveMarker(id)}
+
+          {console.log('MAP HERE')}
+          {console.log(posts)}
+          {
+            posts.postList && posts.postList.map(post => (
+              <Marker
+                key={post.id}
+                position={post.location}
+                title={post.title}
+                onClick={() => handleActiveMarker({ id: post.id, position: post.location })}
+              >
+                {activeMarker === post.id ? (
+                  <InfoWindow onCloseClick={() => setActiveMarker([])}>
+                    <div style={div1}>
+                      <div id="title">
+                        <b>{post.title}</b>
+                      </div>
+                      <div id="sightingType">
+                        {post.sightingType}
+                      </div>
+                      <div id="spottedUTC">
+                        {convertDate(post.spottedUTC, post.timezone)}
+                      </div>
+                      <div>
+                        Address: TBD
+                        {/* Todo : get address based on location to get address */}
+                      </div>
+                      <div align="center">
+                        <br />
+                        <OverlayTrigger
+                          placement="left"
+                          delayShow={1000}
+                          overlay={<Tooltip id="details">details</Tooltip>}
                         >
-                            {activeMarker === id ? (
-                                <InfoWindow onCloseClick={() => setActiveMarker(null)}>
-                                    <div style={div1}>
-                                      <div>Title: {title}</div>
-                                      <div>sightingType: {title}</div>
-                                      <div>timezone:{timezone}</div>
-                                      <div>
-                                        address: Todo : get address based on location to get address
-                                      </div>
-                                    <div>
-                                      <OverlayTrigger
-                                          placement="left"
-                                          delayShow={1000}
-                                          overlay={<Tooltip id="details">details</Tooltip>}
-                                      >
-                                        <Button style={btn1}>Click to view</Button>
+                          <Post post={post} />
 
-                                      </OverlayTrigger>
-                                    </div>
+                        </OverlayTrigger>
+                        <br />
+                      </div>
 
-                                    </div>
-                                </InfoWindow>
-                            ) : null}
-                        </Marker>
-                    ))}
-
-            >
-
-
+                    </div>
+                  </InfoWindow>
+                ) : null}
+              </Marker>
+            ))
+          }
 
         </GoogleMap>
       </div>
@@ -222,7 +181,6 @@ function PostMap(props) {
 function Locate({ panTo }) {
   return (
     <Button
-      style={{ fontSize: 50 }}
       onClick={() => {
         navigator.geolocation.getCurrentPosition(
           (position) => {
@@ -288,9 +246,9 @@ function Search({ panTo }) {
           >
 
             {status === 'OK'
-                        && data.map(({ id, description }) => (
-                          <ComboboxOption key={id} value={description} />
-                        ))}
+            && data.map(({ id, description }) => (
+              <ComboboxOption key={id} value={description} />
+            ))}
           </ComboboxList>
         </ComboboxPopover>
       </Combobox>

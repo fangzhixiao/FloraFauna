@@ -1,12 +1,14 @@
 import React from 'react';
 import {
-  NavItem, Glyphicon, Modal, Form, FormGroup, FormControl, ControlLabel, Col,
-  Button, ButtonToolbar, Tooltip, OverlayTrigger, Alert,
+  NavItem, Glyphicon, Modal, Form, FormGroup, FormControl, ControlLabel,
+  Button, ButtonToolbar, Tooltip, OverlayTrigger,
 } from 'react-bootstrap';
 import graphQLFetch from './graphQLFetch.js';
-import DateInput from './DateInput.jsx';
 import withToast from './withToast.jsx';
+import DateInput from './DateInput.jsx';
+import { DateTime } from 'luxon';
 
+// This function wraps file reader in a promise and translates the file into base64 for upload.
 function readFile(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -28,37 +30,31 @@ function readFile(file) {
 class PostAddNavItem extends React.Component {
   constructor(props) {
     super(props);
+    const dateTimeObj = DateTime.now();
+    const timezone = `UTC${dateTimeObj.offset / 60}`;
+    const date = dateTimeObj.toUTC().toString();
     this.state = {
       showing: false,
       uploadedImages: [],
-      invalidFields: {},
-      showingValidation: false,
-      date: '',
+      date,
+      timezone,
     };
 
     this.showModal = this.showModal.bind(this);
     this.hideModal = this.hideModal.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.dismissValidation = this.dismissValidation.bind(this);
-    this.showValidation = this.showValidation.bind(this);
-    this.onValidityChange = this.onValidityChange.bind(this);
     this.onChangeDate = this.onChangeDate.bind(this);
     this.onFileChange = this.onFileChange.bind(this);
   }
 
-  onValidityChange(event, valid) {
-    const { name } = event.target;
-    this.setState((prevState) => {
-      const invalidFields = { ...prevState.invalidFields, [name]: !valid };
-      if (valid) delete invalidFields[name];
-      return { invalidFields };
-    });
-  }
-
-  onChangeDate(e, dateVal) {
-    const { value: textValue } = e.target;
-    const value = dateVal === undefined ? textValue : dateVal;
-    this.setState({ date: value });
+  onChangeDate(e) {
+    // e is a Moment object so just format it.
+    const formattedDate = e.format('MMMM DD YYYY, HH:mm:ss');
+    const dateISO = (new Date(formattedDate)).toISOString();
+    const dateTimeObj = DateTime.fromISO(dateISO);
+    const timezone = `UTC${dateTimeObj.offset / 60}`;
+    const date = dateTimeObj.toUTC().toString();
+    this.setState({ date, timezone });
   }
 
   // adds each uploaded file to the list of files
@@ -69,65 +65,49 @@ class PostAddNavItem extends React.Component {
     this.setState({ uploadedImages: [...uploadedImages, files[0]] });
   }
 
-  showValidation() {
-    this.setState({ showingValidation: true });
-  }
-
-  dismissValidation() {
-    this.setState({ showingValidation: false });
-  }
-
   showModal() {
-    this.setState({ showing: true });
+    const dateTimeObj = DateTime.now();
+    const timezone = `UTC${dateTimeObj.offset / 60}`;
+    const date = dateTimeObj.toUTC().toString();
+    this.setState({ showing: true, timezone, date });
   }
 
   hideModal() {
-    this.setState({ showing: false });
+    this.setState({ showing: false, uploadedImages: [] });
   }
 
-  // TODO: encode images into base64 (async) and push to db
-  // https://pqina.nl/blog/convert-a-file-to-a-base64-string-with-javascript/
+  // Runs list of files through base64 reader (readFile()); returns array of translated files
   // eslint-disable-next-line consistent-return
   async handleUpload() {
     const { uploadedImages } = this.state;
     const arr = [];
     if (uploadedImages != null || uploadedImages.length >= 1) {
-      // await Promise.all(uploadedImages.map(async (image) => {
-      //   const encoded = await readFile(image);
-      //   console.log(encoded);
-      //   this.setState({ imageBaseEncoded: [...imageBaseEncoded, encoded] });
-      // }));
       // eslint-disable-next-line no-restricted-syntax
       for (const image of uploadedImages) {
         // eslint-disable-next-line no-await-in-loop
         const encoded = await readFile(image);
-        arr.push(encoded);
-        // this.setState({ imageBaseEncoded: [...imageBaseEncoded, encoded] });
+        if (encoded) {
+          arr.push(encoded);
+        }
       }
-      console.log(arr);
       return arr;
     }
   }
 
-  // TODO: having problems with images pushing -- could not load credentials from any providers
-  // Maybe have to config it:
-  // https://stackoverflow.com/questions/56152697/could-not-load-credentials-from-any-providers-when-attempting-upload-to-aws-s3
+  // Handles submission of inputs for adding a new post.
   async handleSubmit(e) {
     e.preventDefault();
-    this.showValidation();
-    const { invalidFields, date, imageBaseEncoded } = this.state;
-    if (Object.keys(invalidFields).length !== 0) return; // keep from submitting if validation fails
+    const { date, timezone } = this.state;
 
-    const encodedImages = await this.handleUpload();
+    const encodedImages = await this.handleUpload(); // base64 encoded images
 
-    // TODO replace hardcoded ID with actual user.id
     const form = document.forms.postAdd;
     const post = {
       title: form.title.value,
       sightingType: form.sightingType.value,
-      authorId: 1,
-      created: new Date(new Date().getTime()),
-      spotted: date,
+      authorId: 1, // TODO replace hardcoded ID with actual user.id
+      spottedUTC: date,
+      timezone,
       location: {
         lat: form.latitude.value,
         lng: form.longitude.value,
@@ -136,17 +116,15 @@ class PostAddNavItem extends React.Component {
       description: form.description.value,
     };
 
-
-    console.log(post.images);
-
     const query = `mutation postAdd($post: PostInput!) {
       postAdd(post: $post) {
         id
         title
         sightingType
         authorId
-        created
-        spotted
+        createdUTC
+        spottedUTC
+        timezone
         imageUrls
         description
         location {
@@ -163,21 +141,10 @@ class PostAddNavItem extends React.Component {
   }
 
   render() {
-    const { showing } = this.state;
+    const { showing, date } = this.state;
     const { user } = this.props;
 
-    const { invalidFields, showingValidation } = this.state;
-    let validationMessage;
-
     const { uploadedImages } = this.state;
-
-    if (Object.keys(invalidFields).length !== 0 && showingValidation) {
-      validationMessage = (
-        <Alert bsStyle="danger" onDismiss={this.dismissValidation}>
-          Please correct invalid fields before submitting.
-        </Alert>
-      );
-    }
 
     return (
       <React.Fragment>
@@ -185,7 +152,7 @@ class PostAddNavItem extends React.Component {
           <OverlayTrigger
             placement="left"
             delayShow={1000}
-            overlay={<Tooltip id="create-issue">Create Issue</Tooltip>}
+            overlay={<Tooltip id="create-issue">New Sighting</Tooltip>}
           >
             <Glyphicon glyph="plus" />
           </OverlayTrigger>
@@ -235,18 +202,14 @@ class PostAddNavItem extends React.Component {
                 <ControlLabel>Longitude</ControlLabel>
                 <FormControl name="longitude" />
               </FormGroup>
-              <FormGroup validationState={invalidFields.spotted ? 'error' : null}>
+              <FormGroup>
                 <ControlLabel>Date Spotted</ControlLabel>
-                <FormControl
-                  componentClass={DateInput}
-                  onValidityChange={this.onValidityChange}
-                  name="spotted"
+                <DateInput
+                  value={date}
+                  input={false}
                   onChange={this.onChangeDate}
                 />
                 <FormControl.Feedback />
-              </FormGroup>
-              <FormGroup>
-                <Col smOffset={3} sm={9}>{validationMessage}</Col>
               </FormGroup>
             </Form>
           </Modal.Body>
