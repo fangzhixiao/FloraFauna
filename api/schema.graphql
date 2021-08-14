@@ -11,13 +11,13 @@ type Location {
 }
 
 type Comment {
-    commenter: String!
+    commenterId: String!
     content:String!
     createdUTC: String!
 }
 
 input CommentInput {
-    commenter: String!
+    commenterId: String!
     content:String!
     createdUTC: String!
 }
@@ -27,7 +27,7 @@ type Post {
     id: String!
     title: String!
     sightingType: SightingType!
-    authorId: Int!
+    authorId: String!
     createdUTC: String!
     spottedUTC: String!
     timezone: String!
@@ -59,7 +59,7 @@ input UserInput {
 input PostInput {
     title: String!
     sightingType: SightingType!
-    authorId: Int!
+    authorId: String!
     spottedUTC: String!
     timezone: String!
     location: LocationInput!
@@ -81,23 +81,23 @@ input PostUpdateInput {
 
 ##### Top level declarations
 # Query and Mutation define the entry point of every GraphQL query
+# TODO redefine user of query with user(id: String!) when appropriate -- front end will need to update for this change.
 type Query {
     about: String!
     postList(
         sightingType: SightingType
         search: String
-        authorId: Int
+        authorId: String
         dateUTC: String
         minTimeUTC: String
         maxTimeUTC: String
     ): [Post!]!
     post(id: String!): Post!
-    user: User!
+    user(id:String): User!
 }
 
 type Mutation {
     setAboutMessage(message: String!): String
-    userFind(user: UserInput): User!
     postAdd(post: PostInput!): Post!
     postUpdate(id: String!, changes: PostUpdateInput!): Post!
     postDelete(id: String!): Boolean!

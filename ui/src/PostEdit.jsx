@@ -36,9 +36,6 @@ class PostEdit extends React.Component {
         }
         imageUrls
         description
-        comments {
-        commenter content createdUTC
-      }
       }
     }`;
 
@@ -133,9 +130,6 @@ class PostEdit extends React.Component {
          }
         imageUrls
         description
-        comments {
-        commenter content createdUTC
-      }
       }
     }`;
 

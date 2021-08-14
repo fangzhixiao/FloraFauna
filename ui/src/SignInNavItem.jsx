@@ -63,7 +63,8 @@ class SignInNavItem extends React.Component {
       const {
         signedIn, givenName, name, email,
       } = result;
-      console.log(`Result from Google authentication ${result}`);
+
+      console.log(`Result from Google authentication ${JSON.stringify(result)}`);
       const { onUserChange } = this.props;
       onUserChange({
         signedIn, givenName, name, email,
