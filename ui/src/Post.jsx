@@ -72,7 +72,7 @@ class Post extends React.Component {
         imageUrls
         description 
         comments {
-          commenter content createdUTC
+          commenterId content createdUTC
           }
         }
       }`;
@@ -109,7 +109,7 @@ class Post extends React.Component {
     const user = this.context;
 
     const comment = {
-      commenter: user.givenName,
+      commenterId: user.givenName, //TODO change this to user id or name
       content: newComment,
       createdUTC: new Date(new Date().getTime()),
     };
@@ -129,7 +129,7 @@ class Post extends React.Component {
       ) {
         id
         comments {
-          commenter content createdUTC
+          commenterId content createdUTC
         }        
       }
     }`;
@@ -200,19 +200,19 @@ class Post extends React.Component {
       }
 
       const commentList = post.comments.map((comment) => {
-        const { commenter, createdUTC, content } = comment;
+        const { commenterId, createdUTC, content } = comment;
         const createdDateTime = DateTime.fromISO((new Date(createdUTC)).toISOString(),
           { zone: 'UTC' });
         const createdString = createdDateTime.toLocaleString(DateTime.DATETIME_MED);
         return (
-          <ListGroupItem key={`${commenter}${createdUTC}`}>
+          <ListGroupItem key={`${commenterId}${createdUTC}`}>
             <Panel>
               <Panel.Body>
                 <div align="right">
                   {createdString}
                 </div>
                 <div align="left">
-                  {commenter}
+                  {commenterId}
                   <br />
                   {content}
                 </div>
