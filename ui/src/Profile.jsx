@@ -113,7 +113,7 @@ class Profile extends React.Component {
     }`;
     const data = await graphQLFetch(query, { id }, this.showError);
     if (data) {
-      const {onPostsChange} = this.props;
+      const { onPostsChange } = this.props;
       onPostsChange(true);
       this.showSuccess(`Post ${id}:${title} restored successfully.`);
       await this.loadData();

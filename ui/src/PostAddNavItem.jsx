@@ -206,11 +206,15 @@ class PostAddNavItem extends React.Component {
               </FormGroup>
               <FormGroup>
                 <ControlLabel>Date Spotted</ControlLabel>
-                <DateInput
-                  value={date}
-                  input={false}
-                  onChange={this.onChangeDate}
-                />
+                <div align="center">
+                  <DateInput
+                    value={date}
+                    input={false}
+                    onChange={this.onChangeDate}
+                    align="center"
+                  />
+                </div>
+
                 <FormControl.Feedback />
               </FormGroup>
             </Form>

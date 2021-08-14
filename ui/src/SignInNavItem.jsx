@@ -113,7 +113,7 @@ class SignInNavItem extends React.Component {
         <NavDropdown title={user.givenName} id="user">
           <MenuItem onClick={this.signOut}>Sign Out</MenuItem>
           <UserContext.Provider value={user}>
-            <Profile user={user} onPostsChange={onPostsChange}/>
+            <Profile user={user} onPostsChange={onPostsChange} />
           </UserContext.Provider>
         </NavDropdown>
       );

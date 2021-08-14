@@ -6,7 +6,7 @@ import {
   MenuItem,
   Glyphicon,
   Grid,
-  Col, NavItem,
+  Col,
 } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import PostAddNavItem from './PostAddNavItem.jsx';
@@ -21,14 +21,14 @@ import store from './store.js';
 function NavBar({ user, onUserChange, onPostsChange }) {
   return (
     <Navbar fluid>
-      <Navbar.Header>
-        <LinkContainer to="/posts">
-          <NavItem>
+      <Col xs={7} sm={6} md={5} lg={4}>
+        <Navbar.Header>
+          <LinkContainer to="/posts">
             <Navbar.Brand>Flora and Fauna Sighting</Navbar.Brand>
-          </NavItem>
-        </LinkContainer>
-      </Navbar.Header>
-      <Col sm={5}>
+          </LinkContainer>
+        </Navbar.Header>
+      </Col>
+      <Col xs={7} sm={6} md={5} lg={4}>
         <Navbar.Form>
           <Search />
         </Navbar.Form>
@@ -73,7 +73,6 @@ export default class Page extends React.Component {
       refresh: false,
       changeRefresh: this.onPostsChange,
     };
-
   }
 
   async componentDidMount() {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Panel, Button } from 'react-bootstrap';
+import { Panel, Col } from 'react-bootstrap';
 import URLSearchParams from 'url-search-params';
 //
 import graphQLFetch from './graphQLFetch.js';
@@ -77,8 +77,6 @@ class PostMapWrapper extends React.Component {
     this.state = {
       posts,
     };
-
-    // this.onClick = this.onClick.bind(this);
   }
 
   componentDidMount() {
@@ -99,14 +97,14 @@ class PostMapWrapper extends React.Component {
     if (refresh === true) {
       this.loadData();
       changeRefresh(false);
-      // // eslint-disable-next-line react/no-did-update-set-state
-      // this.setState({ refresh: false });
     }
   }
 
   // onClick() {
   //   this.setState({ refresh: true });
   // }
+
+
 
   async loadData() {
     const { location: { search }, match, showError } = this.props;
@@ -122,24 +120,31 @@ class PostMapWrapper extends React.Component {
     const { posts } = this.state;
     if (posts == null) return null;
 
+    const mapContain = {
+      width: '75%',
+      height: '75%',
+    }
+
     return (
       <React.Fragment>
-        <div align="center">
-          <Panel>
-            <Panel.Heading>
-              <Panel.Title toggle>Filter</Panel.Title>
-            </Panel.Heading>
-            <Panel.Body collapsible>
-              <PostSightingFilter urlBase="/posts" />
-            </Panel.Body>
-          </Panel>
-        </div>
-        {/* <div> */}
-        {/*  <Button onClick={this.onClick}>Refresh</Button> */}
-        {/* </div> */}
-        <div>
-          <PostMap posts={posts} />
-        </div>
+        <Col xs={6} sm={5} md={4} lg={3}>
+          <div align="center">
+            <Panel>
+              <Panel.Heading>
+                <Panel.Title>Filter</Panel.Title>
+              </Panel.Heading>
+              <Panel.Body>
+                <PostSightingFilter urlBase="/posts" />
+              </Panel.Body>
+            </Panel>
+          </div>
+        </Col>
+        <Col xs={6} sm={5} md={4} lg={3}>
+          <div style={mapContain}>
+            <PostMap posts={posts} />
+          </div>
+
+        </Col>
 
       </React.Fragment>
     );
