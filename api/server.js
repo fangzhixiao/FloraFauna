@@ -9,7 +9,6 @@ const app = express();
 app.use(express.json({limit: '50mb'}));
 app.use(express.urlencoded({limit: '50mb'}));
 app.use(cookieParser());
-app.use('/auth', auth.routes);
 
 const port = process.env.API_SERVER_PORT || 3000;
 

@@ -59,7 +59,7 @@ input UserInput {
 input PostInput {
     title: String!
     sightingType: SightingType!
-    authorId: String!
+    authorId: String
     spottedUTC: String!
     timezone: String!
     location: LocationInput!
@@ -92,7 +92,7 @@ type Query {
         maxTimeUTC: String
     ): [Post!]!
     post(id: String!): Post!
-    user(id: String): User!
+    user(id: String!): User!
 }
 
 type Mutation {

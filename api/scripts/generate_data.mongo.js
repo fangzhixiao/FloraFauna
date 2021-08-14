@@ -9,12 +9,16 @@
 
 /* global db print */
 /* eslint no-restricted-globals: "off" */
-const { DateTime, Settings} = require('luxon');
+const { DateTime } = require('luxon');
 const uuid = require('uuid');
 
 // Settings.defaultZone = 'utc';
 const sightingTypes = ['ANIMAL', 'PLANT'];
 const timezones = ['+', '-'];
+const userIds = [];
+for (let i = 0; i < 5; i+= 1) {
+  userIds.push(uuid.v4());
+}
 
 for (let i = 0; i < 40; i += 1) {
   const randomCreatedDate = (new Date()) - Math.floor(Math.random() * 60 * 1000 * 60 * 60 * 24);
@@ -25,7 +29,7 @@ for (let i = 0; i < 40; i += 1) {
   const location = { lat: randomLat, lng: randomLon };
 
   const id = uuid.v4();
-  const authorId = Math.floor(Math.random() * 50);
+  const authorId = userIds[Math.floor(Math.random() * 5)];
   const sightingType = sightingTypes[Math.floor(Math.random() * 2)];
   const title = `Lorem ipsum dolor sit amet, ${i}`;
   const description = 'Lorem ipsun dolor sit amet';
