@@ -54,7 +54,7 @@ function NavBar({ user, onUserChange, onPostsChange }) {
 export default class Page extends React.Component {
   static async fetchData(cookie) {
     const query = `query { user {
-      signedIn givenName email
+      id signedIn givenName email
     }}`;
     const data = await graphQLFetch(query, null, null, cookie);
     return data;

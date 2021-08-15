@@ -33,6 +33,7 @@ class Profile extends React.Component {
 
   componentDidMount() {
     const { posts } = this.state;
+
     if (posts == null) this.loadData();
   }
 
@@ -61,7 +62,12 @@ class Profile extends React.Component {
       }
     }`;
 
-    const data = await graphQLFetch(query, {}, this.showError);
+    const user = this.context;
+    const { id } = user;
+    console.log(user);
+    console.log(id);
+
+    const data = await graphQLFetch(query, { authorId: id }, this.showError);
     if (data) {
       this.setState({
         posts: data.postList,
@@ -156,7 +162,7 @@ class Profile extends React.Component {
   render() {
     const { posts, showing } = this.state;
     if (posts == null) return null;
-    // const user = this.context;
+    const user = this.context;
     const { showAlert, alertColor, alertMessage } = this.state;
 
 
@@ -174,25 +180,20 @@ class Profile extends React.Component {
           </Modal.Header>
           <Modal.Body>
             <Col>
-              <UserContext.Consumer>
-                {user => (
-                  <Panel>
-                    <Panel.Heading>
-                      <Panel.Title>User Info</Panel.Title>
-                    </Panel.Heading>
-                    <Panel.Body>
-                      Name:
-                      {' '}
-                      {user.givenName}
-                      <br />
-                      Email:
-                      {' '}
-                      {user.email}
-                    </Panel.Body>
-                  </Panel>
-                )}
-              </UserContext.Consumer>
-
+              <Panel>
+                <Panel.Heading>
+                  <Panel.Title>User Info</Panel.Title>
+                </Panel.Heading>
+                <Panel.Body>
+                  Name:
+                  {' '}
+                  {user.givenName}
+                  <br />
+                  Email:
+                  {' '}
+                  {user.email}
+                </Panel.Body>
+              </Panel>
             </Col>
             <Col>
               <PostTable
@@ -223,6 +224,6 @@ class Profile extends React.Component {
   }
 }
 
-// Profile.contextType = UserContext;
+Profile.contextType = UserContext;
 const ProfileWithToast = withToast(Profile);
 export default ProfileWithToast;

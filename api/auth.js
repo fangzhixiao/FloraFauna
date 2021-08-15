@@ -4,6 +4,9 @@ const { OAuth2Client } = require('google-auth-library');
 const jwt = require('jsonwebtoken');
 const { AuthenticationError } = require('apollo-server-express');
 const cors = require('cors');
+const uuid = require('uuid');
+const db = require('./db.js');
+
 
 let { JWT_SECRET } = process.env;
 if (!JWT_SECRET) {
@@ -54,9 +57,20 @@ routes.post('/signin',
     } catch (error) {
       res.status(403).send('Invalid credentials');
     }
-    const { given_name: givenName, name, email } = payload;
+    const { sub: googleId, given_name: givenName, email } = payload;
+
+    const thisDB = await db.connect();
+    let user = await thisDB.collection('users').findOne({ googleId });
+    if (!user) {
+      const userId = uuid.v4();
+      user = Object.assign({}, { googleId, id: userId });
+      await thisDB.collection('users').insertOne(user);
+    }
+
+    const { id } = user;
+
     const credentials = {
-      signedIn: true, givenName, name, email,
+      id, signedIn: true, givenName, email,
     };
 
     const token = jwt.sign(credentials, JWT_SECRET);

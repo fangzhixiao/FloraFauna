@@ -98,6 +98,7 @@ class PostAddNavItem extends React.Component {
   async handleSubmit(e) {
     e.preventDefault();
     const { date, timezone } = this.state;
+    const { user } = this.props;
 
     const encodedImages = await this.handleUpload(); // base64 encoded images
 
@@ -105,7 +106,7 @@ class PostAddNavItem extends React.Component {
     const post = {
       title: form.title.value,
       sightingType: form.sightingType.value,
-      authorId: "1", // TODO replace hardcoded ID with actual user.id
+      authorId: user.id, // TODO replace hardcoded ID with actual user.id
       spottedUTC: date,
       timezone,
       location: {
