@@ -17,7 +17,9 @@ const sightingTypes = ['ANIMAL', 'PLANT'];
 const timezones = ['+', '-'];
 const userIds = [];
 for (let i = 0; i < 5; i+= 1) {
-  userIds.push(uuid.v4());
+  const id = uuid.v4();
+  userIds.push(id);
+  db.users.insertOne({ id, googleId: "test-id" });
 }
 
 for (let i = 0; i < 40; i += 1) {

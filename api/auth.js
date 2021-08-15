@@ -10,13 +10,9 @@ function mustBeSignedIn(resolver) {
   };
 }
 
-function resolveUser(_, args, { user }) {
-  return user;
-}
-
 function getUser(req) {
     const token = req.cookies.jwt;
-    if (!token) return { signedIn: false };
+    if (!token) return { signedIn: false , id: '' };
     try {
         const credentials = jwt.verify(token, JWT_SECRET);
         return credentials;
@@ -25,5 +21,5 @@ function getUser(req) {
     }
 }
 module.exports = {
-  mustBeSignedIn, resolveUser, getUser
+  mustBeSignedIn, getUser
 };

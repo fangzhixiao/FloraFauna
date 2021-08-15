@@ -5,6 +5,10 @@ class Controller {
     constructor(props) {
         this.db = props.db;
         this.jwtSecret = props.jwtSecret;
+        this.signIn = this.signIn.bind(this);
+        this.signOut = this.signOut.bind(this);
+        this.getUserByToken = this.getUserByToken.bind(this);
+        this.getUserById = this.getUserById.bind(this);
     }
 
     async signIn(req, res) {
@@ -30,21 +34,22 @@ class Controller {
             return;
         }
 
-        const { given_name: givenName, email, googleId: sub } = payload;
-        let user = await this.db.collection('users').findOne({ googleId });
+        // extract user info from google
+        const { googleId: sub, given_name, email  } = payload;
 
+        // check if user already exists in db
+        let user = await this.db.collection('users').findOne({ googleId });
         if (!user) {
             const id = uuid.v4();
-            user = Object.assign({}, { givenName: given_name, email, googleId, id });
+            user = Object.assign({}, {googleId, id });
             await this.db.collection('users').insertOne(user);
         }
 
-        user.signedIn = true;
+        // formulate object to send back to front end
         const credentials = {
-            id: user.id, signedIn: user.signedIn, given_name: user.givenName, email: user.email
+            id: user.id, signedIn: true, given_name, email,
         };
 
-        console.log(credentials);
         const token = jwt.sign(credentials, this.jwtSecret);
         res.cookie('jwt', token, { httpOnly: true, domain: process.env.COOKIE_DOMAIN });
         res.json(credentials);
@@ -57,7 +62,7 @@ class Controller {
         res.json({ status: 'ok' });
     }
 
-    async getUser(req, res) {
+    async getUserByToken(req, res) {
         const token = req.cookies.jwt;
 
         if (!token) {
@@ -66,11 +71,22 @@ class Controller {
         }
 
         try {
-            const credentials = jwt.verify(token, JWT_SECRET);
+            const credentials =  jwt.verify(token, JWT_SECRET);
             res.send(credentials);
         } catch (error) {
             res.send({ signedIn: false });
         }
+    }
+
+    async getUserById(_, {id}) {
+       const user = await this.db.collection('users').findOne({ id });
+
+       if (!user) {
+           return null;
+       }
+
+       delete user.googleId;
+       return user;
     }
 }
 

@@ -38,9 +38,8 @@ type Post {
 }
 
 type User {
-    _id: ID!
-    id: String!
-    signedIn: Boolean!
+    _id: ID
+    id: String
     givenName: String
     email: String
 }
@@ -92,8 +91,8 @@ type Query {
         minTimeUTC: String
         maxTimeUTC: String
     ): [Post!]!
-    post(id: String!): Post!
-    user(id: String!): User!
+    post(id: String!): Post
+    user(id: String!): User
 }
 
 type Mutation {

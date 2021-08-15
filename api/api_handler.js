@@ -58,14 +58,14 @@ async function installHandler(app) {
   routes.use(corsf({ origin, credentials: true }));
   routes.post("/signin", userController.signIn);
   routes.post("/signout", userController.signOut);
-  routes.post("/user", userController.getUser);
+  routes.post("/user", userController.getUserByToken);
 
   app.use('/auth', routes);
 
   const resolvers = {
     Query: {
       about: about.getMessage,
-      user: auth.resolveUser,
+      user: userController.getUserById,
       postList: postController.list,
       post: postController.get,
     },

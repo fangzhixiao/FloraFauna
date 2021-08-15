@@ -10,10 +10,8 @@
 
 /* global db print */
 /* eslint no-restricted-globals: "off" */
-const uuid = require('uuid');
 
 db.users.deleteMany({});
-
 db.posts.deleteMany({});
 db.deleted_posts.deleteMany({});
 
