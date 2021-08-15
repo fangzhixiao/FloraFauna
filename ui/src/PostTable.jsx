@@ -4,9 +4,10 @@ import { LinkContainer } from 'react-router-bootstrap';
 import {
   Button, Glyphicon, Tooltip, OverlayTrigger, Table,
 } from 'react-bootstrap';
-
+import { DateTime } from 'luxon';
 import UserContext from './UserContext.js';
 import Post from './Post.jsx';
+import withToast from './withToast.jsx';
 
 class PostRowPlain extends React.Component {
   render() {
@@ -27,6 +28,20 @@ class PostRowPlain extends React.Component {
       deletePost(index);
     }
 
+    const timeZone = post.timezone;
+    // convert to given timezone
+
+    const spottedDateTime = DateTime.fromISO(new Date(post.spottedUTC).toISOString(),
+      { zone: 'UTC' })
+      .setZone(timeZone);
+    const createdDateTime = DateTime.fromISO(new Date(post.createdUTC).toISOString(),
+      { zone: 'UTC' })
+      .setZone(timeZone);
+
+    const spotted = spottedDateTime.toLocaleString(DateTime.DATETIME_MED);
+    const created = createdDateTime.toLocaleString(DateTime.DATETIME_MED);
+
+
     const user = this.context;
 
     const tableRow = (
@@ -36,9 +51,8 @@ class PostRowPlain extends React.Component {
         </td>
         <td>{post.title}</td>
         <td>{post.sightingType}</td>
-        <td>{post.created.toLocaleDateString()}</td>
-        <td>{post.spotted.toLocaleDateString()}</td>
-        <td>{post.spotted.toLocaleTimeString()}</td>
+        <td>{created}</td>
+        <td>{spotted}</td>
         <td>
           <LinkContainer to="/">
             <OverlayTrigger disabled={!user.signedIn} delayShow={1000} overlay={editTooltip}>
@@ -65,7 +79,7 @@ PostRowPlain.contextType = UserContext;
 const PostRow = withRouter(PostRowPlain);
 delete PostRow.contextType;
 
-export default function PostTable({ posts, deletePost }) {
+function PostTable({ posts, deletePost }) {
   const postRows = posts.map((post, index) => (
     <PostRow
       key={post.id}
@@ -84,7 +98,6 @@ export default function PostTable({ posts, deletePost }) {
           <th>Sighting Type</th>
           <th>Date Post Created</th>
           <th>Date Spotted</th>
-          <th>Time Spotted</th>
           <th>Action</th>
         </tr>
       </thead>
@@ -94,3 +107,5 @@ export default function PostTable({ posts, deletePost }) {
     </Table>
   );
 }
+const TableWithToast = withToast(PostTable);
+export default TableWithToast;

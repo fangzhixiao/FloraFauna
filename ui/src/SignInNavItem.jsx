@@ -45,6 +45,7 @@ class SignInNavItem extends React.Component {
       const auth2 = window.gapi.auth2.getAuthInstance();
       const googleUser = await auth2.signIn();
       googleToken = googleUser.getAuthResponse().id_token;
+      console.log(`Google Token that will be passed to back end auth ${googleToken}`);
     } catch (error) {
       showError(`Error authenticating with Google: ${error.error}`);
     }
@@ -62,6 +63,8 @@ class SignInNavItem extends React.Component {
       const {
         signedIn, givenName, name, email,
       } = result;
+
+      console.log(`Result from Google authentication ${JSON.stringify(result)}`);
       const { onUserChange } = this.props;
       onUserChange({
         signedIn, givenName, name, email,

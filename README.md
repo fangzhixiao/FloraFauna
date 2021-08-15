@@ -1,25 +1,32 @@
 # FloraFauna
 ----
-Link to deployment: https://florafauna-ui.herokuapp.com/posts
+Link to UI deployment: https://florafauna-ui.herokuapp.com/posts  
+Link to API deployment: https://florafauna-api.herokuapp.com/graphql
 
 Students:  
-Jiatian Wang wang.jiati@northeastern.edu  
-Zhiqi Lin lin.zhiq@northeastern.edu  
-Zhining Fang fang.zhi@northeastern.edu
-* user fang.zhi and fzhining are both Zhining Fang
+* Jiatian Wang wang.jiati@northeastern.edu
+   * user WJT1156  
+* Zhiqi Lin lin.zhiq@northeastern.edu  
+   * user zhiqilin
+* Zhining Fang fang.zhi@northeastern.edu  
+   * users fang.zhi and fzhining are both Zhining
+   * Responsible for merging, maintaining deploy repos, and deploying to Heroku.  
 
 Instructions to run application locally on machine:  
 1. Clone Repository
 2. In API Directory and UI Directory, run npm install to install dependencies.
 3. To run application, run npm start in API directory. In a new terminal and in the UI directory, 
    run npm run watch-server-hmr. In another terminal, run npm start.
-Application should run in http://ui.promernstack.com:8000 on the web
-
+4. For AWS CLI and S3: First you need the AWS Secret Key ID and Access Key ID -- ask group if don't
+   have it, since each AWS account can only have up to 2 sets; Then in the api directory run npm ci.
+   If on Windows go to https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-windows.html
+   and download the MSI and run it to download the aws-cli. Then in the terminal run "aws configure"
+   and give the appropriate access key id and secret key id. Region is us-west-2; default output
+   format is "json".
+   Application should run in http://ui.promernstack.com:8000 on the web
 ---
 
 ### Project Iteration 2
-
-TL;DR:
 
 #### API Functionality: Responsible Member: Zhiqi Lin
 * Connected the app to S3 for image storage.
@@ -36,21 +43,56 @@ TL;DR:
 ![Graphql Playground screenshot 3](readme_images/ite2_api_3.png)
 
 
-#### UI Functionality:
+#### UI Functionality: 
+* Landing Page: Map + Filter (PostSightingFilter.jsx, PostMap.jsx, PostMapWrapper.jsx):  
+  Responsible Members: Zhining Fang and Jiatian Wang
+    * Map is populated with markers read from the database. On clicking the marker, an infowindow
+      pops up with some information about the post and a view post button. Users can click the
+      button to view the post, even when not signed in.
+      ![UI Map Marker screenshot](readme_images/ite_2_ui_map_info.png)
+    * Map will display appropriate markers when the filter is applied. Note that there are 
+      combinations of the filter that will not display any markers as posts populated in the
+      database may not have that combination of attributes.
+    * Currently in the process of figuring out how to signal the Map to re-render when a new sighting
+      post is added or deleted, right now there is a refresh button that will re-render the page 
+      to display any changes. Next iteration will attempt to signal the page to refresh on new post 
+      or post deleted.
+    * Intended to move add a new post functionality to the map this iteration, however this feature
+      will be pushed back to the last iteration. Adding is still done through the header; 
+      coordinates will have to be entered manually.
+      ![UI Map screenshot](readme_images/ite_2_ui_map.png)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+Responsible Member: Zhining Fang
+* Add a Post component (PostAddNavItem.jsx):
+    * Plus button at the navigation bar will show a modal to add a new post. Updated the date input
+    to display a calendar/time selector (click the time or date to select time or date). 
+      The user cannot select dates in the future. Users can upload images to
+      their post here as well. Note that there isn't currently a limit for images but will likely
+      be implemented soon. Users can upload multiple images. 
+      * Bug with add post -- there is currently a bug where if the page hasn't been refreshed the
+        image list will still be there when the user clicks the plus button again after submitting a 
+        post. Will apply a fix in next iteration.
+        ![UI Add screenshot](readme_images/ite_2_ui_add.png)
+* Edit a Post component (PostEdit.jsx):
+    * Updated the date input to display a calendar and time selector. No other changes
+      ![UI Edit screenshot](readme_images/ite_2_ui_edit.png)
+* View a Post component (Post.jsx):
+    * When viewing a Post, if signed in, a user can comment on the post and see comments that have
+    been made by others
+    * Posts will also display images if there are any. If there are multiple images, clicking the
+    arrows will display the next image.
+      ![UI Post with Comments and Images screenshot](readme_images/ite_2_ui_post.png)
+* Profile component (Profile.jsx, PostTable.jsx):
+    * Can delete posts here, users will be implemented next iteration; after that is implemented
+      the post list will show only the user's own posts. On deletion at the bottom of the modal will 
+      display the message and user can undo if they wish.
+      ![UI Profile screenshot](readme_images/ite_2_profile_delete_undo.png)
+    
+Since a lot of the structure of the back end has changed, we spent a lot of time updating the
+frontend to accommodate those changes. Dealing with the date/time and timezone for displaying the
+date and time, for implementing the filter, and for adding/editing posts took up a lot of time for
+this iteration. We tried to focus more on functionality than styling, we will finish up the 
+functionality for adding a post and move on to styling. 
 
 ---
 ### Project Iteration 1
@@ -119,3 +161,4 @@ displaying images, user specific profiles, and post commenting.
       * Comments do not display currently. Iteration 2 will display comments appropriately and users
         will be able to actually send comments.
       * Stretch goal: Display longitude/latitude as real locations instead of coordinates.
+    

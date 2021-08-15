@@ -46,7 +46,7 @@ class PostSightingFilter extends React.Component {
   onChangeDate(e) {
     let dateString;
     try {
-      dateString = e.format('YYYY-MM-DD');
+      dateString = e.format('MMMM DD, YYYY');
       if (dateString) {
         this.setState({ date: dateString, changed: true });
       }
@@ -56,15 +56,7 @@ class PostSightingFilter extends React.Component {
   }
 
   onChangeTime(e) {
-    let timeString;
-    try {
-      timeString = e.format('hh:mm:ss a');
-      if (timeString) {
-        this.setState({ time: timeString, changed: true });
-      }
-    } catch (error) {
-      timeString = null;
-    }
+    this.setState({ time: e.target.value, changed: true });
   }
 
   showOriginalFilter() {
@@ -84,7 +76,7 @@ class PostSightingFilter extends React.Component {
     const params = new URLSearchParams();
     if (sightingType) params.set('sightingType', sightingType);
     if (date) params.set('date', date);
-    if (time) params.set('time', time); // right now shows by hour -- possibly show sightings by hr
+    if (time) params.set('time', time);
     const search = params.toString() ? `?${params.toString()}` : '';
     history.push({ pathname: urlBase, search });
   }
@@ -93,6 +85,11 @@ class PostSightingFilter extends React.Component {
     const {
       sightingType, date, time, changed,
     } = this.state;
+
+    let dateView = new Date(date);
+    if (dateView.toString() === 'Invalid Date') {
+      dateView = '';
+    }
 
     return (
       <Col>
@@ -124,7 +121,7 @@ class PostSightingFilter extends React.Component {
               {date}
             </ControlLabel>
             <Datetime
-              value={date}
+              value={dateView}
               timeFormat={false}
               input={false}
               onChange={this.onChangeDate}
@@ -138,13 +135,17 @@ class PostSightingFilter extends React.Component {
           <Panel.Body collapsible>
             <ControlLabel>Sighting Time</ControlLabel>
             <InputGroup>
-              <Datetime
+              <FormControl
+                componentClass="select"
                 value={time}
-                dateFormat={false}
-                input={false}
-                timeFormat="h a"
                 onChange={this.onChangeTime}
-              />
+              >
+                <option value="">(All)</option>
+                <option value="Early AM">Early AM: 12AM - 6AM</option>
+                <option value="Morning">Morning: 6AM - 12PM</option>
+                <option value="Afternoon">Afternoon: 12PM - 6PM</option>
+                <option value="Evening">Evening: 6PM - 12AM</option>
+              </FormControl>
             </InputGroup>
           </Panel.Body>
         </Panel>

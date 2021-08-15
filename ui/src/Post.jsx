@@ -1,12 +1,19 @@
 import React from 'react';
 import {
   Modal, FormGroup, FormControl, ControlLabel, Alert,
-  Col, Button, Carousel, Row, ListGroup, ListGroupItem,
+  Col, Button, Carousel, Row, ListGroup, ListGroupItem, Panel,
 } from 'react-bootstrap';
+import { DateTime } from 'luxon';
 import withToast from './withToast.jsx';
 import graphQLFetch from './graphQLFetch.js';
 import TextInput from './TextInput.jsx';
 import UserContext from './UserContext.js';
+
+const btn1 = {
+  backgroundColor: '#F0F8FF',
+  padding: '10px',
+  fontsize: '28px',
+};
 
 class Post extends React.Component {
   // props in this case would be passing in the post object from clicking on a map marker
@@ -17,8 +24,6 @@ class Post extends React.Component {
     this.state = {
       showing: false,
       post,
-      // eslint-disable-next-line react/no-unused-state
-      imageURLs: null,
       invalidFields: {},
       showingValidation: false,
       newComment: '',
@@ -58,22 +63,22 @@ class Post extends React.Component {
         title
         sightingType
         authorId
-        created 
-        spotted
+        createdUTC 
+        spottedUTC
+        timezone
         location {
           lat lng
           }
         imageUrls
         description 
         comments {
-          commenter content created
+          commenterId content createdUTC
           }
         }
       }`;
 
     const data = await graphQLFetch(query, { id }, showError);
     if (data) {
-      console.log(data.post.imageUrls);
       this.setState({ imageUrls: data.post.imageUrls });
     }
   }
@@ -104,9 +109,9 @@ class Post extends React.Component {
     const user = this.context;
 
     const comment = {
-      commenter: user.givenName,
+      commenterId: user.givenName, //TODO change this to user id or name
       content: newComment,
-      created: new Date(new Date().getTime()),
+      createdUTC: new Date(new Date().getTime()),
     };
 
     if (post.comments == null) {
@@ -124,13 +129,13 @@ class Post extends React.Component {
       ) {
         id
         comments {
-          commenter content created
+          commenterId content createdUTC
         }        
       }
     }`;
 
     const {
-      id, created, spotted, authorId, location, imageUrls, ...changes
+      id, createdUTC, spottedUTC, timezone, authorId, location, imageUrls, ...changes
     } = post;
     const { showSuccess, showError } = this.props;
     const data = await graphQLFetch(
@@ -139,10 +144,6 @@ class Post extends React.Component {
     if (data) {
       this.setState((prevState) => {
         const updatedPost = prevState.post;
-        // if (updatedPost.comments == null) {
-        //   updatedPost.comments = [];
-        // }
-        // updatedPost.comments = [...updatedPost.comments, comment];
         return { post: updatedPost };
       });
       showSuccess('Comment added successfully');
@@ -163,6 +164,12 @@ class Post extends React.Component {
         </Alert>
       );
     }
+
+    const { timezone } = post;
+    const spottedDateTime = DateTime.fromISO(new Date(post.spottedUTC).toISOString(),
+      { zone: 'UTC' })
+      .setZone(timezone);
+    const spotted = spottedDateTime.toLocaleString(DateTime.DATETIME_MED);
 
     // TODO: image from DB should be a URL see google doc for reference
     function DisplayImages() {
@@ -193,20 +200,25 @@ class Post extends React.Component {
       }
 
       const commentList = post.comments.map((comment) => {
-        const { commenter, created, content } = comment;
+        const { commenterId, createdUTC, content } = comment;
+        const createdDateTime = DateTime.fromISO((new Date(createdUTC)).toISOString(),
+          { zone: 'UTC' });
+        const createdString = createdDateTime.toLocaleString(DateTime.DATETIME_MED);
         return (
-          <ListGroupItem key={`${commenter}${created}`}>
-            <Row>
-              <Col lg={5}>
-                {commenter}
-              </Col>
-              <Col lg={5}>
-                {created.toLocaleString()}
-              </Col>
-            </Row>
-            <Row>
-              {content}
-            </Row>
+          <ListGroupItem key={`${commenterId}${createdUTC}`}>
+            <Panel>
+              <Panel.Body>
+                <div align="right">
+                  {createdString}
+                </div>
+                <div align="left">
+                  {commenterId}
+                  <br />
+                  {content}
+                </div>
+
+              </Panel.Body>
+            </Panel>
           </ListGroupItem>
         );
       });
@@ -221,63 +233,67 @@ class Post extends React.Component {
     // TODO: enable send comment when functionality is implemented
     return (
       <React.Fragment>
-        <Button onClick={this.showModal}>
+        <Button style={btn1} onClick={this.showModal}>
           View Post
         </Button>
         <Modal keyboard show={showing} onHide={this.hideModal}>
           <Modal.Header closeButton>
-            <Modal.Title>{post.title}</Modal.Title>
+            <Modal.Title>
+              {post.title}
+            </Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <Row>
-              <b> Location: </b>
-              {' '}
-              Latitude:
-              {' '}
-              {post.location.lat}
-              {' '}
-              Longitude:
-              {' '}
-              {post.location.lng}
-            </Row>
-            <br />
-            <Row><DisplayImages /></Row>
-            <Row>
-              <br />
-              Sighting at:
-              {' '}
-              {post.spotted.toDateString()}
-              {' '}
-              {post.spotted.toTimeString()}
-            </Row>
-            <Row>
-              <br />
-              Author:
-              {' '}
-              {post.authorId}
-            </Row>
-            <Row>
-              Sighting Description:
-              {' '}
-              {post.description}
-            </Row>
+            <Panel>
+              <Panel.Body>
+                <b> Location: </b>
+                {' '}
+                Latitude:
+                {' '}
+                {post.location.lat}
+                {' '}
+                Longitude:
+                {' '}
+                {post.location.lng}
+                <br />
+                <b>Sighting Date:</b>
+                {' '}
+                {spotted}
+              </Panel.Body>
+            </Panel>
+            <Panel>
+              <Panel.Body>
+                <DisplayImages />
+              </Panel.Body>
+            </Panel>
+            <Panel>
+              <Panel.Heading>
+                Description
+              </Panel.Heading>
+              <Panel.Body>
+                Author:
+                {' '}
+                {post.authorId}
+                <br />
+                {post.description}
+              </Panel.Body>
+            </Panel>
             <br />
             <Row><DisplayComments /></Row>
           </Modal.Body>
           <Modal.Footer>
             <FormGroup>
-              <Col componentClass={ControlLabel} sm={3}>Comment: </Col>
-              <Col sm={9}>
+              <Col componentClass={ControlLabel} sm={4} lg={2} med={3}>Comment: </Col>
+              <Col sm={9} lg={7} med={8}>
                 <FormControl
                   componentClass={TextInput}
                   rows={2}
-                  cols={50}
+                  cols={40}
                   name="comment"
                   value={newComment}
                   onChange={this.onChange}
                 />
               </Col>
-              <Col sm={3}>
+              <Col sm={3} lg={1} med={2}>
                 <Button
                   disabled={!user.signedIn}
                   bsStyle="primary"

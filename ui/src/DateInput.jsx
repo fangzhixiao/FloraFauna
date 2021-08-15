@@ -1,67 +1,62 @@
 import React from 'react';
+import { Col } from 'react-bootstrap';
+import Datetime from 'react-datetime';
+import moment from 'moment';
 
-function displayFormat(date) {
-  return (date != null) ? date.toDateString() : '';
-}
-
-function editFormat(date) {
-  return (date != null) ? date.toISOString().substr(0, 10) : '';
-}
-
-function unformat(str) {
-  const isDate = str.match(/^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/);
-  return isDate ? new Date(str.replaceAll('-', '/')) : null;
+function isValidDate(date) {
+  const current = new Date(new Date().getTime());
+  return date < moment(current);
 }
 
 export default class DateInput extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: editFormat(props.value),
-      focused: false,
-      valid: true,
+      value: props.value,
     };
-    this.onFocus = this.onFocus.bind(this);
-    this.onBlur = this.onBlur.bind(this);
     this.onChange = this.onChange.bind(this);
   }
 
-  onFocus() {
-    this.setState({ focused: true });
-  }
-
-  onBlur(e) {
-    const { value, valid: oldValid } = this.state;
-    const { onValidityChange, onChange } = this.props;
-    const dateValue = unformat(value);
-    const valid = value === '' || dateValue != null;
-    if (valid !== oldValid && onValidityChange) {
-      onValidityChange(e, valid);
-    }
-    this.setState({ focused: false, valid });
-    if (valid) onChange(e, dateValue);
-  }
-
   onChange(e) {
-    if (e.target.value.match(/^[\d-]*$/)) {
-      this.setState({ value: e.target.value });
+    let dateString;
+    try {
+      dateString = e.format('MMMM DD, YYYY hh:mm:ss a');
+      if (dateString) {
+        this.setState({ value: dateString });
+        const { onChange } = this.props;
+        onChange(e);
+      }
+    } catch (error) {
+      dateString = null;
     }
   }
 
   render() {
-    const { valid, focused, value } = this.state;
-    const { value: origValue, onValidityChange, ...props } = this.props;
-    const displayValue = (focused || !valid) ? value
-      : displayFormat(origValue);
+    const { value } = this.state;
+    const { ...props } = this.props;
+
+    let displayValue = new Date(value);
+    let formattedDate = moment(displayValue).format('MMMM DD, YYYY, hh:mm a');
+
+    if (displayValue.toString() === 'Invalid Date') {
+      displayValue = '';
+      formattedDate = '';
+    }
+
     return (
-      <input
-        {...props}
-        value={displayValue}
-        placeholder={focused ? 'yyyy-mm-dd' : null}
-        onFocus={this.onFocus}
-        onBlur={this.onBlur}
-        onChange={this.onChange}
-      />
+      <div>
+        {formattedDate}
+        <div align="center">
+
+            <Datetime
+              {...props}
+              value={displayValue}
+              onChange={this.onChange}
+              isValidDate={isValidDate}
+            />
+
+        </div>
+      </div>
     );
   }
 }

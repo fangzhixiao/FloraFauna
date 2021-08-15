@@ -11,19 +11,18 @@
 /* global db print */
 /* eslint no-restricted-globals: "off" */
 
-const uuid = require('uuid');
-
+db.users.deleteMany({});
 db.posts.deleteMany({});
 db.deleted_posts.deleteMany({});
 
 const postsDB = [
   {
     title: 'A Turkey',
-    authorId: 1,
-    id: uuid.v4(),
-    spottedUTC: "2017-05-15T09:10:23Z",
-    createdUTC: "2017-08-15T09:10:23Z",
-    timezone: "UTC+9",
+    authorId: '1',
+    id: '6089e736-0364-4c44-8497-6d7bb0e72084',
+    spottedUTC: '2017-05-15T09:10:23Z',
+    createdUTC: '2017-08-15T09:10:23Z',
+    timezone: 'UTC+9',
     location: {
       lat: 42.341146910114595,
       lng: -71.0917251720235,
@@ -33,11 +32,11 @@ const postsDB = [
   },
   {
     title: 'A Poppy',
-    id: uuid.v4(),
-    authorId: 2,
-    spottedUTC: "2018-01-15T09:10:23Z",
-    createdUTC: "2019-08-15T09:10:23Z",
-    timezone: "UTC-8",
+    id: 'c676e7e5-4eaf-4b5c-867a-948c599c5545',
+    authorId: '2',
+    spottedUTC: '2018-01-15T09:10:23Z',
+    createdUTC: '2019-08-15T09:10:23Z',
+    timezone: 'UTC-8',
     location: {
       lat: 49.341146910114595,
       lng: -79.0917251720235,

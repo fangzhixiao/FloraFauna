@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from 'react-bootstrap';
+import { Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import {
   Marker, InfoWindow, GoogleMap, useLoadScript,
 } from '@react-google-maps/api';
@@ -10,25 +10,21 @@ import usePlacesAutocomplete, {
   getGeocode,
   getLatLng,
 } from 'use-places-autocomplete';
+import { DateTime } from 'luxon';
 import withToast from './withToast.jsx';
 import mapStyles from './mapStyles.jsx';
+import Post from './Post.jsx';
 
+const div1 = {
+  align: 'center',
+  width: '150px',
+  margin: '10px ',
+  backgroundColor: '#F0F8FF',
+  minHeight: '80px',
+  boxSizing: 'border-box',
+};
 
-const Posts = [
-  {
-    id: 1,
-    name: 'A Turkey',
-    position: { lat: 42.341146910114595, lng: -71.0917251720235 },
-  },
-  {
-    id: 2,
-    name: 'A Poppy',
-    position: { lat: 49.341146910114595, lng: -79.0917251720235 },
-  },
-
-];
-
-
+// determines map size
 const containerStyle = {
   width: '80vw',
   height: '80vh',
@@ -49,7 +45,9 @@ const options = {
 };
 
 
-function PostMap() {
+function PostMap(props) {
+  const { posts } = props;
+
   const { isLoaded, loadError } = useLoadScript({
     id: 'google-map-script',
     version: '1.00',
@@ -58,7 +56,6 @@ function PostMap() {
   });
 
   const [activeMarker, setActiveMarker] = React.useState([]);
-  // const [selected, setSelected] = React.useState(null);
 
   const mapRef = React.useRef();
   const onMapLoad = React.useCallback((map) => {
@@ -67,24 +64,36 @@ function PostMap() {
 
   const panTo = React.useCallback(({ lat, lng }) => {
     mapRef.current.panTo({ lat, lng });
-    mapRef.current.setZoom(16);
+    //const zoom = mapRef.current.getZoom();
+    //mapRef.current.setZoom(10);
   }, []);
+
 
   const onMapClick = React.useCallback((e) => {
     console.log(e);
   }, []);
 
   if (loadError) return 'Error';
-  if (!isLoaded) return 'loding';
+  if (!isLoaded) return 'Loading';
 
 
   const handleActiveMarker = (marker) => {
-    if (marker === activeMarker) {
+    if (activeMarker == null) {
+      return;
+    } if (marker.id === activeMarker.id) {
       return;
     }
-
-    setActiveMarker(marker);
+    setActiveMarker(marker.id);
     panTo(marker.position);
+  };
+
+  const convertDate = (date, timezone) => {
+    const timeZone = timezone;
+    const spottedDateTime = DateTime.fromISO(new Date(date).toISOString(),
+      { zone: 'UTC' })
+      .setZone(timeZone);
+
+    return spottedDateTime.toLocaleString(DateTime.DATETIME_MED);
   };
 
 
@@ -113,20 +122,51 @@ function PostMap() {
           options={options}
         >
 
+          {console.log('MAP HERE')}
+          {console.log(posts)}
+          {
+            posts.postList && posts.postList.map(post => (
+              <Marker
+                key={post.id}
+                position={post.location}
+                title={post.title}
+                onClick={() => handleActiveMarker({ id: post.id, position: post.location })}
+              >
+                {activeMarker === post.id ? (
+                  <InfoWindow onCloseClick={() => setActiveMarker([])}>
+                    <div style={div1}>
+                      <div id="title">
+                        <b>{post.title}</b>
+                      </div>
+                      <div id="sightingType">
+                        {post.sightingType}
+                      </div>
+                      <div id="spottedUTC">
+                        {convertDate(post.spottedUTC, post.timezone)}
+                      </div>
+                      <div>
+                        Address: TBD
+                        {/* Todo : get address based on location to get address */}
+                      </div>
+                      <div align="center">
+                        <br />
+                        <OverlayTrigger
+                          placement="left"
+                          delayShow={1000}
+                          overlay={<Tooltip id="details">details</Tooltip>}
+                        >
+                          <Post post={post} />
 
-          {Posts.map(({ id, name, position }) => (
-            <Marker
-              key={id}
-              position={position}
-              onClick={() => handleActiveMarker(id)}
-            >
-              {activeMarker === id ? (
-                <InfoWindow onCloseClick={() => setActiveMarker(null)}>
-                  <div>{name}</div>
-                </InfoWindow>
-              ) : null}
-            </Marker>
-          ))}
+                        </OverlayTrigger>
+                        <br />
+                      </div>
+
+                    </div>
+                  </InfoWindow>
+                ) : null}
+              </Marker>
+            ))
+          }
 
         </GoogleMap>
       </div>
@@ -141,7 +181,6 @@ function PostMap() {
 function Locate({ panTo }) {
   return (
     <Button
-      style={{ fontSize: 50 }}
       onClick={() => {
         navigator.geolocation.getCurrentPosition(
           (position) => {
@@ -198,7 +237,7 @@ function Search({ panTo }) {
           value={value}
           onChange={handleInput}
           disabled={!ready}
-          placeholder="Search  location"
+          placeholder="Search for locations"
         />
         <ComboboxPopover style={{ backgroundColor: 'white' }}>
           <ComboboxList style={{
@@ -207,9 +246,9 @@ function Search({ panTo }) {
           >
 
             {status === 'OK'
-                        && data.map(({ id, description }) => (
-                          <ComboboxOption key={id} value={description} />
-                        ))}
+            && data.map(({ id, description }) => (
+              <ComboboxOption key={id} value={description} />
+            ))}
           </ComboboxList>
         </ComboboxPopover>
       </Combobox>

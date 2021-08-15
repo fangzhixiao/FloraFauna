@@ -1,5 +1,5 @@
 import React from 'react';
-import { Panel, Row } from 'react-bootstrap';
+import { Panel, Button } from 'react-bootstrap';
 import URLSearchParams from 'url-search-params';
 //
 import graphQLFetch from './graphQLFetch.js';
@@ -8,66 +8,78 @@ import PostSightingFilter from './PostSightingFilter.jsx';
 import withToast from './withToast.jsx';
 import PostMap from './PostMap.jsx';
 
+const TIME_INTERVALS = new Map();
+TIME_INTERVALS.set('Early AM', { minTimeUTC: '00:00:00', maxTimeUTC: '05:59:59' });
+TIME_INTERVALS.set('Morning', { minTimeUTC: '06:00:00', maxTimeUTC: '11:59:59' });
+TIME_INTERVALS.set('Afternoon', { minTimeUTC: '12:00:00', maxTimeUTC: '17:59:59' });
+TIME_INTERVALS.set('Evening', { minTimeUTC: '18:00:00', maxTimeUTC: '23:59:59' });
+
 // eslint-disable-next-line react/prefer-stateless-function
 class PostMapWrapper extends React.Component {
   static async fetchData(match, search, showError) {
     const params = new URLSearchParams(search);
     const vars = { hasSelection: false, selectedId: 0 };
     if (params.get('sightingType')) vars.sightingType = params.get('sightingType');
-    if (params.get('date')) vars.date = params.get('date');
+    if (params.get('date')) {
+      const date = new Date(params.get('date'));
+      if (date !== 'Invalid Date') {
+        vars.dateUTC = date.toISOString(); // backend reads ISO strings
+      }
+    }
+
+    if (params.get('time')) {
+      const interval = TIME_INTERVALS.get(params.get('time'));
+      vars.minTimeUTC = interval.minTimeUTC;
+      vars.maxTimeUTC = interval.maxTimeUTC;
+    }
     // TODO: Add hasImages based on images
-    // if (params.get('time')) vars.time = params.get('time');
-
-    // const { params: { id } } = match;
-    // const idInt = parseInt(id, 10);
-    // if (!Number.isNaN(idInt)) {
-    //   vars.hasSelection = true;
-    //   vars.selectedId = idInt;
-    // }
-
-    // TODO: figure out how to use graphQL date to filter by time (without consideration for time)
 
     const query = `query postList(
       $sightingType: SightingType
-      $spotted: GraphQLDate
-      $minHour: GraphQLDate
-      $maxHour: GraphQLDate
+      $dateUTC: String
+      $minTimeUTC: String
+      $maxTimeUTC: String
     ) {
       postList(
         sightingType: $sightingType
-        spotted: $spotted
-        minHour: $minHour
-        maxHour: $maxHour
+        dateUTC: $dateUTC
+        minTimeUTC: $minTimeUTC
+        maxTimeUTC: $maxTimeUTC
     ) {
       id
       title
       sightingType
       authorId
-      created 
-      spotted
+      createdUTC 
+      spottedUTC
+      timezone
       location {
         lat lng
         }
       imageUrls
       description 
       comments {
-        commenter content created
+        commenterId content createdUTC
       }
     }
   }`;
 
     const data = await graphQLFetch(query, vars, showError);
+    console.log(data);
     return data;
   }
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     const posts = store.initialData || { postList: [] };
     delete store.initialData;
 
     this.state = {
       posts,
+      refresh: false,
     };
+
+    this.onClick = this.onClick.bind(this);
   }
 
   componentDidMount() {
@@ -84,6 +96,16 @@ class PostMapWrapper extends React.Component {
     if (prevSearch !== search || prevId !== id) {
       this.loadData();
     }
+    const { refresh } = this.state;
+    if (refresh === true) {
+      this.loadData();
+      // eslint-disable-next-line react/no-did-update-set-state
+      this.setState({ refresh: false });
+    }
+  }
+
+  onClick() {
+    this.setState({ refresh: true });
   }
 
   async loadData() {
@@ -91,7 +113,7 @@ class PostMapWrapper extends React.Component {
     const data = await PostMapWrapper.fetchData(match, search, showError);
     if (data) {
       this.setState({
-        posts: data.postList,
+        posts: data,
       });
     }
   }
@@ -102,7 +124,7 @@ class PostMapWrapper extends React.Component {
 
     return (
       <React.Fragment>
-        <Row xs={7} sm={6} md={5} lg={4}>
+        <div align="center">
           <Panel>
             <Panel.Heading>
               <Panel.Title toggle>Filter</Panel.Title>
@@ -111,10 +133,13 @@ class PostMapWrapper extends React.Component {
               <PostSightingFilter urlBase="/posts" />
             </Panel.Body>
           </Panel>
-        </Row>
-        <Row>
-          <PostMap />
-        </Row>
+        </div>
+        <div>
+          <Button onClick={this.onClick}>Refresh</Button>
+        </div>
+        <div>
+          <PostMap posts={posts} />
+        </div>
 
       </React.Fragment>
     );
