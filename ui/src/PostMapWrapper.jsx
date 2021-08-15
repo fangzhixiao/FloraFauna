@@ -121,7 +121,6 @@ class PostMapWrapper extends React.Component {
   render() {
     const { posts } = this.state;
     if (posts == null) return null;
-
     return (
       <React.Fragment>
         <div align="center">
