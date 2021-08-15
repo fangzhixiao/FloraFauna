@@ -105,7 +105,7 @@ class PostAddNavItem extends React.Component {
     const post = {
       title: form.title.value,
       sightingType: form.sightingType.value,
-      authorId: 1, // TODO replace hardcoded ID with actual user.id
+      authorId: "1", // TODO replace hardcoded ID with actual user.id
       spottedUTC: date,
       timezone,
       location: {

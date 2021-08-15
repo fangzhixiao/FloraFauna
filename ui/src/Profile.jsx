@@ -38,7 +38,7 @@ class Profile extends React.Component {
 
   async loadData() {
     const query = `query postList(
-      $authorId: Int
+      $authorId: String
       ) {
         postList(
           authorId: $authorId
@@ -56,7 +56,7 @@ class Profile extends React.Component {
         imageUrls
         description 
         comments {
-          commenter content createdUTC
+          commenterId content createdUTC
         }
       }
     }`;

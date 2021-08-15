@@ -60,7 +60,7 @@ class PostMapWrapper extends React.Component {
       imageUrls
       description 
       comments {
-        commenter content createdUTC
+        commenterId content createdUTC
       }
     }
   }`;
