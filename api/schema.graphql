@@ -93,7 +93,8 @@ type Query {
         maxTimeUTC: String
     ): [Post!]!
     post(id: String!): Post!
-    user(id:String): User!
+    user: User!
+    getAuthor(id:String): User
 }
 
 type Mutation {

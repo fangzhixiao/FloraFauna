@@ -24,6 +24,7 @@ class Post extends React.Component {
     this.state = {
       showing: false,
       post,
+      author: '',
       invalidFields: {},
       showingValidation: false,
       newComment: '',
@@ -77,9 +78,23 @@ class Post extends React.Component {
         }
       }`;
 
+    const queryUser = `query getAuthor($id: String){ 
+    getAuthor(id:$id){
+      id givenName email
+    }}`;
+
     const data = await graphQLFetch(query, { id }, showError);
+
     if (data) {
       this.setState({ imageUrls: data.post.imageUrls });
+      console.log(data.post.authorId);
+      const userData = await graphQLFetch(queryUser, { id: data.post.authorId }, showError);
+      if (userData != null) {
+        if (userData.getAuthor == null) {
+          this.setState({ author: 'unknown' });
+        }
+        this.setState({ author: userData.getAuthor.givenName });
+      }
     }
   }
 
@@ -109,7 +124,7 @@ class Post extends React.Component {
     const user = this.context;
 
     const comment = {
-      commenterId: user.givenName, //TODO change this to user id or name
+      commenterId: user.givenName, // TODO change this to user id or name
       content: newComment,
       createdUTC: new Date(new Date().getTime()),
     };
@@ -151,7 +166,7 @@ class Post extends React.Component {
   }
 
   render() {
-    const { showing, post } = this.state;
+    const { showing, post, author } = this.state;
     const { imageUrls } = this.state;
     const user = this.context;
 
@@ -272,7 +287,7 @@ class Post extends React.Component {
               <Panel.Body>
                 Author:
                 {' '}
-                {post.authorId}
+                {author}
                 <br />
                 {post.description}
               </Panel.Body>

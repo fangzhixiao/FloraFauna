@@ -13,6 +13,7 @@
 
 
 db.posts.deleteMany({});
+db.users.deleteMany({})
 db.deleted_posts.deleteMany({});
 
 const postsDB = [

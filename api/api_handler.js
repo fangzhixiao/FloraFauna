@@ -37,6 +37,7 @@ async function installHandler(app) {
     Query: {
       about: about.getMessage,
       user: auth.resolveUser,
+      getAuthor: auth.getAuthor,
       postList: postController.list,
       post: postController.get,
     },

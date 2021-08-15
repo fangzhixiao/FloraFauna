@@ -63,7 +63,9 @@ routes.post('/signin',
     let user = await thisDB.collection('users').findOne({ googleId });
     if (!user) {
       const userId = uuid.v4();
-      user = Object.assign({}, { googleId, id: userId });
+      user = Object.assign({}, {
+        googleId, id: userId, givenName, email,
+      });
       await thisDB.collection('users').insertOne(user);
     }
 
@@ -103,6 +105,20 @@ function resolveUser(_, args, { user }) {
   return user;
 }
 
+async function getAuthor(_, { id }) {
+  const thisDB = await db.connect();
+  (console.log(id));
+  const user = await thisDB.collection('users').findOne({ id });
+
+  if (!user) {
+    return null;
+  }
+
+  delete user.googleId;
+  return user;
+}
+
+
 module.exports = {
-  routes, getUser, mustBeSignedIn, resolveUser,
+  routes, getUser, mustBeSignedIn, resolveUser, getAuthor,
 };
