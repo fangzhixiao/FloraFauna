@@ -13,7 +13,7 @@ app.use(cookieParser());
 const port = process.env.API_SERVER_PORT || 3000;
 
 (async function start() {
-  installHandler(app);
+  await installHandler(app);
 
   try {
     app.listen(port, () => {

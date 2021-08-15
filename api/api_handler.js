@@ -27,7 +27,6 @@ if (!JWT_SECRET) {
   }
 }
 
-
 async function installHandler(app) {
   const enableCors = (process.env.ENABLE_CORS || 'true') === 'true';
 
