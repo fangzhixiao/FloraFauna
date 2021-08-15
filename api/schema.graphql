@@ -39,7 +39,7 @@ type Post {
 
 type User {
     _id: ID!
-    id: Int!
+    id: String
     signedIn: Boolean!
     givenName: String
     email: String

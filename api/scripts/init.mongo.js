@@ -4,7 +4,7 @@
  * localhost:
  *   mongo florafauna scripts/init.mongo.js
  * Atlas:
- *   mongo mongodb+srv://user:pwd@xxx.mongodb.net/issuetracker scripts/init.mongo.js
+ *   mongo mongodb+srv://zfang:flora@florafauna.t5n7j.mongodb.net/myFirstDatabase init.mongo.js
  *   mongosh "mongodb+srv://florafauna.rlhox.mongodb.net/FloraFauna" --username arzqlin
  */
 
@@ -58,3 +58,4 @@ db.posts.createIndex({ author: 1 });
 db.posts.createIndex({ created: 1 });
 db.posts.createIndex({ title: 'text', description: 'text' });
 db.deleted_posts.createIndex({ id: 1 }, { unique: true });
+db.users.createIndex({ id: 1 }, { unique: true });
