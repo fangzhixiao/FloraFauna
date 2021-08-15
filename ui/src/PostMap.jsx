@@ -14,6 +14,7 @@ import { DateTime } from 'luxon';
 import withToast from './withToast.jsx';
 import mapStyles from './mapStyles.jsx';
 import Post from './Post.jsx';
+import image from './flora.svg';
 
 const div1 = {
   align: 'center',
@@ -56,6 +57,10 @@ function PostMap(props) {
   });
 
   const [activeMarker, setActiveMarker] = React.useState([]);
+
+  const img = image;
+
+
 
   const mapRef = React.useRef();
   const onMapLoad = React.useCallback((map) => {
@@ -131,6 +136,7 @@ function PostMap(props) {
                 position={post.location}
                 title={post.title}
                 onClick={() => handleActiveMarker({ id: post.id, position: post.location })}
+                icon={img}
               >
                 {activeMarker === post.id ? (
                   <InfoWindow onCloseClick={() => setActiveMarker([])}>
