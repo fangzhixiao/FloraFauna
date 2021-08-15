@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   Modal, FormGroup, FormControl, ControlLabel, Alert,
-  Col, Button, Carousel, Row, ListGroup, ListGroupItem, Panel,
+  Col, Button, Carousel, Row, ListGroup, ListGroupItem, Panel, Tooltip, OverlayTrigger,
 } from 'react-bootstrap';
 import { DateTime } from 'luxon';
 import withToast from './withToast.jsx';
@@ -233,9 +233,18 @@ class Post extends React.Component {
     // TODO: enable send comment when functionality is implemented
     return (
       <React.Fragment>
+
+        <OverlayTrigger
+            placement="left"
+            delayShow={1000}
+            overlay={<Tooltip id="details">details</Tooltip>}
+        >
+
         <Button style={btn1} onClick={this.showModal}>
           View Post
         </Button>
+
+        </OverlayTrigger>
         <Modal keyboard show={showing} onHide={this.hideModal}>
           <Modal.Header closeButton>
             <Modal.Title>

@@ -54,8 +54,10 @@ function PostMap(props) {
   });
 
   const [activeMarker, setActiveMarker] = React.useState([]);
+
   const [newMarkers, setnewMarkers] = React.useState([]);
 
+  const [selected, setSelected] = React.useState(null);
 
   const floraIcon = flora;
   const faunaIcon = fauna;
@@ -80,7 +82,6 @@ function PostMap(props) {
       lng: e.latLng.lng(),
       time : new Date(),
     }]);
-    console.log(e.latLng.lat(),e.latLng.lng());
   }, []);
 
   if (loadError) return 'Error';
@@ -104,8 +105,6 @@ function PostMap(props) {
 
     return spottedDateTime.toLocaleString(DateTime.DATETIME_MED);
   };
-
-
 
 
 
@@ -163,14 +162,7 @@ function PostMap(props) {
                       </div>
                       <div align="center">
                         <br />
-                        <OverlayTrigger
-                          placement="left"
-                          delayShow={1000}
-                          overlay={<Tooltip id="details">details</Tooltip>}
-                        >
                           <Post post={post} />
-
-                        </OverlayTrigger>
                         <br />
                       </div>
 
@@ -181,14 +173,37 @@ function PostMap(props) {
             ))
           }
 
+
           {
             newMarkers.map(newMarker =>
               <Marker
                  key = {newMarker.time.toISOString()}
-                   position={ {
-                     lat : newMarker.lat,
-                     lng : newMarker.lng,
-                   } }/>
+                 position={{lat : newMarker.lat,
+                     lng : newMarker.lng,} }
+                 onClick={() =>  {
+                   setSelected(newMarker);
+                 }}
+              >
+                {selected ? (
+                    <InfoWindow
+                        position={{lat:selected.lat, lng : selected.lng}}
+                        onCloseClick={() => {
+                          setSelected(null);
+                        }}
+                    >
+                      <div>
+                        <p>lat:{selected.lat}; lng : {selected.lng}</p>
+                        <div>
+                          <Button>
+                            Delete the marker
+                          </Button>
+                        </div>
+                      </div>
+                    </InfoWindow>
+                ) : null}
+
+                </Marker>
+
               )
           }
 

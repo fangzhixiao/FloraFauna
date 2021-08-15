@@ -10,3 +10,5 @@
     "react-hooks/exhaustive-deps": "warn" // Checks effect dependencies
   }
 }
+
+
