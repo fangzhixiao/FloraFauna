@@ -14,7 +14,8 @@ import { DateTime } from 'luxon';
 import withToast from './withToast.jsx';
 import mapStyles from './mapStyles.jsx';
 import Post from './Post.jsx';
-import image from './flora.svg';
+import flora from './flora.svg';
+import fauna from './iconmonstr-cat-7.svg'
 
 const div1 = {
   align: 'center',
@@ -58,7 +59,8 @@ function PostMap(props) {
 
   const [activeMarker, setActiveMarker] = React.useState([]);
 
-  const img = image;
+  const floraIcon = flora;
+  const faunaIcon = fauna;
 
 
 
@@ -136,7 +138,7 @@ function PostMap(props) {
                 position={post.location}
                 title={post.title}
                 onClick={() => handleActiveMarker({ id: post.id, position: post.location })}
-                icon={img}
+                icon= {post.sightingType === 'ANIMAL' ? floraIcon : faunaIcon }
               >
                 {activeMarker === post.id ? (
                   <InfoWindow onCloseClick={() => setActiveMarker([])}>

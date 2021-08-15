@@ -38,8 +38,8 @@ const postsDB = [
         createdUTC: "2019-08-15T09:10:23Z",
         timezone: "UTC-8",
         location: {
-            lat: 49.341146910114595,
-            lng: -79.0917251720235,
+            lat: 42,
+            lng: -71,
         },
         sightingType: 'PLANT',
         description: 'I saw a poppy',
