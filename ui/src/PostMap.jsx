@@ -1,16 +1,9 @@
 import React from 'react';
-import { Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
-import {
-  Marker, InfoWindow, GoogleMap, useLoadScript,
-} from '@react-google-maps/api';
-import {
-  Combobox, ComboboxInput, ComboboxList, ComboboxOption, ComboboxPopover,
-} from '@reach/combobox';
-import usePlacesAutocomplete, {
-  getGeocode,
-  getLatLng,
-} from 'use-places-autocomplete';
-import { DateTime } from 'luxon';
+import {Button, OverlayTrigger, Tooltip} from 'react-bootstrap';
+import {GoogleMap, InfoWindow, Marker, useLoadScript,} from '@react-google-maps/api';
+import {Combobox, ComboboxInput, ComboboxList, ComboboxOption, ComboboxPopover,} from '@reach/combobox';
+import usePlacesAutocomplete, {getGeocode, getLatLng,} from 'use-places-autocomplete';
+import {DateTime} from 'luxon';
 import withToast from './withToast.jsx';
 import mapStyles from './mapStyles.jsx';
 import Post from './Post.jsx';
@@ -37,7 +30,8 @@ const libraries = ['places'];
 const center = {
   lat: 42.3601,
   lng: -71.0589,
-};
+}
+
 
 
 const options = {
@@ -50,6 +44,8 @@ const options = {
 function PostMap(props) {
   const { posts } = props;
 
+
+
   const { isLoaded, loadError } = useLoadScript({
     id: 'google-map-script',
     version: '1.00',
@@ -58,6 +54,8 @@ function PostMap(props) {
   });
 
   const [activeMarker, setActiveMarker] = React.useState([]);
+  const [newMarkers, setnewMarkers] = React.useState([]);
+
 
   const floraIcon = flora;
   const faunaIcon = fauna;
@@ -77,7 +75,12 @@ function PostMap(props) {
 
 
   const onMapClick = React.useCallback((e) => {
-    console.log(e);
+    setnewMarkers(current => [...current, {
+      lat: e.latLng.lat(),
+      lng: e.latLng.lng(),
+      time : new Date(),
+    }]);
+    console.log(e.latLng.lat(),e.latLng.lng());
   }, []);
 
   if (loadError) return 'Error';
@@ -95,13 +98,15 @@ function PostMap(props) {
   };
 
   const convertDate = (date, timezone) => {
-    const timeZone = timezone;
     const spottedDateTime = DateTime.fromISO(new Date(date).toISOString(),
       { zone: 'UTC' })
-      .setZone(timeZone);
+      .setZone(timezone);
 
     return spottedDateTime.toLocaleString(DateTime.DATETIME_MED);
   };
+
+
+
 
 
   return (
@@ -125,8 +130,8 @@ function PostMap(props) {
           center={center}
           zoom={10}
           onLoad={onMapLoad}
-          onClick={onMapClick}
           options={options}
+          onClick={onMapClick}
         >
 
           {console.log('MAP HERE')}
@@ -138,7 +143,7 @@ function PostMap(props) {
                 position={post.location}
                 title={post.title}
                 onClick={() => handleActiveMarker({ id: post.id, position: post.location })}
-                icon= {post.sightingType === 'ANIMAL' ? floraIcon : faunaIcon }
+                icon= {post.sightingType === 'ANIMAL' ? faunaIcon : floraIcon }
               >
                 {activeMarker === post.id ? (
                   <InfoWindow onCloseClick={() => setActiveMarker([])}>
@@ -175,6 +180,18 @@ function PostMap(props) {
               </Marker>
             ))
           }
+
+          {
+            newMarkers.map(newMarker =>
+              <Marker
+                 key = {newMarker.time.toISOString()}
+                   position={ {
+                     lat : newMarker.lat,
+                     lng : newMarker.lng,
+                   } }/>
+              )
+          }
+
 
         </GoogleMap>
       </div>
