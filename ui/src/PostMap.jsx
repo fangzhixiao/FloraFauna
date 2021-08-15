@@ -55,9 +55,15 @@ function PostMap(props) {
 
   const [activeMarker, setActiveMarker] = React.useState([]);
 
-  const [newMarkers, setnewMarkers] = React.useState([]);
+  //const [newMarkers, setnewMarkers] = React.useState([]);
 
-  const [selected, setSelected] = React.useState(null);
+  const [selected, setSelected] = React.useState(false);
+
+  const [newMarkerLatLng, setNewMarkerLatLng] = React.useState(center);
+  const [showing, setShowing] = React.useState(false);
+
+
+
 
   const floraIcon = flora;
   const faunaIcon = fauna;
@@ -76,13 +82,17 @@ function PostMap(props) {
   }, []);
 
 
+
+
   const onMapClick = React.useCallback((e) => {
-    setnewMarkers(current => [...current, {
+    setNewMarkerLatLng( {
       lat: e.latLng.lat(),
       lng: e.latLng.lng(),
-      time : new Date(),
-    }]);
+    });
+    setShowing(true);
+    setSelected(true);
   }, []);
+
 
   if (loadError) return 'Error';
   if (!isLoaded) return 'Loading';
@@ -174,7 +184,34 @@ function PostMap(props) {
           }
 
 
-          {
+
+          <Marker
+              position={newMarkerLatLng}
+              visible={showing}
+          >
+            {selected ? (
+              <InfoWindow
+                  position={newMarkerLatLng}
+                  onCloseClick={ () => {setSelected(false) }}
+              >
+                <div>
+                  <p>lat:{newMarkerLatLng.lat}; lng : {newMarkerLatLng.lng}</p>
+                  <div>
+                    <Button>
+                      ADD a new Post
+                    </Button>
+                  </div>
+                </div>
+              </InfoWindow>) : null
+
+            }
+
+          </Marker>
+
+
+
+
+          {/*{
             newMarkers.map(newMarker =>
               <Marker
                  key = {newMarker.time.toISOString()}
@@ -205,9 +242,7 @@ function PostMap(props) {
                 </Marker>
 
               )
-          }
-
-
+          }*/}
         </GoogleMap>
       </div>
 
