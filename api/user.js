@@ -35,19 +35,19 @@ class Controller {
         }
 
         // extract user info from google
-        const { googleId: sub, given_name, email  } = payload;
+        const { sub: googleId, given_name: givenName, email  } = payload;
 
         // check if user already exists in db
         let user = await this.db.collection('users').findOne({ googleId });
         if (!user) {
             const id = uuid.v4();
-            user = Object.assign({}, {googleId, id });
+            user = Object.assign({}, {googleId, id, givenName, email });
             await this.db.collection('users').insertOne(user);
         }
 
         // formulate object to send back to front end
         const credentials = {
-            id: user.id, signedIn: true, given_name, email,
+            id: user.id, signedIn: true, givenName, email,
         };
 
         const token = jwt.sign(credentials, this.jwtSecret);

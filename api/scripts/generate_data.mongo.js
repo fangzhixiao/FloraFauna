@@ -19,7 +19,7 @@ const userIds = [];
 for (let i = 0; i < 5; i+= 1) {
   const id = uuid.v4();
   userIds.push(id);
-  db.users.insertOne({ id, googleId: "test-id" });
+  db.users.insertOne({ id, googleId: "test-id", givenName: "test-givenName", email: "test@gmail.com" });
 }
 
 for (let i = 0; i < 40; i += 1) {
