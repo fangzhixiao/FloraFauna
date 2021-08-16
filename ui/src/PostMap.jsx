@@ -140,7 +140,7 @@ function PostMap(props) {
           zoom={10}
           onLoad={onMapLoad}
           options={options}
-          onClick={onMapClick}
+          onRightClick={onMapClick}
         >
 
           {console.log('MAP HERE')}
@@ -192,7 +192,7 @@ function PostMap(props) {
             {selected ? (
               <InfoWindow
                   position={newMarkerLatLng}
-                  onCloseClick={ () => {setSelected(false) }}
+                  onCloseClick={ () => { setShowing(false); setSelected(false) }}
               >
                 <div>
                   <p>lat:{newMarkerLatLng.lat}; lng : {newMarkerLatLng.lng}</p>
