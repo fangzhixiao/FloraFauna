@@ -19,6 +19,15 @@ const div1 = {
   boxSizing: 'border-box',
 };
 
+const search = {
+  position: 'absolute',
+  top: '250px',
+  left: '100%',
+  transform: 'translateX(-50%)',
+  width: '100%',
+  zIndex: '10',
+}
+
 // determines map size
 const containerStyle = {
   width: '80vw',
@@ -123,17 +132,12 @@ function PostMap(props) {
     <div>
 
       <div>
-
         <div>
           <Locate panTo={panTo} />
         </div>
-
-
         <div>
           <Search panTo={panTo} />
         </div>
-
-
         <GoogleMap
           mapContainerStyle={containerStyle}
           center={center}
@@ -197,7 +201,7 @@ function PostMap(props) {
                 <div>
                   <p>lat:{newMarkerLatLng.lat}; lng : {newMarkerLatLng.lng}</p>
                   <div>
-                    <Button>
+                    <Button onClick={() => {setSelected(false)}}>
                       ADD a new Post
                     </Button>
                   </div>
@@ -307,7 +311,7 @@ function Search({ panTo }) {
 
   return (
     <div>
-      <Combobox onSelect={handleSelect}>
+      <Combobox  style={search} onSelect={handleSelect}>
         <ComboboxInput
           value={value}
           onChange={handleInput}
