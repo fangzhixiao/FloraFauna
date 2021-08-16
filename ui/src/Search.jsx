@@ -1,49 +1,47 @@
 import React from 'react';
-import SelectAsync from 'react-select/lib/Async'; // eslint-disable-line
+import URLSearchParams from 'url-search-params';
 import { withRouter } from 'react-router-dom';
-import graphQLFetch from './graphQLFetch.js';
-import withToast from './withToast.jsx';
+import {
+  Navbar, FormGroup, FormControl, Button,
+} from 'react-bootstrap';
 
 class Search extends React.Component {
-  constructor(props) {
-    super(props);
-    this.onChangeSelection = this.onChangeSelection.bind(this);
-    this.loadOptions = this.loadOptions.bind(this);
+  constructor({ location: { search } }) {
+    super();
+    const params = new URLSearchParams(search);
+    this.state = {
+      search: params.get('search') || '',
+    };
+
+    this.applySearch = this.applySearch.bind(this);
+    this.onChangeSearch = this.onChangeSearch.bind(this);
   }
 
-  onChangeSelection({ value }) {
+
+  onChangeSearch(e) {
+    this.setState({ search: e.target.value });
+  }
+
+  applySearch() {
+    const { search: searchTerms } = this.state;
     const { history } = this.props;
-    history.push(`/edit/${value}`);
-  }
-
-  async loadOptions(term) {
-    if (term.length < 3) return [];
-    const query = `query issueList($search: String) {
-      issueList(search: $search){
-        issues {id title}
-      }
-    }`;
-
-    const { showError } = this.props;
-    const data = await graphQLFetch(query, { search: term }, showError);
-
-    return data.issueList.issues.map(issue => ({
-      label: `#${issue.id}: ${issue.title}`, value: issue.id,
-    }));
+    const params = new URLSearchParams();
+    if (searchTerms) params.set('search', searchTerms);
+    const search = params.toString() ? `?${params.toString()}` : '';
+    history.push(`/posts/${search}`);
   }
 
   render() {
     return (
-      <SelectAsync
-        instanceId="search-select"
-        value=""
-        loadOptions={this.loadOptions}
-        filterOption={() => true}
-        onChange={this.onChangeSelection}
-        components={{ DropdownIndicator: null }}
-      />
+      <Navbar.Form>
+        <FormGroup>
+          <FormControl type="text" placeholder="Search" onChange={this.onChangeSearch} />
+        </FormGroup>
+        {' '}
+        <Button type="submit" onClick={this.applySearch}>Submit</Button>
+      </Navbar.Form>
     );
   }
 }
 
-export default withRouter(withToast(Search));
+export default withRouter(Search);

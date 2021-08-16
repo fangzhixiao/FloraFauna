@@ -29,9 +29,7 @@ function NavBar({ user, onUserChange, onPostsChange }) {
         </Navbar.Header>
       </Col>
       <Col xs={7} sm={6} md={5} lg={4}>
-        <Navbar.Form>
-          <Search />
-        </Navbar.Form>
+        <Search urlBase="/posts" />
       </Col>
       <Nav pullRight>
         <SignInNavItem user={user} onUserChange={onUserChange} onPostsChange={onPostsChange} />

@@ -28,6 +28,8 @@ class PostMapWrapper extends React.Component {
       }
     }
 
+    if (params.get('search')) vars.search = params.get('search');
+
     if (params.get('time')) {
       const interval = TIME_INTERVALS.get(params.get('time'));
       vars.minTimeUTC = interval.minTimeUTC;
@@ -37,6 +39,7 @@ class PostMapWrapper extends React.Component {
 
     const query = `query postList(
       $sightingType: SightingType
+      $search: String
       $dateUTC: String
       $minTimeUTC: String
       $maxTimeUTC: String
@@ -46,6 +49,7 @@ class PostMapWrapper extends React.Component {
         dateUTC: $dateUTC
         minTimeUTC: $minTimeUTC
         maxTimeUTC: $maxTimeUTC
+        search: $search
     ) {
       id
       title
