@@ -9,30 +9,36 @@
 
 /* global db print */
 /* eslint no-restricted-globals: "off" */
-const { DateTime, Settings} = require('luxon');
+const { DateTime } = require('luxon');
 const uuid = require('uuid');
 
 // Settings.defaultZone = 'utc';
 const sightingTypes = ['ANIMAL', 'PLANT'];
 const timezones = ['+', '-'];
+const userIds = [];
+for (let i = 0; i < 5; i+= 1) {
+  const id = uuid.v4();
+  userIds.push(id);
+  db.users.insertOne({ id, googleId: `test_id_${i}`, givenName: `test_givenName_${i}`, email: `test_${i}@gmail.com` });
+}
 
-for (let i = 0; i < 10; i += 1) {
+for (let i = 0; i < 40; i += 1) {
   const randomCreatedDate = (new Date()) - Math.floor(Math.random() * 60 * 1000 * 60 * 60 * 24);
   const spottedUTC = DateTime.fromJSDate(new Date(randomCreatedDate)).setZone("UTC").toISO();
 
-  const randomLat = Math.random() * 360 - 180;
+  const randomLat = Math.random() * 140 - 70;
   const randomLon = Math.random() * 360 - 180;
   const location = { lat: randomLat, lng: randomLon };
 
   const id = uuid.v4();
-  const authorId = Math.floor(Math.random() * 50);
+  const authorId = userIds[Math.floor(Math.random() * 5)];
   const sightingType = sightingTypes[Math.floor(Math.random() * 2)];
   const title = `Lorem ipsum dolor sit amet, ${i}`;
   const description = 'Lorem ipsun dolor sit amet';
   const timezone = 'UTC' + timezones[Math.floor(Math.random() * 2)] + Math.floor(Math.random() * 12);
   const createdUTC = '2021-08-11T03:03:07.546Z';
   const post = {
-    id, title, sightingType, authorId, spottedUTC, timezone, location, createdUTC, description,
+    id, title, sightingType, authorId, spottedUTC, timezone, location, createdUTC, description, confirmedCount: 0,
   };
 
   db.posts.insertOne(post);
@@ -41,4 +47,4 @@ for (let i = 0; i < 10; i += 1) {
 const count = db.posts.count();
 db.counters.updateOne({ _id: 'posts' }, { $set: { current: count } });
 
-print('New post count:', count);
+console.log('New post count:', count);

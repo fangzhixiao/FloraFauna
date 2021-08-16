@@ -47,6 +47,8 @@ async function installHandler(app) {
       postUpdate: mustBeSignedIn(postController.update),
       postDelete: mustBeSignedIn(postController.remove),
       postRestore: mustBeSignedIn(postController.restore),
+      postIncrementConfirmed: postController.incrementConfirmed,
+      postDecrementConfirmed: postController.decrementConfirmed,
     },
   };
 
