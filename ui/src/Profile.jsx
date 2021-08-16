@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   Button, Modal,
-  Col, Panel, Glyphicon,
+  Col, Panel,
 } from 'react-bootstrap';
 import withToast from './withToast.jsx';
 import graphQLFetch from './graphQLFetch.js';
@@ -18,17 +18,11 @@ class Profile extends React.Component {
     this.state = {
       posts: null,
       showing: false,
-      showAlert: 'invisible',
-      alertMessage: '',
-      alertColor: '',
     };
     this.showModal = this.showModal.bind(this);
     this.hideModal = this.hideModal.bind(this);
     this.deletePost = this.deletePost.bind(this);
     this.restorePost = this.restorePost.bind(this);
-    this.showError = this.showError.bind(this);
-    this.showSuccess = this.showSuccess.bind(this);
-    this.closeAlert = this.closeAlert.bind(this);
   }
 
   componentDidMount() {
@@ -78,11 +72,12 @@ class Profile extends React.Component {
       postDelete(id: $id)
     }`;
 
-    const { posts, showAlert } = this.state;
+    const { posts } = this.state;
     const { onPostsChange } = this.props;
+    const { showSuccess, showError } = this.props;
     const { id, title } = posts[index];
-    if (showAlert === 'block') this.setState('none');
-    const data = await graphQLFetch(query, { id }, this.showError);
+
+    const data = await graphQLFetch(query, { id }, showError);
     if (data && data.postDelete) {
       onPostsChange(true);
       this.setState((prevState) => {
@@ -97,55 +92,30 @@ class Profile extends React.Component {
             bsStyle="link"
             onClick={() => {
               this.restorePost(id, title);
-              this.closeAlert();
             }}
           >
             UNDO
           </Button>
         </span>
       );
-      this.showSuccess(undoMessage);
+      // this.showSuccess(undoMessage);
+      showSuccess(undoMessage);
     } else {
       await this.loadData();
     }
   }
 
-  // write own show error/success alerts just for this page?
   async restorePost(id, title) {
     const query = `mutation postRestore($id: String!) {
       postRestore(id: $id)
     }`;
     const data = await graphQLFetch(query, { id }, this.showError);
     if (data) {
-      const { onPostsChange } = this.props;
+      const { onPostsChange, showSuccess } = this.props;
       onPostsChange(true);
-      this.showSuccess(`Post ${id}:${title} restored successfully.`);
+      showSuccess(`Post ${id}:${title} restored successfully.`);
       await this.loadData();
     }
-  }
-
-  showError(message) {
-    this.setState({
-      showAlert: 'visible',
-      alertColor: '#D9534FFF',
-      alertMessage: message,
-    });
-  }
-
-  showSuccess(message) {
-    this.setState({
-      showAlert: 'visible',
-      alertColor: '#5CB85CFF',
-      alertMessage: message,
-    });
-  }
-
-  closeAlert() {
-    this.setState({
-      showAlert: 'invisible',
-      alertColor: '#fff',
-      alertMessage: '',
-    });
   }
 
   async showModal() {
@@ -161,7 +131,6 @@ class Profile extends React.Component {
     const { posts, showing } = this.state;
     if (posts == null) return null;
     const user = this.context;
-    const { showAlert, alertColor, alertMessage } = this.state;
 
 
     // TODO: nice to have: Location as town/state
@@ -200,22 +169,6 @@ class Profile extends React.Component {
               />
             </Col>
           </Modal.Body>
-          <Modal.Footer>
-            <div
-              className={showAlert}
-              style={{
-                position: 'fixed',
-                backgroundColor: { alertColor },
-              }}
-            >
-              {alertMessage}
-              <Button bsSize="xsmall" onClick={this.closeAlert}>
-                <Glyphicon glyph="remove" />
-              </Button>
-            </div>
-            <br />
-          </Modal.Footer>
-
         </Modal>
       </React.Fragment>
     );

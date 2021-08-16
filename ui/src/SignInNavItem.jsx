@@ -109,14 +109,19 @@ class SignInNavItem extends React.Component {
 
   render() {
     const { user } = this.props;
-    const { onPostsChange } = this.props;
+    const { onPostsChange, showSuccess, showError } = this.props;
 
     if (user.signedIn) {
       return (
         <NavDropdown title={user.givenName} id="user">
           <MenuItem onClick={this.signOut}>Sign Out</MenuItem>
           <UserContext.Provider value={user}>
-            <Profile user={user} onPostsChange={onPostsChange} />
+            <Profile
+              user={user}
+              onPostsChange={onPostsChange}
+              showError={showError}
+              showSuccess={showSuccess}
+            />
           </UserContext.Provider>
         </NavDropdown>
       );

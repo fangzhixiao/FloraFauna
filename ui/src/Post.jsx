@@ -4,7 +4,6 @@ import {
   Col, Button, Carousel, Row, ListGroup, ListGroupItem, Panel, Tooltip, OverlayTrigger,
 } from 'react-bootstrap';
 import { DateTime } from 'luxon';
-import withToast from './withToast.jsx';
 import graphQLFetch from './graphQLFetch.js';
 import TextInput from './TextInput.jsx';
 import UserContext from './UserContext.js';
@@ -246,7 +245,6 @@ class Post extends React.Component {
     }
 
     // TODO: Location will need to be converted to town/state?
-    // TODO: enable send comment when functionality is implemented
     return (
       <React.Fragment>
 
@@ -341,4 +339,4 @@ class Post extends React.Component {
 }
 
 Post.contextType = UserContext;
-export default withToast(Post);
+export default Post;

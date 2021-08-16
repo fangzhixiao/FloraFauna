@@ -114,15 +114,15 @@ class PostMapWrapper extends React.Component {
     const { posts } = this.state;
     if (posts == null) return null;
 
-    const mapContain = {
-      width: '75%',
-      height: '75%',
-    };
-
     return (
       <React.Fragment>
         <Col xs={6} sm={5} md={4} lg={3}>
           <div align="center">
+            <Panel>
+              <Panel.Body>
+                Right click on the map to add a new post.
+              </Panel.Body>
+            </Panel>
             <Panel>
               <Panel.Heading>
                 <Panel.Title>Filter</Panel.Title>
@@ -134,7 +134,7 @@ class PostMapWrapper extends React.Component {
           </div>
         </Col>
         <Col xs={6} sm={5} md={4} lg={3}>
-          <div style={mapContain}>
+          <div>
             <PostMap posts={posts} />
           </div>
 

@@ -115,8 +115,8 @@ function PostMap(props) {
   }, []);
 
 
-  if (loadError) return 'Error';
-  if (!isLoaded) return 'Loading';
+  if (loadError) return 'Map loading error, please try again';
+  if (!isLoaded) return 'Loading...';
 
 
   const handleActiveMarker = (marker) => {
@@ -192,7 +192,11 @@ function PostMap(props) {
                       </div>
                       <div align="center">
                         <br />
-                        <Post post={post} />
+                        <Post
+                          post={post}
+                          showError={showError}
+                          showSuccess={showSuccess}
+                        />
                         <br />
                       </div>
 
@@ -220,7 +224,7 @@ function PostMap(props) {
                     ; lng :
                     {newMarkerLatLng.lng}
                   </p>
-                  <div>
+                  <div align="center">
                     <UserContext.Consumer>
                       {user => (
                         <PostContext.Consumer>

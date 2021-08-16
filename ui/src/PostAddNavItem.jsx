@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  NavItem, Glyphicon, Modal, Form, FormGroup, FormControl, ControlLabel,
+  Glyphicon, Modal, Form, FormGroup, FormControl, ControlLabel,
   Button, ButtonToolbar, Tooltip, OverlayTrigger,
 } from 'react-bootstrap';
 import { DateTime } from 'luxon';
@@ -152,7 +152,7 @@ class PostAddNavItem extends React.Component {
 
     return (
       <React.Fragment>
-        <NavItem disabled={!user.signedIn} onClick={this.showModal}>
+        <Button disabled={!user.signedIn} onClick={this.showModal}>
           <OverlayTrigger
             placement="left"
             delayShow={1000}
@@ -160,7 +160,7 @@ class PostAddNavItem extends React.Component {
           >
             <Glyphicon glyph="plus" />
           </OverlayTrigger>
-        </NavItem>
+        </Button>
         <Modal keyboard show={showing} onHide={this.hideModal}>
           <Modal.Header closeButton>
             <Modal.Title>Create New Sighting Post</Modal.Title>
