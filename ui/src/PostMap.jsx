@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, OverlayTrigger, Tooltip} from 'react-bootstrap';
+import {Button, OverlayTrigger, Tooltip, Col, Glyphicon} from 'react-bootstrap';
 import {GoogleMap, InfoWindow, Marker, useLoadScript,} from '@react-google-maps/api';
 import {Combobox, ComboboxInput, ComboboxList, ComboboxOption, ComboboxPopover,} from '@reach/combobox';
 import usePlacesAutocomplete, {getGeocode, getLatLng,} from 'use-places-autocomplete';
@@ -19,9 +19,27 @@ const div1 = {
   boxSizing: 'border-box',
 };
 
+const div2 = {
+  padding: '3rem',
+  fontsize: '1.5rem',
+  width: '100%',
+  maxWidth: '800px',
+  zIndex: '10',
+  transform: 'translateX(-60%)',
+  position: 'absolute',
+  left: '60%',
+  align: 'left',
+};
+
+
+const cob1 = {
+  padding: '2rem',
+  height: '20px',
+};
+
 // determines map size
 const containerStyle = {
-  width: '80vw',
+  width: '70vw',
   height: '80vh',
 };
 
@@ -38,13 +56,12 @@ const options = {
   styles: mapStyles,
   disableDefaultUI: true,
   zoomControl: true,
+  gestureHandling: 'greedy',
 };
 
 
 function PostMap(props) {
   const { posts } = props;
-
-
 
   const { isLoaded, loadError } = useLoadScript({
     id: 'google-map-script',
@@ -77,11 +94,7 @@ function PostMap(props) {
 
   const panTo = React.useCallback(({ lat, lng }) => {
     mapRef.current.panTo({ lat, lng });
-    //const zoom = mapRef.current.getZoom();
-    //mapRef.current.setZoom(10);
   }, []);
-
-
 
 
   const onMapClick = React.useCallback((e) => {
@@ -123,11 +136,6 @@ function PostMap(props) {
     <div>
 
       <div>
-
-        <div>
-          <Locate panTo={panTo} />
-        </div>
-
 
         <div>
           <Search panTo={panTo} />
@@ -207,42 +215,6 @@ function PostMap(props) {
             }
 
           </Marker>
-
-
-
-
-          {/*{
-            newMarkers.map(newMarker =>
-              <Marker
-                 key = {newMarker.time.toISOString()}
-                 position={{lat : newMarker.lat,
-                     lng : newMarker.lng,} }
-                 onClick={() =>  {
-                   setSelected(newMarker);
-                 }}
-              >
-                {selected ? (
-                    <InfoWindow
-                        position={{lat:selected.lat, lng : selected.lng}}
-                        onCloseClick={() => {
-                          setSelected(null);
-                        }}
-                    >
-                      <div>
-                        <p>lat:{selected.lat}; lng : {selected.lng}</p>
-                        <div>
-                          <Button>
-                            Delete the marker
-                          </Button>
-                        </div>
-                      </div>
-                    </InfoWindow>
-                ) : null}
-
-                </Marker>
-
-              )
-          }*/}
         </GoogleMap>
       </div>
 
@@ -253,8 +225,12 @@ function PostMap(props) {
 }
 
 
-function Locate({ panTo }) {
-  return (
+const locateTooltip = (
+  <Tooltip id="locate-tooltip" placement="left">Find my location</Tooltip>
+);
+
+const Locate = ({ panTo }) => (
+  <OverlayTrigger delayShow={1000} overlay={locateTooltip}>
     <Button
       onClick={() => {
         navigator.geolocation.getCurrentPosition(
@@ -268,10 +244,10 @@ function Locate({ panTo }) {
         );
       }}
     >
-      Find me
+      <Glyphicon glyph="map-marker" />
     </Button>
-  );
-}
+  </OverlayTrigger>
+);
 
 function Search({ panTo }) {
   const {
@@ -305,32 +281,41 @@ function Search({ panTo }) {
     }
   };
 
-  return (
-    <div>
-      <Combobox onSelect={handleSelect}>
-        <ComboboxInput
-          value={value}
-          onChange={handleInput}
-          disabled={!ready}
-          placeholder="Search for locations"
-        />
-        <ComboboxPopover style={{ backgroundColor: 'white' }}>
-          <ComboboxList style={{
-            position: 'absolute', left: '10%', padding: '0.5rem', backgroundColor: 'white',
-          }}
-          >
 
-            {status === 'OK'
-            && data.map(({ id, description }) => (
-              <ComboboxOption key={id} value={description} />
-            ))}
-          </ComboboxList>
-        </ComboboxPopover>
-      </Combobox>
+  return (
+    <div style={div2}>
+      <Col sm={3} lg={1} med={2}>
+        <Locate panTo={panTo} />
+      </Col>
+      <Col sm={3} lg={1} med={2}>
+        &nbsp;
+      </Col>
+      <Col sm={4} lg={2} med={3}>
+        <Combobox onSelect={handleSelect}>
+          <ComboboxInput
+            style={cob1}
+            value={value}
+            onChange={handleInput}
+            disabled={!ready}
+            placeholder="Search for locations"
+          />
+          <ComboboxPopover style={{ backgroundColor: 'white' }}>
+            <ComboboxList style={{
+              position: 'absolute', left: '10%', padding: '0.5rem', backgroundColor: 'white',
+            }}
+            >
+
+              {status === 'OK'
+              && data.map(({ id, description }) => (
+                <ComboboxOption key={id} value={description} />
+              ))}
+            </ComboboxList>
+          </ComboboxPopover>
+        </Combobox>
+      </Col>
     </div>
   );
 }
-
 
 const PostMapWithToast = withToast(PostMap);
 

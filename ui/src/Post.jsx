@@ -92,8 +92,9 @@ class Post extends React.Component {
       if (userData != null) {
         if (userData.getAuthor == null) {
           this.setState({ author: 'unknown' });
+        } else {
+          this.setState({ author: userData.getAuthor.givenName });
         }
-        this.setState({ author: userData.getAuthor.givenName });
       }
     }
   }
