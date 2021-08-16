@@ -107,7 +107,7 @@ class Controller {
     if (authorId) filter.authorId = authorId;
 
     let posts = await this.db.collection('posts').find(filter).toArray();
-    if (dateUTC || minTimeUTC || hasImage ) {
+    if (dateUTC || minTimeUTC || hasImage != null ) {
       const filteredPosts = [];
       for (const post of posts) {
         const spottedUTC = DateTime.fromISO(post.spottedUTC, { zone: 'UTC' });
@@ -124,9 +124,16 @@ class Controller {
             continue;
           }
         }
-        if (hasImage && hasImage === true) {
-          if (!post.imageKeys || post.imageKeys.length === 0) {
-            continue;
+        if (hasImage != null) {
+          if (hasImage === true) {
+            if (!post.imageKeys || post.imageKeys.length === 0) {
+              continue;
+            }
+          } else {
+            console.log("looking for posts with no image");
+            if (post.imageKeys && post.imageKeys.length > 0) {
+              continue;
+            }
           }
         }
         filteredPosts.push(post);
