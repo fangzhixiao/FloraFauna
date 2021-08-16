@@ -108,8 +108,6 @@ class PostEdit extends React.Component {
     const { post, invalidFields } = this.state;
     if (Object.keys(invalidFields).length !== 0) return;
 
-    console.log(post.spottedUTC);
-
     const query = `mutation postUpdate(
       $id: String!
       $changes: PostUpdateInput!
@@ -133,7 +131,6 @@ class PostEdit extends React.Component {
       }
     }`;
 
-    // TODO: For post updates -- would users be allowed to change location data? May need to remove
     const {
       id, createdUTC, timezone, authorId, location, imageUrls, ...changes
     } = post;

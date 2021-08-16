@@ -251,14 +251,14 @@ class Post extends React.Component {
       <React.Fragment>
 
         <OverlayTrigger
-            placement="left"
-            delayShow={1000}
-            overlay={<Tooltip id="details">details</Tooltip>}
+          placement="left"
+          delayShow={1000}
+          overlay={<Tooltip id="details">details</Tooltip>}
         >
 
-        <Button style={btn1} onClick={this.showModal}>
-          View Post
-        </Button>
+          <Button style={btn1} onClick={this.showModal}>
+            View Post
+          </Button>
 
         </OverlayTrigger>
         <Modal keyboard show={showing} onHide={this.hideModal}>

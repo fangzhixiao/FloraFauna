@@ -5,7 +5,6 @@ import {
 } from 'react-bootstrap';
 import { DateTime } from 'luxon';
 import graphQLFetch from './graphQLFetch.js';
-import withToast from './withToast.jsx';
 import DateInput from './DateInput.jsx';
 
 // This function wraps file reader in a promise and translates the file into base64 for upload.
@@ -73,7 +72,9 @@ class PostAddNavItem extends React.Component {
   }
 
   hideModal() {
+    const { closeNewMarker } = this.props;
     this.setState({ showing: false, uploadedImages: [] });
+    closeNewMarker();
   }
 
   // Runs list of files through base64 reader (readFile()); returns array of translated files
@@ -98,7 +99,7 @@ class PostAddNavItem extends React.Component {
   async handleSubmit(e) {
     e.preventDefault();
     const { date, timezone } = this.state;
-    const { user } = this.props;
+    const { user, location } = this.props;
 
     const encodedImages = await this.handleUpload(); // base64 encoded images
 
@@ -110,8 +111,8 @@ class PostAddNavItem extends React.Component {
       spottedUTC: date,
       timezone,
       location: {
-        lat: form.latitude.value,
-        lng: form.longitude.value,
+        lat: location.lat,
+        lng: location.lng,
       },
       images: encodedImages,
       description: form.description.value,
@@ -136,8 +137,8 @@ class PostAddNavItem extends React.Component {
     const { showSuccess, showError } = this.props;
     const data = await graphQLFetch(query, { post }, showError);
     if (data) {
-      const { onPostsChange } = this.props;
-      onPostsChange(true); // set refresh
+      const { changeRefresh } = this.props;
+      changeRefresh(true); // set refresh
       this.hideModal();
       showSuccess('Added new post successfully');
     }
@@ -145,7 +146,7 @@ class PostAddNavItem extends React.Component {
 
   render() {
     const { showing, date } = this.state;
-    const { user } = this.props;
+    const { user, location } = this.props;
 
     const { uploadedImages } = this.state;
 
@@ -198,12 +199,16 @@ class PostAddNavItem extends React.Component {
                 />
               </FormGroup>
               <FormGroup>
-                <ControlLabel>Latitude</ControlLabel>
-                <FormControl name="latitude" />
-              </FormGroup>
-              <FormGroup>
-                <ControlLabel>Longitude</ControlLabel>
-                <FormControl name="longitude" />
+                <ControlLabel>Location</ControlLabel>
+                <FormControl.Static>
+                  Latitude:
+                  {' '}
+                  {location.lat}
+                  {' '}
+                  Longitude:
+                  {' '}
+                  {location.lng}
+                </FormControl.Static>
               </FormGroup>
               <FormGroup>
                 <ControlLabel>Date Spotted</ControlLabel>
@@ -238,4 +243,4 @@ class PostAddNavItem extends React.Component {
   }
 }
 
-export default withToast(PostAddNavItem);
+export default PostAddNavItem;

@@ -100,12 +100,6 @@ class PostMapWrapper extends React.Component {
     }
   }
 
-  // onClick() {
-  //   this.setState({ refresh: true });
-  // }
-
-
-
   async loadData() {
     const { location: { search }, match, showError } = this.props;
     const data = await PostMapWrapper.fetchData(match, search, showError);
@@ -123,7 +117,7 @@ class PostMapWrapper extends React.Component {
     const mapContain = {
       width: '75%',
       height: '75%',
-    }
+    };
 
     return (
       <React.Fragment>

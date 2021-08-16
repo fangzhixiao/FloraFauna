@@ -64,8 +64,6 @@ class Profile extends React.Component {
 
     const user = this.context;
     const { id } = user;
-    console.log(user);
-    console.log(id);
 
     const data = await graphQLFetch(query, { authorId: id }, this.showError);
     if (data) {

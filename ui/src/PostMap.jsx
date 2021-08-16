@@ -1,14 +1,23 @@
 import React from 'react';
-import {Button, OverlayTrigger, Tooltip, Col, Glyphicon} from 'react-bootstrap';
-import {GoogleMap, InfoWindow, Marker, useLoadScript,} from '@react-google-maps/api';
-import {Combobox, ComboboxInput, ComboboxList, ComboboxOption, ComboboxPopover,} from '@reach/combobox';
-import usePlacesAutocomplete, {getGeocode, getLatLng,} from 'use-places-autocomplete';
-import {DateTime} from 'luxon';
+import {
+  Button, OverlayTrigger, Tooltip, Col, Glyphicon,
+} from 'react-bootstrap';
+import {
+  GoogleMap, InfoWindow, Marker, useLoadScript,
+} from '@react-google-maps/api';
+import {
+  Combobox, ComboboxInput, ComboboxList, ComboboxOption, ComboboxPopover,
+} from '@reach/combobox';
+import usePlacesAutocomplete, { getGeocode, getLatLng } from 'use-places-autocomplete';
+import { DateTime } from 'luxon';
 import withToast from './withToast.jsx';
 import mapStyles from './mapStyles.jsx';
 import Post from './Post.jsx';
 import flora from './flora.svg';
-import fauna from './iconmonstr-cat-7.svg'
+import fauna from './iconmonstr-cat-7.svg';
+import PostAddNavItem from './PostAddNavItem.jsx';
+import UserContext from './UserContext.js';
+import PostContext from './PostContext.js';
 
 const div1 = {
   align: 'center',
@@ -48,8 +57,7 @@ const libraries = ['places'];
 const center = {
   lat: 42.3601,
   lng: -71.0589,
-}
-
+};
 
 
 const options = {
@@ -63,16 +71,19 @@ const options = {
 function PostMap(props) {
   const { posts } = props;
 
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
   const { isLoaded, loadError } = useLoadScript({
     id: 'google-map-script',
-    version: '1.00',
-    googleMapsApiKey: 'AIzaSyBxw1ZLvBFlT_uLrisvAPSF29rv2PKcynw',
+    version: '3.46',
+    googleMapsApiKey: window.ENV.REACT_APP_GOOGLE_MAPS_API_KEY,
     libraries,
   });
 
-  const [activeMarker, setActiveMarker] = React.useState([]);
 
-  //const [newMarkers, setnewMarkers] = React.useState([]);
+  const [activeMarker, setActiveMarker] = React.useState([]);
 
   const [selected, setSelected] = React.useState(false);
 
@@ -80,11 +91,8 @@ function PostMap(props) {
   const [showing, setShowing] = React.useState(false);
 
 
-
-
   const floraIcon = flora;
   const faunaIcon = fauna;
-
 
 
   const mapRef = React.useRef();
@@ -98,7 +106,7 @@ function PostMap(props) {
 
 
   const onMapClick = React.useCallback((e) => {
-    setNewMarkerLatLng( {
+    setNewMarkerLatLng({
       lat: e.latLng.lat(),
       lng: e.latLng.lng(),
     });
@@ -129,6 +137,12 @@ function PostMap(props) {
     return spottedDateTime.toLocaleString(DateTime.DATETIME_MED);
   };
 
+  const closeNewMarker = () => {
+    setShowing(false);
+    setSelected(false);
+  };
+
+  const { showError, showSuccess } = props;
 
 
   return (
@@ -151,8 +165,6 @@ function PostMap(props) {
           onRightClick={onMapClick}
         >
 
-          {console.log('MAP HERE')}
-          {console.log(posts)}
           {
             posts.postList && posts.postList.map(post => (
               <Marker
@@ -160,7 +172,7 @@ function PostMap(props) {
                 position={post.location}
                 title={post.title}
                 onClick={() => handleActiveMarker({ id: post.id, position: post.location })}
-                icon= {post.sightingType === 'ANIMAL' ? faunaIcon : floraIcon }
+                icon={post.sightingType === 'ANIMAL' ? faunaIcon : floraIcon}
               >
                 {activeMarker === post.id ? (
                   <InfoWindow onCloseClick={() => setActiveMarker([])}>
@@ -180,7 +192,7 @@ function PostMap(props) {
                       </div>
                       <div align="center">
                         <br />
-                          <Post post={post} />
+                        <Post post={post} />
                         <br />
                       </div>
 
@@ -192,25 +204,43 @@ function PostMap(props) {
           }
 
 
-
           <Marker
-              position={newMarkerLatLng}
-              visible={showing}
+            position={newMarkerLatLng}
+            visible={showing}
           >
             {selected ? (
               <InfoWindow
-                  position={newMarkerLatLng}
-                  onCloseClick={ () => { setShowing(false); setSelected(false) }}
+                position={newMarkerLatLng}
+                onCloseClick={closeNewMarker}
               >
                 <div>
-                  <p>lat:{newMarkerLatLng.lat}; lng : {newMarkerLatLng.lng}</p>
+                  <p>
+                    lat:
+                    {newMarkerLatLng.lat}
+                    ; lng :
+                    {newMarkerLatLng.lng}
+                  </p>
                   <div>
-                    <Button>
-                      ADD a new Post
-                    </Button>
+                    <UserContext.Consumer>
+                      {user => (
+                        <PostContext.Consumer>
+                          { postContext => (
+                            <PostAddNavItem
+                              user={user}
+                              changeRefresh={postContext.changeRefresh}
+                              closeNewMarker={closeNewMarker}
+                              location={newMarkerLatLng}
+                              showError={showError}
+                              showSuccess={showSuccess}
+                            />
+                          )}
+                        </PostContext.Consumer>
+                      )}
+                    </UserContext.Consumer>
                   </div>
                 </div>
-              </InfoWindow>) : null
+              </InfoWindow>
+            ) : null
 
             }
 

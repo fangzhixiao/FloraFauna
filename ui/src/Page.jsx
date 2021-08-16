@@ -9,7 +9,7 @@ import {
   Col,
 } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-import PostAddNavItem from './PostAddNavItem.jsx';
+// import PostAddNavItem from './PostAddNavItem.jsx';
 import SignInNavItem from './SignInNavItem.jsx';
 import Contents from './Contents.jsx';
 import Search from './Search.jsx';
@@ -34,7 +34,6 @@ function NavBar({ user, onUserChange, onPostsChange }) {
         </Navbar.Form>
       </Col>
       <Nav pullRight>
-        <PostAddNavItem user={user} onPostsChange={onPostsChange} />
         <SignInNavItem user={user} onUserChange={onUserChange} onPostsChange={onPostsChange} />
 
         <NavDropdown
@@ -96,6 +95,7 @@ export default class Page extends React.Component {
     const { user, refresh, changeRefresh } = this.state;
     const postContext = { refresh, changeRefresh };
     if (user == null) return null;
+
     return (
       <div>
         <NavBar user={user} onUserChange={this.onUserChange} onPostsChange={this.onPostsChange} />

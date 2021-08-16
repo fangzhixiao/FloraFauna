@@ -55,7 +55,7 @@ app.get('/env.js', (req, res) => {
     UI_API_ENDPOINT: process.env.UI_API_ENDPOINT,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     UI_AUTH_ENDPOINT: process.env.UI_AUTH_ENDPOINT,
-    REACT_APP_GOOGLE_MAPS_API_KEY : process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
+    REACT_APP_GOOGLE_MAPS_API_KEY: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
   };
   res.send(`window.ENV = ${JSON.stringify(env)}`);
 });
