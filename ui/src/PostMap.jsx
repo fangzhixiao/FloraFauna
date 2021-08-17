@@ -192,11 +192,23 @@ function PostMap(props) {
                       </div>
                       <div align="center">
                         <br />
-                        <Post
-                          post={post}
-                          showError={showError}
-                          showSuccess={showSuccess}
-                        />
+                        <UserContext.Consumer>
+                          {user => (
+                            <PostContext.Consumer>
+                              {postContext => (
+                                <Post
+                                  post={post}
+                                  changeRefresh={postContext.changeRefresh}
+                                  user={user}
+                                  showError={showError}
+                                  showSuccess={showSuccess}
+                                />
+                              )}
+                            </PostContext.Consumer>
+                          )}
+                        </UserContext.Consumer>
+
+
                         <br />
                       </div>
 

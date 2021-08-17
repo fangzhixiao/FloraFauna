@@ -132,7 +132,7 @@ class PostEdit extends React.Component {
     }`;
 
     const {
-      id, createdUTC, timezone, authorId, location, imageUrls, ...changes
+      id, createdUTC, timezone, authorId, location, imageUrls, confirmedCount, ...changes
     } = post;
     const { showSuccess, showError } = this.props;
     const data = await graphQLFetch(

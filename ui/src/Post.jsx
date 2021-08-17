@@ -1,12 +1,12 @@
 import React from 'react';
 import {
   Modal, FormGroup, FormControl, ControlLabel, Alert,
-  Col, Button, Carousel, Row, ListGroup, ListGroupItem, Panel, Tooltip, OverlayTrigger,
+  Col, Button, Carousel, Row, ListGroup, ListGroupItem,
+  Panel, Tooltip, OverlayTrigger, Label, Glyphicon, Badge,
 } from 'react-bootstrap';
 import { DateTime } from 'luxon';
 import graphQLFetch from './graphQLFetch.js';
 import TextInput from './TextInput.jsx';
-import UserContext from './UserContext.js';
 
 const btn1 = {
   backgroundColor: '#F0F8FF',
@@ -27,6 +27,7 @@ class Post extends React.Component {
       invalidFields: {},
       showingValidation: false,
       newComment: '',
+      confirmedClick: false,
     };
 
     this.showModal = this.showModal.bind(this);
@@ -36,6 +37,7 @@ class Post extends React.Component {
     this.dismissValidation = this.dismissValidation.bind(this);
     this.showValidation = this.showValidation.bind(this);
     this.onChange = this.onChange.bind(this);
+    this.onConfirmedChange = this.onConfirmedChange.bind(this);
   }
 
   onChange(event, naturalValue) {
@@ -51,6 +53,38 @@ class Post extends React.Component {
       if (valid) delete invalidFields[name];
       return { invalidFields };
     });
+  }
+
+  async onConfirmedChange(e) {
+    e.preventDefault();
+    const { showError, changeRefresh } = this.props;
+    const { confirmedClick, post } = this.state;
+    const { id } = post;
+    if (confirmedClick === true) {
+      const query = `mutation postDecrementConfirmed($id: String!) {
+       postDecrementConfirmed(id: $id)
+     }`;
+      const data = await graphQLFetch(
+        query, { id }, showError,
+      );
+      if (data) {
+        changeRefresh(true);
+        this.setState({ confirmedClick: false });
+        this.setState({ count: data.postDecrementConfirmed });
+      }
+    } else {
+      const query = `mutation postIncrementConfirmed($id: String!) {
+       postIncrementConfirmed(id: $id)
+     }`;
+      const data = await graphQLFetch(
+        query, { id }, showError,
+      );
+      if (data) {
+        changeRefresh(true);
+        this.setState({ confirmedClick: true });
+        this.setState({ count: data.postIncrementConfirmed });
+      }
+    }
   }
 
   async loadData() {
@@ -87,6 +121,7 @@ class Post extends React.Component {
 
     if (data) {
       this.setState({ imageUrls: data.post.imageUrls });
+      this.setState({ count: data.post.confirmedCount });
       const userData = await graphQLFetch(queryUser, { id: data.post.authorId }, showError);
       if (userData != null) {
         if (userData.getAuthor == null) {
@@ -121,10 +156,10 @@ class Post extends React.Component {
     this.showValidation();
     const { invalidFields, newComment, post } = this.state;
     if (Object.keys(invalidFields).length !== 0) return;
-    const user = this.context;
+    const { user } = this.props;
 
     const comment = {
-      commenterId: user.givenName, // TODO change this to user id or name
+      commenterId: user.givenName,
       content: newComment,
       createdUTC: new Date(new Date().getTime()),
     };
@@ -150,25 +185,29 @@ class Post extends React.Component {
     }`;
 
     const {
-      id, createdUTC, spottedUTC, timezone, authorId, location, imageUrls, ...changes
+      id, createdUTC, timezone, authorId,
+      location, imageUrls, confirmedCount, ...changes
     } = post;
-    const { showSuccess, showError } = this.props;
+    const { showSuccess, showError, changeRefresh } = this.props;
     const data = await graphQLFetch(
       query, { changes, id }, showError,
     );
     if (data) {
+      changeRefresh(true);
       this.setState((prevState) => {
         const updatedPost = prevState.post;
-        return { post: updatedPost };
+        return { post: updatedPost, newComment: '' };
       });
       showSuccess('Comment added successfully');
     }
   }
 
   render() {
-    const { showing, post, author } = this.state;
+    const {
+      showing, post, author, count, confirmedClick,
+    } = this.state;
     const { imageUrls } = this.state;
-    const user = this.context;
+    const { user } = this.props;
 
     const { invalidFields, showingValidation, newComment } = this.state;
     let validationMessage;
@@ -185,6 +224,15 @@ class Post extends React.Component {
       { zone: 'UTC' })
       .setZone(timezone);
     const spotted = spottedDateTime.toLocaleString(DateTime.DATETIME_MED);
+    const disable = user.id === post.authorId || !user.signedIn;
+    const ShowOK = () => {
+      if (confirmedClick === true) {
+        return (
+          <Glyphicon glyph="ok" />
+        );
+      }
+      return null;
+    };
 
     function DisplayImages() {
       if (imageUrls == null || imageUrls.length === 0) {
@@ -219,21 +267,21 @@ class Post extends React.Component {
         const createdDateTime = DateTime.fromISO((new Date(createdUTC)).toISOString(),
           { zone: 'UTC' });
         const createdString = createdDateTime.toLocaleString(DateTime.DATETIME_MED);
-        return (
-          <ListGroupItem key={`${commenterId}${createdUTC}`}>
-            <Panel>
-              <Panel.Body>
-                <div align="right">
-                  {createdString}
-                </div>
-                <div align="left">
-                  {commenterId}
-                  <br />
-                  {content}
-                </div>
 
-              </Panel.Body>
-            </Panel>
+        const ListHeader = () => (
+          <h5>
+            <Label>{commenterId}</Label>
+            {' | '}
+            {createdString}
+          </h5>
+        );
+
+        return (
+          <ListGroupItem
+            key={`${commenterId}${createdUTC}`}
+          >
+            <ListHeader />
+            {content}
           </ListGroupItem>
         );
       });
@@ -281,6 +329,17 @@ class Post extends React.Component {
                 <b>Sighting Date:</b>
                 {' '}
                 {spotted}
+                <br />
+                <div>
+                  <Button disabled={disable} onClick={this.onConfirmedChange}>
+                    Confirm Sighting
+                    {' '}
+                    <ShowOK />
+                  </Button>
+                  {' '}
+                  <Badge>{count}</Badge>
+
+                </div>
               </Panel.Body>
             </Panel>
             <Panel>
@@ -289,13 +348,12 @@ class Post extends React.Component {
               </Panel.Body>
             </Panel>
             <Panel>
-              <Panel.Heading>
-                Description
-              </Panel.Heading>
               <Panel.Body>
-                Author:
+                <b>Author:</b>
                 {' '}
                 {author}
+                <br />
+                <b>Description:</b>
                 <br />
                 {post.description}
               </Panel.Body>
@@ -327,7 +385,6 @@ class Post extends React.Component {
                 </Button>
               </Col>
             </FormGroup>
-
             <FormGroup>
               <Col smOffset={3} sm={9}>{validationMessage}</Col>
             </FormGroup>
@@ -338,5 +395,4 @@ class Post extends React.Component {
   }
 }
 
-Post.contextType = UserContext;
 export default Post;

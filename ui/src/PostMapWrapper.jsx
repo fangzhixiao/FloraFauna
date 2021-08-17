@@ -74,7 +74,6 @@ class PostMapWrapper extends React.Component {
     }
   }`;
 
-    console.log(vars);
     const data = await graphQLFetch(query, vars, showError);
     return data;
   }

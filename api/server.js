@@ -1,4 +1,3 @@
-
 require('dotenv').config();
 const express = require('express');
 const cookieParser = require('cookie-parser');
@@ -9,11 +8,12 @@ const app = express();
 app.use(express.json({limit: '50mb'}));
 app.use(express.urlencoded({limit: '50mb'}));
 app.use(cookieParser());
+app.use('/auth', auth.routes);
 
 const port = process.env.API_SERVER_PORT || 3000;
 
 (async function start() {
-  await installHandler(app);
+  installHandler(app);
 
   try {
     app.listen(port, () => {
