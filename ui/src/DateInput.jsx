@@ -33,6 +33,7 @@ export default class DateInput extends React.Component {
 
   render() {
     const { value } = this.state;
+    const { align } = this.props;
     const { ...props } = this.props;
 
     let displayValue = new Date(value);
@@ -46,7 +47,7 @@ export default class DateInput extends React.Component {
     return (
       <div>
         {formattedDate}
-        <div align="center">
+        <div align={align}>
 
             <Datetime
               {...props}

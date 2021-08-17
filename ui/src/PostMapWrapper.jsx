@@ -1,5 +1,5 @@
 import React from 'react';
-import { Panel, Button } from 'react-bootstrap';
+import { Panel, Col } from 'react-bootstrap';
 import URLSearchParams from 'url-search-params';
 //
 import graphQLFetch from './graphQLFetch.js';
@@ -7,6 +7,7 @@ import store from './store.js';
 import PostSightingFilter from './PostSightingFilter.jsx';
 import withToast from './withToast.jsx';
 import PostMap from './PostMap.jsx';
+import PostContext from './PostContext.js';
 
 const TIME_INTERVALS = new Map();
 TIME_INTERVALS.set('Early AM', { minTimeUTC: '00:00:00', maxTimeUTC: '05:59:59' });
@@ -65,7 +66,6 @@ class PostMapWrapper extends React.Component {
   }`;
 
     const data = await graphQLFetch(query, vars, showError);
-    console.log(data);
     return data;
   }
 
@@ -76,10 +76,7 @@ class PostMapWrapper extends React.Component {
 
     this.state = {
       posts,
-      refresh: false,
     };
-
-    this.onClick = this.onClick.bind(this);
   }
 
   componentDidMount() {
@@ -96,17 +93,18 @@ class PostMapWrapper extends React.Component {
     if (prevSearch !== search || prevId !== id) {
       this.loadData();
     }
-    const { refresh } = this.state;
+    const { refresh, changeRefresh } = this.context;
     if (refresh === true) {
       this.loadData();
-      // eslint-disable-next-line react/no-did-update-set-state
-      this.setState({ refresh: false });
+      changeRefresh(false);
     }
   }
 
-  onClick() {
-    this.setState({ refresh: true });
-  }
+  // onClick() {
+  //   this.setState({ refresh: true });
+  // }
+
+
 
   async loadData() {
     const { location: { search }, match, showError } = this.props;
@@ -122,30 +120,38 @@ class PostMapWrapper extends React.Component {
     const { posts } = this.state;
     if (posts == null) return null;
 
+    const mapContain = {
+      width: '75%',
+      height: '75%',
+    }
+
     return (
       <React.Fragment>
-        <div align="center">
-          <Panel>
-            <Panel.Heading>
-              <Panel.Title toggle>Filter</Panel.Title>
-            </Panel.Heading>
-            <Panel.Body collapsible>
-              <PostSightingFilter urlBase="/posts" />
-            </Panel.Body>
-          </Panel>
-        </div>
-        <div>
-          <Button onClick={this.onClick}>Refresh</Button>
-        </div>
-        <div>
-          <PostMap posts={posts} />
-        </div>
+        <Col xs={6} sm={5} md={4} lg={3}>
+          <div align="center">
+            <Panel>
+              <Panel.Heading>
+                <Panel.Title>Filter</Panel.Title>
+              </Panel.Heading>
+              <Panel.Body>
+                <PostSightingFilter urlBase="/posts" />
+              </Panel.Body>
+            </Panel>
+          </div>
+        </Col>
+        <Col xs={6} sm={5} md={4} lg={3}>
+          <div style={mapContain}>
+            <PostMap posts={posts} />
+          </div>
+
+        </Col>
 
       </React.Fragment>
     );
   }
 }
 
-const PostMapWithToast = withToast(PostMapWrapper);
-PostMapWithToast.fetchData = PostMapWrapper.fetchData;
-export default PostMapWithToast;
+PostMapWrapper.contextType = PostContext;
+const PostMapWrapperWithToast = withToast(PostMapWrapper);
+PostMapWrapperWithToast.fetchData = PostMapWrapper.fetchData;
+export default PostMapWrapperWithToast;

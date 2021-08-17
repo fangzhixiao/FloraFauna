@@ -35,11 +35,13 @@ type Post {
     imageUrls:[String]
     description: String
     comments: [Comment]
+    confirmedCount: Int!
 }
 
 type User {
-    _id: ID
+    _id: ID!
     id: String
+    signedIn: Boolean!
     givenName: String
     email: String
 }
@@ -90,9 +92,11 @@ type Query {
         dateUTC: String
         minTimeUTC: String
         maxTimeUTC: String
+        hasImage: Boolean
     ): [Post!]!
-    post(id: String!): Post
-    user(id: String!): User
+    post(id: String!): Post!
+    user: User!
+    getAuthor(id:String): User
 }
 
 type Mutation {
@@ -101,4 +105,7 @@ type Mutation {
     postUpdate(id: String!, changes: PostUpdateInput!): Post!
     postDelete(id: String!): Boolean!
     postRestore(id: String!): Boolean!
+#    postIncrementConfirmed and postDecrementConfirmed returns the updated count
+    postIncrementConfirmed(id: String!): Int!
+    postDecrementConfirmed(id: String!): Int!
 }

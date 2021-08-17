@@ -4,12 +4,13 @@
  * localhost:
  *   mongo florafauna scripts/init.mongo.js
  * Atlas:
- *   mongo mongodb+srv://user:pwd@xxx.mongodb.net/issuetracker scripts/init.mongo.js
+ *   mongo mongodb+srv://zfang:flora@florafauna.t5n7j.mongodb.net/myFirstDatabase init.mongo.js
  *   mongosh "mongodb+srv://florafauna.rlhox.mongodb.net/FloraFauna" --username arzqlin
  */
 
 /* global db print */
 /* eslint no-restricted-globals: "off" */
+
 
 db.users.deleteMany({});
 db.posts.deleteMany({});
@@ -29,6 +30,7 @@ const postsDB = [
     },
     sightingType: 'ANIMAL',
     description: 'I saw a turkey',
+    confirmedCount: 0,
   },
   {
     title: 'A Poppy',
@@ -43,12 +45,13 @@ const postsDB = [
     },
     sightingType: 'PLANT',
     description: 'I saw a poppy',
+    confirmedCount: 0,
   },
 ];
 
 db.posts.insertMany(postsDB);
 const count = db.posts.count();
-print('Inserted', count, 'posts');
+console.log('Inserted', count, 'posts');
 
 db.counters.deleteMany({ _id: 'posts' });
 db.counters.insertOne({ _id: 'posts', current: count });

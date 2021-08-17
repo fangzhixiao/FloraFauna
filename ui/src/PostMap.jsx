@@ -1,19 +1,14 @@
 import React from 'react';
-import { Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
-import {
-  Marker, InfoWindow, GoogleMap, useLoadScript,
-} from '@react-google-maps/api';
-import {
-  Combobox, ComboboxInput, ComboboxList, ComboboxOption, ComboboxPopover,
-} from '@reach/combobox';
-import usePlacesAutocomplete, {
-  getGeocode,
-  getLatLng,
-} from 'use-places-autocomplete';
-import { DateTime } from 'luxon';
+import {Button, OverlayTrigger, Tooltip, Col, Glyphicon} from 'react-bootstrap';
+import {GoogleMap, InfoWindow, Marker, useLoadScript,} from '@react-google-maps/api';
+import {Combobox, ComboboxInput, ComboboxList, ComboboxOption, ComboboxPopover,} from '@reach/combobox';
+import usePlacesAutocomplete, {getGeocode, getLatLng,} from 'use-places-autocomplete';
+import {DateTime} from 'luxon';
 import withToast from './withToast.jsx';
 import mapStyles from './mapStyles.jsx';
 import Post from './Post.jsx';
+import flora from './flora.svg';
+import fauna from './iconmonstr-cat-7.svg'
 
 const div1 = {
   align: 'center',
@@ -24,9 +19,27 @@ const div1 = {
   boxSizing: 'border-box',
 };
 
+const div2 = {
+  padding: '3rem',
+  fontsize: '1.5rem',
+  width: '100%',
+  maxWidth: '800px',
+  zIndex: '10',
+  transform: 'translateX(-60%)',
+  position: 'absolute',
+  left: '60%',
+  align: 'left',
+};
+
+
+const cob1 = {
+  padding: '2rem',
+  height: '20px',
+};
+
 // determines map size
 const containerStyle = {
-  width: '80vw',
+  width: '70vw',
   height: '80vh',
 };
 
@@ -35,13 +48,15 @@ const libraries = ['places'];
 const center = {
   lat: 42.3601,
   lng: -71.0589,
-};
+}
+
 
 
 const options = {
   styles: mapStyles,
   disableDefaultUI: true,
   zoomControl: true,
+  gestureHandling: 'greedy',
 };
 
 
@@ -57,6 +72,21 @@ function PostMap(props) {
 
   const [activeMarker, setActiveMarker] = React.useState([]);
 
+  //const [newMarkers, setnewMarkers] = React.useState([]);
+
+  const [selected, setSelected] = React.useState(false);
+
+  const [newMarkerLatLng, setNewMarkerLatLng] = React.useState(center);
+  const [showing, setShowing] = React.useState(false);
+
+
+
+
+  const floraIcon = flora;
+  const faunaIcon = fauna;
+
+
+
   const mapRef = React.useRef();
   const onMapLoad = React.useCallback((map) => {
     mapRef.current = map;
@@ -64,14 +94,18 @@ function PostMap(props) {
 
   const panTo = React.useCallback(({ lat, lng }) => {
     mapRef.current.panTo({ lat, lng });
-    //const zoom = mapRef.current.getZoom();
-    //mapRef.current.setZoom(10);
   }, []);
 
 
   const onMapClick = React.useCallback((e) => {
-    console.log(e);
+    setNewMarkerLatLng( {
+      lat: e.latLng.lat(),
+      lng: e.latLng.lng(),
+    });
+    setShowing(true);
+    setSelected(true);
   }, []);
+
 
   if (loadError) return 'Error';
   if (!isLoaded) return 'Loading';
@@ -88,13 +122,13 @@ function PostMap(props) {
   };
 
   const convertDate = (date, timezone) => {
-    const timeZone = timezone;
     const spottedDateTime = DateTime.fromISO(new Date(date).toISOString(),
       { zone: 'UTC' })
-      .setZone(timeZone);
+      .setZone(timezone);
 
     return spottedDateTime.toLocaleString(DateTime.DATETIME_MED);
   };
+
 
 
   return (
@@ -102,11 +136,6 @@ function PostMap(props) {
     <div>
 
       <div>
-
-        <div>
-          <Locate panTo={panTo} />
-        </div>
-
 
         <div>
           <Search panTo={panTo} />
@@ -118,8 +147,8 @@ function PostMap(props) {
           center={center}
           zoom={10}
           onLoad={onMapLoad}
-          onClick={onMapClick}
           options={options}
+          onRightClick={onMapClick}
         >
 
           {console.log('MAP HERE')}
@@ -131,6 +160,7 @@ function PostMap(props) {
                 position={post.location}
                 title={post.title}
                 onClick={() => handleActiveMarker({ id: post.id, position: post.location })}
+                icon= {post.sightingType === 'ANIMAL' ? faunaIcon : floraIcon }
               >
                 {activeMarker === post.id ? (
                   <InfoWindow onCloseClick={() => setActiveMarker([])}>
@@ -150,14 +180,7 @@ function PostMap(props) {
                       </div>
                       <div align="center">
                         <br />
-                        <OverlayTrigger
-                          placement="left"
-                          delayShow={1000}
-                          overlay={<Tooltip id="details">details</Tooltip>}
-                        >
                           <Post post={post} />
-
-                        </OverlayTrigger>
                         <br />
                       </div>
 
@@ -168,6 +191,30 @@ function PostMap(props) {
             ))
           }
 
+
+
+          <Marker
+              position={newMarkerLatLng}
+              visible={showing}
+          >
+            {selected ? (
+              <InfoWindow
+                  position={newMarkerLatLng}
+                  onCloseClick={ () => { setShowing(false); setSelected(false) }}
+              >
+                <div>
+                  <p>lat:{newMarkerLatLng.lat}; lng : {newMarkerLatLng.lng}</p>
+                  <div>
+                    <Button>
+                      ADD a new Post
+                    </Button>
+                  </div>
+                </div>
+              </InfoWindow>) : null
+
+            }
+
+          </Marker>
         </GoogleMap>
       </div>
 
@@ -178,8 +225,12 @@ function PostMap(props) {
 }
 
 
-function Locate({ panTo }) {
-  return (
+const locateTooltip = (
+  <Tooltip id="locate-tooltip" placement="left">Find my location</Tooltip>
+);
+
+const Locate = ({ panTo }) => (
+  <OverlayTrigger delayShow={1000} overlay={locateTooltip}>
     <Button
       onClick={() => {
         navigator.geolocation.getCurrentPosition(
@@ -193,10 +244,10 @@ function Locate({ panTo }) {
         );
       }}
     >
-      Find me
+      <Glyphicon glyph="map-marker" />
     </Button>
-  );
-}
+  </OverlayTrigger>
+);
 
 function Search({ panTo }) {
   const {
@@ -230,32 +281,41 @@ function Search({ panTo }) {
     }
   };
 
-  return (
-    <div>
-      <Combobox onSelect={handleSelect}>
-        <ComboboxInput
-          value={value}
-          onChange={handleInput}
-          disabled={!ready}
-          placeholder="Search for locations"
-        />
-        <ComboboxPopover style={{ backgroundColor: 'white' }}>
-          <ComboboxList style={{
-            position: 'absolute', left: '10%', padding: '0.5rem', backgroundColor: 'white',
-          }}
-          >
 
-            {status === 'OK'
-            && data.map(({ id, description }) => (
-              <ComboboxOption key={id} value={description} />
-            ))}
-          </ComboboxList>
-        </ComboboxPopover>
-      </Combobox>
+  return (
+    <div style={div2}>
+      <Col sm={3} lg={1} med={2}>
+        <Locate panTo={panTo} />
+      </Col>
+      <Col sm={3} lg={1} med={2}>
+        &nbsp;
+      </Col>
+      <Col sm={4} lg={2} med={3}>
+        <Combobox onSelect={handleSelect}>
+          <ComboboxInput
+            style={cob1}
+            value={value}
+            onChange={handleInput}
+            disabled={!ready}
+            placeholder="Search for locations"
+          />
+          <ComboboxPopover style={{ backgroundColor: 'white' }}>
+            <ComboboxList style={{
+              position: 'absolute', left: '10%', padding: '0.5rem', backgroundColor: 'white',
+            }}
+            >
+
+              {status === 'OK'
+              && data.map(({ id, description }) => (
+                <ComboboxOption key={id} value={description} />
+              ))}
+            </ComboboxList>
+          </ComboboxPopover>
+        </Combobox>
+      </Col>
     </div>
   );
 }
-
 
 const PostMapWithToast = withToast(PostMap);
 

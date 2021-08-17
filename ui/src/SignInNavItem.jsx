@@ -61,13 +61,13 @@ class SignInNavItem extends React.Component {
       const body = await response.text();
       const result = JSON.parse(body);
       const {
-        signedIn, givenName, name, email,
+        id, signedIn, givenName, email,
       } = result;
 
       console.log(`Result from Google authentication ${JSON.stringify(result)}`);
       const { onUserChange } = this.props;
       onUserChange({
-        signedIn, givenName, name, email,
+        id, signedIn, givenName, email,
       });
     } catch (error) {
       showError(`Error signing into the app: ${error}`);
@@ -109,12 +109,14 @@ class SignInNavItem extends React.Component {
 
   render() {
     const { user } = this.props;
+    const { onPostsChange } = this.props;
+
     if (user.signedIn) {
       return (
         <NavDropdown title={user.givenName} id="user">
           <MenuItem onClick={this.signOut}>Sign Out</MenuItem>
           <UserContext.Provider value={user}>
-            <Profile user={user} />
+            <Profile user={user} onPostsChange={onPostsChange} />
           </UserContext.Provider>
         </NavDropdown>
       );

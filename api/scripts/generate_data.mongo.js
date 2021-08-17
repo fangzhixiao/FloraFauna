@@ -2,7 +2,7 @@
  * Run using the mongo shell. For remote databases, ensure that the
  * connection string is supplied in the command line. For example:
  * localhost:
- *   mongo issuetracker scripts/generate_data.mongo.js
+ *   mongo florafauna scripts/generate_data.mongo.js
  * Atlas:
  *   mongo mongodb+srv://user:pwd@xxx.mongodb.net/issuetracker scripts/generate_data.mongo.js
  */
@@ -19,7 +19,7 @@ const userIds = [];
 for (let i = 0; i < 5; i+= 1) {
   const id = uuid.v4();
   userIds.push(id);
-  db.users.insertOne({ id, googleId: "test-id" });
+  db.users.insertOne({ id, googleId: `test_id_${i}`, givenName: `test_givenName_${i}`, email: `test_${i}@gmail.com` });
 }
 
 for (let i = 0; i < 40; i += 1) {
@@ -38,7 +38,7 @@ for (let i = 0; i < 40; i += 1) {
   const timezone = 'UTC' + timezones[Math.floor(Math.random() * 2)] + Math.floor(Math.random() * 12);
   const createdUTC = '2021-08-11T03:03:07.546Z';
   const post = {
-    id, title, sightingType, authorId, spottedUTC, timezone, location, createdUTC, description,
+    id, title, sightingType, authorId, spottedUTC, timezone, location, createdUTC, description, confirmedCount: 0,
   };
 
   db.posts.insertOne(post);
@@ -47,4 +47,4 @@ for (let i = 0; i < 40; i += 1) {
 const count = db.posts.count();
 db.counters.updateOne({ _id: 'posts' }, { $set: { current: count } });
 
-print('New post count:', count);
+console.log('New post count:', count);

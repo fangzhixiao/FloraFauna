@@ -3,10 +3,10 @@ import {
   NavItem, Glyphicon, Modal, Form, FormGroup, FormControl, ControlLabel,
   Button, ButtonToolbar, Tooltip, OverlayTrigger,
 } from 'react-bootstrap';
+import { DateTime } from 'luxon';
 import graphQLFetch from './graphQLFetch.js';
 import withToast from './withToast.jsx';
 import DateInput from './DateInput.jsx';
-import { DateTime } from 'luxon';
 
 // This function wraps file reader in a promise and translates the file into base64 for upload.
 function readFile(file) {
@@ -98,6 +98,7 @@ class PostAddNavItem extends React.Component {
   async handleSubmit(e) {
     e.preventDefault();
     const { date, timezone } = this.state;
+    const { user } = this.props;
 
     const encodedImages = await this.handleUpload(); // base64 encoded images
 
@@ -105,7 +106,7 @@ class PostAddNavItem extends React.Component {
     const post = {
       title: form.title.value,
       sightingType: form.sightingType.value,
-      authorId: "1", // TODO replace hardcoded ID with actual user.id
+      authorId: user.id, // TODO replace hardcoded ID with actual user.id
       spottedUTC: date,
       timezone,
       location: {
@@ -135,6 +136,8 @@ class PostAddNavItem extends React.Component {
     const { showSuccess, showError } = this.props;
     const data = await graphQLFetch(query, { post }, showError);
     if (data) {
+      const { onPostsChange } = this.props;
+      onPostsChange(true); // set refresh
       this.hideModal();
       showSuccess('Added new post successfully');
     }
@@ -204,11 +207,15 @@ class PostAddNavItem extends React.Component {
               </FormGroup>
               <FormGroup>
                 <ControlLabel>Date Spotted</ControlLabel>
-                <DateInput
-                  value={date}
-                  input={false}
-                  onChange={this.onChangeDate}
-                />
+                <div align="center">
+                  <DateInput
+                    value={date}
+                    input={false}
+                    onChange={this.onChangeDate}
+                    align="center"
+                  />
+                </div>
+
                 <FormControl.Feedback />
               </FormGroup>
             </Form>

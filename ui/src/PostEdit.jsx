@@ -202,8 +202,8 @@ class PostEdit extends React.Component {
         <Panel.Body>
           <Form horizontal onSubmit={this.handleSubmit}>
             <FormGroup>
-              <Col componentClass={ControlLabel} sm={3}>Title</Col>
-              <Col sm={9}>
+              <Col componentClass={ControlLabel} xs={6} sm={5} md={4} lg={3}>Title</Col>
+              <Col sm={7} md={6} lg={5}>
                 <FormControl
                   componentClass={TextInput}
                   size={50}
@@ -215,25 +215,28 @@ class PostEdit extends React.Component {
               </Col>
             </FormGroup>
             <FormGroup>
-              <Col componentClass={ControlLabel} sm={3}>Created</Col>
-              <Col sm={9}>
+              <Col componentClass={ControlLabel} xs={6} sm={5} md={4} lg={3}>Created</Col>
+              <Col sm={7} md={6} lg={5}>
                 <FormControl.Static>
                   {created}
                 </FormControl.Static>
               </Col>
             </FormGroup>
             <FormGroup>
-              <Col componentClass={ControlLabel} sm={3}>SpottedUTC</Col>
-              <DateInput
-                name="spottedUTC"
-                value={post.spottedUTC}
-                input={false}
-                onChange={this.onChangeDate}
-              />
+              <Col componentClass={ControlLabel} xs={6} sm={5} md={4} lg={3}>SpottedUTC</Col>
+              <Col sm={7} md={6} lg={5}>
+                <DateInput
+                  name="spottedUTC"
+                  value={post.spottedUTC}
+                  input={false}
+                  onChange={this.onChangeDate}
+                  align="left"
+                />
+              </Col>
             </FormGroup>
             <FormGroup>
-              <Col componentClass={ControlLabel} sm={3}>Location</Col>
-              <Col sm={9}>
+              <Col componentClass={ControlLabel} xs={6} sm={5} md={4} lg={3}>Location</Col>
+              <Col sm={7} md={6} lg={5}>
                 <FormControl.Static>
                   Latitude:
                   {' '}
@@ -246,8 +249,8 @@ class PostEdit extends React.Component {
               </Col>
             </FormGroup>
             <FormGroup>
-              <Col componentClass={ControlLabel} sm={3}>Sighting Type</Col>
-              <Col sm={9}>
+              <Col componentClass={ControlLabel} xs={6} sm={5} md={4} lg={3}>Sighting Type</Col>
+              <Col sm={7} md={6} lg={5}>
                 <FormControl
                   componentClass="select"
                   name="sightingType"
@@ -260,8 +263,8 @@ class PostEdit extends React.Component {
               </Col>
             </FormGroup>
             <FormGroup>
-              <Col componentClass={ControlLabel} sm={3}>Description</Col>
-              <Col sm={9}>
+              <Col componentClass={ControlLabel} xs={6} sm={5} md={4} lg={3}>Description</Col>
+              <Col sm={7} md={6} lg={5}>
                 <FormControl
                   componentClass={TextInput}
                   tag="textarea"

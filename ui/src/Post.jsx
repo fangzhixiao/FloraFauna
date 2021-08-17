@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   Modal, FormGroup, FormControl, ControlLabel, Alert,
-  Col, Button, Carousel, Row, ListGroup, ListGroupItem, Panel,
+  Col, Button, Carousel, Row, ListGroup, ListGroupItem, Panel, Tooltip, OverlayTrigger,
 } from 'react-bootstrap';
 import { DateTime } from 'luxon';
 import withToast from './withToast.jsx';
@@ -24,6 +24,7 @@ class Post extends React.Component {
     this.state = {
       showing: false,
       post,
+      author: '',
       invalidFields: {},
       showingValidation: false,
       newComment: '',
@@ -77,9 +78,24 @@ class Post extends React.Component {
         }
       }`;
 
+    const queryUser = `query getAuthor($id: String){ 
+    getAuthor(id:$id){
+      id givenName email
+    }}`;
+
     const data = await graphQLFetch(query, { id }, showError);
+
     if (data) {
       this.setState({ imageUrls: data.post.imageUrls });
+      console.log(data.post.authorId);
+      const userData = await graphQLFetch(queryUser, { id: data.post.authorId }, showError);
+      if (userData != null) {
+        if (userData.getAuthor == null) {
+          this.setState({ author: 'unknown' });
+        } else {
+          this.setState({ author: userData.getAuthor.givenName });
+        }
+      }
     }
   }
 
@@ -109,7 +125,7 @@ class Post extends React.Component {
     const user = this.context;
 
     const comment = {
-      commenterId: user.givenName, //TODO change this to user id or name
+      commenterId: user.givenName, // TODO change this to user id or name
       content: newComment,
       createdUTC: new Date(new Date().getTime()),
     };
@@ -151,7 +167,7 @@ class Post extends React.Component {
   }
 
   render() {
-    const { showing, post } = this.state;
+    const { showing, post, author } = this.state;
     const { imageUrls } = this.state;
     const user = this.context;
 
@@ -233,9 +249,18 @@ class Post extends React.Component {
     // TODO: enable send comment when functionality is implemented
     return (
       <React.Fragment>
+
+        <OverlayTrigger
+            placement="left"
+            delayShow={1000}
+            overlay={<Tooltip id="details">details</Tooltip>}
+        >
+
         <Button style={btn1} onClick={this.showModal}>
           View Post
         </Button>
+
+        </OverlayTrigger>
         <Modal keyboard show={showing} onHide={this.hideModal}>
           <Modal.Header closeButton>
             <Modal.Title>
@@ -272,7 +297,7 @@ class Post extends React.Component {
               <Panel.Body>
                 Author:
                 {' '}
-                {post.authorId}
+                {author}
                 <br />
                 {post.description}
               </Panel.Body>

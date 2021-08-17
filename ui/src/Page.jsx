@@ -6,7 +6,7 @@ import {
   MenuItem,
   Glyphicon,
   Grid,
-  Col, NavItem,
+  Col,
 } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import PostAddNavItem from './PostAddNavItem.jsx';
@@ -14,27 +14,28 @@ import SignInNavItem from './SignInNavItem.jsx';
 import Contents from './Contents.jsx';
 import Search from './Search.jsx';
 import UserContext from './UserContext.js';
+import PostContext from './PostContext.js';
 import graphQLFetch from './graphQLFetch.js';
 import store from './store.js';
 
-function NavBar({ user, onUserChange }) {
+function NavBar({ user, onUserChange, onPostsChange }) {
   return (
     <Navbar fluid>
-      <Navbar.Header>
-        <LinkContainer to="/posts">
-          <NavItem>
+      <Col xs={7} sm={6} md={5} lg={4}>
+        <Navbar.Header>
+          <LinkContainer to="/posts">
             <Navbar.Brand>Flora and Fauna Sighting</Navbar.Brand>
-          </NavItem>
-        </LinkContainer>
-      </Navbar.Header>
-      <Col sm={5}>
+          </LinkContainer>
+        </Navbar.Header>
+      </Col>
+      <Col xs={7} sm={6} md={5} lg={4}>
         <Navbar.Form>
           <Search />
         </Navbar.Form>
       </Col>
       <Nav pullRight>
-        <PostAddNavItem user={user} />
-        <SignInNavItem user={user} onUserChange={onUserChange} />
+        <PostAddNavItem user={user} onPostsChange={onPostsChange} />
+        <SignInNavItem user={user} onUserChange={onUserChange} onPostsChange={onPostsChange} />
 
         <NavDropdown
           id="user-dropdown"
@@ -53,7 +54,7 @@ function NavBar({ user, onUserChange }) {
 export default class Page extends React.Component {
   static async fetchData(cookie) {
     const query = `query { user {
-      signedIn givenName email
+      id signedIn givenName email
     }}`;
     const data = await graphQLFetch(query, null, null, cookie);
     return data;
@@ -63,8 +64,15 @@ export default class Page extends React.Component {
     super(props);
     const user = store.userData ? store.userData.user : null;
     delete store.userData;
-    this.state = { user };
+
     this.onUserChange = this.onUserChange.bind(this);
+    this.onPostsChange = this.onPostsChange.bind(this);
+
+    this.state = {
+      user,
+      refresh: false,
+      changeRefresh: this.onPostsChange,
+    };
   }
 
   async componentDidMount() {
@@ -79,15 +87,23 @@ export default class Page extends React.Component {
     this.setState({ user });
   }
 
+
+  onPostsChange(refresh) {
+    this.setState({ refresh });
+  }
+
   render() {
-    const { user } = this.state;
+    const { user, refresh, changeRefresh } = this.state;
+    const postContext = { refresh, changeRefresh };
     if (user == null) return null;
     return (
       <div>
-        <NavBar user={user} onUserChange={this.onUserChange} />
+        <NavBar user={user} onUserChange={this.onUserChange} onPostsChange={this.onPostsChange} />
         <Grid fluid>
           <UserContext.Provider value={user}>
-            <Contents />
+            <PostContext.Provider value={postContext}>
+              <Contents />
+            </PostContext.Provider>
           </UserContext.Provider>
         </Grid>
       </div>
