@@ -9,6 +9,7 @@ import mapStyles from './mapStyles.jsx';
 import Post from './Post.jsx';
 import flora from './flora.svg';
 import fauna from './iconmonstr-cat-7.svg'
+import Geocode from 'react-geocode'
 
 const div1 = {
   align: 'center',
@@ -52,6 +53,8 @@ const options = {
 
 function PostMap(props) {
   const { posts } = props;
+
+
 
 
 
@@ -126,6 +129,41 @@ function PostMap(props) {
   };
 
 
+  const reverseGeocoding = (position) =>  {
+    Geocode.setLanguage("en");
+    Geocode.setApiKey("AIzaSyBxw1ZLvBFlT_uLrisvAPSF29rv2PKcynw");
+    Geocode.setLocationType("ROOFTOP");
+    Geocode.enableDebug();
+    Geocode.fromLatLng(position.lat, position.lng).then(
+        (response) => {
+          const address = response.results[0].formatted_address;
+          let city, state, country;
+          for (let i = 0; i < response.results[0].address_components.length; i++) {
+            for (let j = 0; j < response.results[0].address_components[i].types.length; j++) {
+              switch (response.results[0].address_components[i].types[j]) {
+                case "locality":
+                  city = response.results[0].address_components[i].long_name;
+                  break;
+                case "administrative_area_level_1":
+                  state = response.results[0].address_components[i].long_name;
+                  break;
+                case "country":
+                  country = response.results[0].address_components[i].long_name;
+                  break;
+              }
+            }
+          }
+
+          console.log(city, state, country);
+          console.log(address.toString());
+
+          return address.toLocaleString();
+        },
+        (error) => {
+          console.error(error);
+        }
+    );
+      }
 
   return (
 
@@ -171,7 +209,8 @@ function PostMap(props) {
                         {convertDate(post.spottedUTC, post.timezone)}
                       </div>
                       <div>
-                        Address: TBD
+                        Address:
+                        {reverseGeocoding(post.location)}
                         {/* Todo : get address based on location to get address */}
                       </div>
                       <div align="center">
