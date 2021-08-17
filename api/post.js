@@ -37,6 +37,8 @@ class Controller {
     this.update = this.update.bind(this);
     this.remove = this.remove.bind(this);
     this.restore = this.restore.bind(this);
+    this.incrementConfirmed = this.incrementConfirmed.bind(this);
+    this.decrementConfirmed = this.decrementConfirmed.bind(this);
   }
 
   async add(_, { post }) {
@@ -69,6 +71,7 @@ class Controller {
     newPost.spottedUTC = DateTime.fromISO(post.spottedUTC, { zone: 'utc' }).toString();
     newPost.id = uuid.v4();
     newPost.imageKeys = keys;
+    newPost.confirmedCount = 0;
 
     const result = await this.db.collection('posts').insertOne(newPost);
     const savedPost = await this.get(this, { id: result.ops[0].id });
@@ -95,16 +98,15 @@ class Controller {
   }
 
   async list(_, {
-    sightingType, search, authorId, dateUTC, minTimeUTC, maxTimeUTC,
+    sightingType, search, authorId, dateUTC, minTimeUTC, maxTimeUTC, hasImage
   }) {
-    console.log('new query');
     const filter = {};
     if (sightingType) filter.sightingType = sightingType;
     if (search) filter.$text = { $search: search };
     if (authorId) filter.authorId = authorId;
 
-    const posts = await this.db.collection('posts').find(filter).toArray();
-    if (dateUTC || minTimeUTC) {
+    let posts = await this.db.collection('posts').find(filter).toArray();
+    if (dateUTC || minTimeUTC || hasImage != null ) {
       const filteredPosts = [];
       for (const post of posts) {
         const spottedUTC = DateTime.fromISO(post.spottedUTC, { zone: 'UTC' });
@@ -117,16 +119,42 @@ class Controller {
           const min = parseInt(DateTime.fromISO(minTimeUTC, { zone: 'UTC' }).toFormat('HHmmss'));
           const max = parseInt(DateTime.fromISO(maxTimeUTC, { zone: 'UTC' }).toFormat('HHmmss'));
           const t = parseInt(spottedRezoned.toFormat('HHmmss'));
-          console.log('min: ', min);
-          console.log('max: ', max);
-          console.log('t: ', t);
           if (t < min || t > max) {
             continue;
           }
         }
+        if (hasImage != null) {
+          if (hasImage === true) {
+            if (!post.imageKeys || post.imageKeys.length === 0) {
+              continue;
+            }
+          } else {
+            console.log("looking for posts with no image");
+            if (post.imageKeys && post.imageKeys.length > 0) {
+              continue;
+            }
+          }
+        }
         filteredPosts.push(post);
       }
-      return filteredPosts;
+      posts = filteredPosts;
+    }
+
+    for (const post of posts) {
+      const imageUrls = [];
+
+      if (post.imageKeys != null) {
+        for (const imageKey of post.imageKeys) {
+          const url = await getSignedUrl(this.s3Client, new s3.GetObjectCommand({
+            Bucket: 'florafauna-images',
+            Key: imageKey,
+          }), { expiresIn: 3600 });
+          imageUrls.push(url);
+        }
+      }
+
+      post.imageUrls = imageUrls;
+      delete post.imageKeys;
     }
     return posts;
   }
@@ -165,15 +193,39 @@ class Controller {
     }
     return false;
   }
+
+  async incrementConfirmed(_, { id }) {
+    const post = await this.db.collection('posts').findOne({ id });
+    post.confirmedCount += 1;
+
+    await this.db.collection('posts').updateOne({ id }, { $set: post });
+    const savedPost = await this.db.collection('posts').findOne({ id });
+
+    if (!savedPost) {
+      return -1;
+    }
+
+    return savedPost.confirmedCount;
+  }
+
+  async decrementConfirmed(_, { id }) {
+    const post = await this.db.collection('posts').findOne({ id });
+    if (post.confirmedCount > 0) {
+      post.confirmedCount -= 1;
+    }
+
+    await this.db.collection('posts').updateOne({ id }, { $set: post });
+    const savedPost = await this.db.collection('posts').findOne({ id });
+
+    if (!savedPost) {
+      return -1;
+    }
+
+    return savedPost.confirmedCount;
+  }
 }
 
 // mustbeSignedIn to make sure that if not signed in, user can only see posts, no mutations.
 module.exports = {
   Controller,
-  // list,
-  // add: mustBeSignedIn(add),
-  // get,
-  // update: mustBeSignedIn(update),
-  // delete: mustBeSignedIn(remove),
-  // restore: mustBeSignedIn(restore),
 };

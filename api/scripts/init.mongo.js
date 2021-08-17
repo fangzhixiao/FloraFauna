@@ -12,8 +12,8 @@
 /* eslint no-restricted-globals: "off" */
 
 
+db.users.deleteMany({});
 db.posts.deleteMany({});
-db.users.deleteMany({})
 db.deleted_posts.deleteMany({});
 
 const postsDB = [
@@ -30,6 +30,7 @@ const postsDB = [
     },
     sightingType: 'ANIMAL',
     description: 'I saw a turkey',
+    confirmedCount: 0,
   },
   {
     title: 'A Poppy',
@@ -44,12 +45,13 @@ const postsDB = [
     },
     sightingType: 'PLANT',
     description: 'I saw a poppy',
+    confirmedCount: 0,
   },
 ];
 
 db.posts.insertMany(postsDB);
 const count = db.posts.count();
-print('Inserted', count, 'posts');
+console.log('Inserted', count, 'posts');
 
 db.counters.deleteMany({ _id: 'posts' });
 db.counters.insertOne({ _id: 'posts', current: count });
@@ -59,4 +61,3 @@ db.posts.createIndex({ author: 1 });
 db.posts.createIndex({ created: 1 });
 db.posts.createIndex({ title: 'text', description: 'text' });
 db.deleted_posts.createIndex({ id: 1 }, { unique: true });
-db.users.createIndex({ id: 1 }, { unique: true });
