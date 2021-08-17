@@ -74,6 +74,7 @@ class Post extends React.Component {
         comments {
           commenterId content createdUTC
           }
+        confirmedCount
         }
       }`;
 
@@ -86,7 +87,6 @@ class Post extends React.Component {
 
     if (data) {
       this.setState({ imageUrls: data.post.imageUrls });
-      console.log(data.post.authorId);
       const userData = await graphQLFetch(queryUser, { id: data.post.authorId }, showError);
       if (userData != null) {
         if (userData.getAuthor == null) {
@@ -186,7 +186,6 @@ class Post extends React.Component {
       .setZone(timezone);
     const spotted = spottedDateTime.toLocaleString(DateTime.DATETIME_MED);
 
-    // TODO: image from DB should be a URL see google doc for reference
     function DisplayImages() {
       if (imageUrls == null || imageUrls.length === 0) {
         return (
@@ -194,9 +193,10 @@ class Post extends React.Component {
         );
       }
       const display = imageUrls.map((image, index) => (
-        <Carousel.Item align="center">
+        // eslint-disable-next-line react/no-array-index-key
+        <Carousel.Item align="center" key={`${post.title}${index}`}>
           {/* eslint-disable-next-line react/no-array-index-key */}
-          <img src={image} key={index} alt={post.title} />
+          <img src={image} key={`${post.title}${index}`} alt={post.title} />
         </Carousel.Item>
       ));
 

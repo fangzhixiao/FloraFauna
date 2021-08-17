@@ -22,11 +22,13 @@ class PostSightingFilter extends React.Component {
       sightingType: params.get('sightingType') || '',
       date: params.get('date') || '',
       time: params.get('time') || '',
+      hasImage: params.get('image') || '',
       changed: false,
     };
     this.onChangeSightingType = this.onChangeSightingType.bind(this);
     this.onChangeDate = this.onChangeDate.bind(this);
     this.onChangeTime = this.onChangeTime.bind(this);
+    this.onChangeHasImage = this.onChangeHasImage.bind(this);
     this.applyFilter = this.applyFilter.bind(this);
     this.showOriginalFilter = this.showOriginalFilter.bind(this);
   }
@@ -59,6 +61,10 @@ class PostSightingFilter extends React.Component {
     this.setState({ time: e.target.value, changed: true });
   }
 
+  onChangeHasImage(e) {
+    this.setState({ hasImage: e.target.value, changed: true });
+  }
+
   showOriginalFilter() {
     const { location: { search } } = this.props;
     const params = new URLSearchParams(search);
@@ -66,24 +72,28 @@ class PostSightingFilter extends React.Component {
       sightingType: params.get('sightingType') || '',
       date: params.get('date') || '',
       time: params.get('time') || '',
+      hasImage: params.get('image') || '',
       changed: false,
     });
   }
 
   applyFilter() {
-    const { sightingType, date, time } = this.state;
+    const {
+      sightingType, date, time, hasImage,
+    } = this.state;
     const { history, urlBase } = this.props;
     const params = new URLSearchParams();
     if (sightingType) params.set('sightingType', sightingType);
     if (date) params.set('date', date);
     if (time) params.set('time', time);
+    if (hasImage) params.set('image', hasImage);
     const search = params.toString() ? `?${params.toString()}` : '';
     history.push({ pathname: urlBase, search });
   }
 
   render() {
     const {
-      sightingType, date, time, changed,
+      sightingType, date, time, changed, hasImage,
     } = this.state;
 
     let dateView = new Date(date);
@@ -147,6 +157,23 @@ class PostSightingFilter extends React.Component {
                 <option value="Evening">Evening: 6PM - 12AM</option>
               </FormControl>
             </InputGroup>
+          </Panel.Body>
+        </Panel>
+        <Panel>
+          <Panel.Heading>
+            <Panel.Title toggle>Images</Panel.Title>
+          </Panel.Heading>
+          <Panel.Body collapsible>
+            <ControlLabel>Images</ControlLabel>
+            <FormControl
+              componentClass="select"
+              value={hasImage}
+              onChange={this.onChangeHasImage}
+            >
+              <option value="">(All)</option>
+              <option value="true">Post has images</option>
+              <option value="false">Post does not have images</option>
+            </FormControl>
           </Panel.Body>
         </Panel>
         <FormGroup>

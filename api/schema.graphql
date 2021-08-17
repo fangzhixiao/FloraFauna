@@ -82,7 +82,6 @@ input PostUpdateInput {
 
 ##### Top level declarations
 # Query and Mutation define the entry point of every GraphQL query
-# TODO redefine user of query with user(id: String!) when appropriate -- front end will need to update for this change.
 type Query {
     about: String!
     postList(

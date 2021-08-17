@@ -1,8 +1,10 @@
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable radix */
 const uuid = require('uuid');
 const s3 = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 const { UserInputError } = require('apollo-server-express');
-const { DateTime, Settings } = require('luxon');
+const { DateTime } = require('luxon');
 /**
  * These are functions related to post objects in the database.
  */
@@ -65,6 +67,7 @@ class Controller {
         }));
     }
 
+    // eslint-disable-next-line no-param-reassign
     delete post.images;
     const newPost = Object.assign({}, post);
     newPost.createdUTC = DateTime.utc().toString();
@@ -84,6 +87,7 @@ class Controller {
 
     if (post.imageKeys != null) {
       for (const imageKey of post.imageKeys) {
+        // eslint-disable-next-line no-await-in-loop
         const url = await getSignedUrl(this.s3Client, new s3.GetObjectCommand({
           Bucket: 'florafauna-images',
           Key: imageKey,
@@ -98,7 +102,7 @@ class Controller {
   }
 
   async list(_, {
-    sightingType, search, authorId, dateUTC, minTimeUTC, maxTimeUTC, hasImage
+    sightingType, search, authorId, dateUTC, minTimeUTC, maxTimeUTC, hasImage,
   }) {
     const filter = {};
     if (sightingType) filter.sightingType = sightingType;
@@ -106,7 +110,7 @@ class Controller {
     if (authorId) filter.authorId = authorId;
 
     let posts = await this.db.collection('posts').find(filter).toArray();
-    if (dateUTC || minTimeUTC || hasImage != null ) {
+    if (dateUTC || minTimeUTC || hasImage != null) {
       const filteredPosts = [];
       for (const post of posts) {
         const spottedUTC = DateTime.fromISO(post.spottedUTC, { zone: 'UTC' });
@@ -129,7 +133,7 @@ class Controller {
               continue;
             }
           } else {
-            console.log("looking for posts with no image");
+            console.log('looking for posts with no image');
             if (post.imageKeys && post.imageKeys.length > 0) {
               continue;
             }
@@ -145,6 +149,7 @@ class Controller {
 
       if (post.imageKeys != null) {
         for (const imageKey of post.imageKeys) {
+          // eslint-disable-next-line no-await-in-loop
           const url = await getSignedUrl(this.s3Client, new s3.GetObjectCommand({
             Bucket: 'florafauna-images',
             Key: imageKey,
@@ -225,7 +230,6 @@ class Controller {
   }
 }
 
-// mustbeSignedIn to make sure that if not signed in, user can only see posts, no mutations.
 module.exports = {
   Controller,
 };

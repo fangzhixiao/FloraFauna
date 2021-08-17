@@ -21,6 +21,9 @@ class PostMapWrapper extends React.Component {
     const params = new URLSearchParams(search);
     const vars = { hasSelection: false, selectedId: 0 };
     if (params.get('sightingType')) vars.sightingType = params.get('sightingType');
+    if (params.get('image')) {
+      vars.hasImage = params.get('image') === 'true';
+    }
     if (params.get('date')) {
       const date = new Date(params.get('date'));
       if (date !== 'Invalid Date') {
@@ -35,7 +38,6 @@ class PostMapWrapper extends React.Component {
       vars.minTimeUTC = interval.minTimeUTC;
       vars.maxTimeUTC = interval.maxTimeUTC;
     }
-    // TODO: Add hasImages based on images
 
     const query = `query postList(
       $sightingType: SightingType
@@ -43,6 +45,7 @@ class PostMapWrapper extends React.Component {
       $dateUTC: String
       $minTimeUTC: String
       $maxTimeUTC: String
+      $hasImage: Boolean
     ) {
       postList(
         sightingType: $sightingType
@@ -50,6 +53,7 @@ class PostMapWrapper extends React.Component {
         minTimeUTC: $minTimeUTC
         maxTimeUTC: $maxTimeUTC
         search: $search
+        hasImage: $hasImage
     ) {
       id
       title
@@ -66,9 +70,11 @@ class PostMapWrapper extends React.Component {
       comments {
         commenterId content createdUTC
       }
+      confirmedCount
     }
   }`;
 
+    console.log(vars);
     const data = await graphQLFetch(query, vars, showError);
     return data;
   }
