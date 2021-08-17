@@ -18,6 +18,7 @@ import TextInput from './TextInput.jsx';
 import withToast from './withToast.jsx';
 import store from './store.js';
 import UserContext from './UserContext.js';
+import PostContext from './PostContext.js';
 import DateInput from './DateInput.jsx';
 
 class PostEdit extends React.Component {
@@ -139,6 +140,8 @@ class PostEdit extends React.Component {
       query, { changes, id }, showError,
     );
     if (data) {
+      const postContext = this.context;
+      postContext.changeRefresh(true);
       this.setState({ post: data.postUpdate });
       showSuccess('Updated post successfully');
     }
@@ -181,14 +184,12 @@ class PostEdit extends React.Component {
       );
     }
 
-    const user = this.context;
-
     const timeZone = post.timezone;
     // convert to given timezone
     const createdDateTime = DateTime.fromISO(new Date(post.createdUTC).toISOString(),
       { zone: 'UTC' })
       .setZone(timeZone);
-    const created = createdDateTime.toLocaleString(DateTime.DATETIME_FULL);
+    const created = createdDateTime.toLocaleString(DateTime.DATETIME_MED);
 
 
     return (
@@ -277,13 +278,17 @@ class PostEdit extends React.Component {
             <FormGroup>
               <Col smOffset={3} sm={6}>
                 <ButtonToolbar>
-                  <Button
-                    disabled={!user.signedIn}
-                    bsStyle="primary"
-                    type="submit"
-                  >
-                    Submit
-                  </Button>
+                  <UserContext.Consumer>
+                    {user => (
+                      <Button
+                        disabled={!user.signedIn}
+                        bsStyle="primary"
+                        type="submit"
+                      >
+                        Submit
+                      </Button>
+                    )}
+                  </UserContext.Consumer>
                   <LinkContainer to="/posts">
                     <Button bsStyle="link">Back</Button>
                   </LinkContainer>
@@ -295,17 +300,12 @@ class PostEdit extends React.Component {
             </FormGroup>
           </Form>
         </Panel.Body>
-        <Panel.Footer>
-          <Link to={`/edit/${id - 1}`}>Prev</Link>
-          {' | '}
-          <Link to={`/edit/${id + 1}`}>Next</Link>
-        </Panel.Footer>
       </Panel>
     );
   }
 }
 
-PostEdit.contextType = UserContext;
+PostEdit.contextType = PostContext;
 const PostEditWithToast = withToast(PostEdit);
 PostEditWithToast.fetchData = PostEdit.fetchData;
 export default PostEditWithToast;

@@ -1,6 +1,5 @@
 import React from 'react';
-import { withRouter } from 'react-router-dom';
-import { LinkContainer } from 'react-router-bootstrap';
+import { withRouter, Link } from 'react-router-dom';
 import {
   Button, Glyphicon, Tooltip, OverlayTrigger, Table,
 } from 'react-bootstrap';
@@ -12,7 +11,7 @@ import withToast from './withToast.jsx';
 class PostRowPlain extends React.Component {
   render() {
     const {
-      post, deletePost, index,
+      post, deletePost, index, showError, showSuccess, onPostsChange,
     } = this.props;
 
     const editTooltip = (
@@ -47,20 +46,24 @@ class PostRowPlain extends React.Component {
     const tableRow = (
       <tr>
         <td>
-          <Post post={post} />
+          <Post
+            post={post}
+            changeRefresh={onPostsChange}
+            user={user}
+            showError={showError}
+            showSuccess={showSuccess}
+          />
         </td>
         <td>{post.title}</td>
         <td>{post.sightingType}</td>
         <td>{created}</td>
         <td>{spotted}</td>
         <td>
-          <LinkContainer to="/">
-            <OverlayTrigger disabled={!user.signedIn} delayShow={1000} overlay={editTooltip}>
-              <Button bsSize="xsmall" onClick={() => { window.open(`/edit/${post.id}`, '_blank'); }}>
-                <Glyphicon glyph="edit" />
-              </Button>
-            </OverlayTrigger>
-          </LinkContainer>
+          <OverlayTrigger disabled={!user.signedIn} delayShow={1000} overlay={editTooltip}>
+            <Button bsSize="xsmall">
+              <Link to={`/edit/${post.id}`} target="_blank"><Glyphicon glyph="edit" /></Link>
+            </Button>
+          </OverlayTrigger>
           {' '}
           <OverlayTrigger disabled={!user.signedIn} delayShow={1000} overlay={deleteTooltip}>
             <Button bsSize="xsmall" onClick={onDelete}>
@@ -79,12 +82,17 @@ PostRowPlain.contextType = UserContext;
 const PostRow = withRouter(PostRowPlain);
 delete PostRow.contextType;
 
-function PostTable({ posts, deletePost }) {
+function PostTable({
+  posts, deletePost, showError, showSuccess, onPostsChange,
+}) {
   const postRows = posts.map((post, index) => (
     <PostRow
       key={post.id}
       post={post}
       deletePost={deletePost}
+      showSuccess={showSuccess}
+      showError={showError}
+      onPostsChange={onPostsChange}
       index={index}
     />
   ));

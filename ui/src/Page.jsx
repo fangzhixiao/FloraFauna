@@ -8,8 +8,8 @@ import {
   Grid,
   Col,
 } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import { LinkContainer } from 'react-router-bootstrap';
-// import PostAddNavItem from './PostAddNavItem.jsx';
 import SignInNavItem from './SignInNavItem.jsx';
 import Contents from './Contents.jsx';
 import Search from './Search.jsx';
@@ -23,9 +23,11 @@ function NavBar({ user, onUserChange, onPostsChange }) {
     <Navbar fluid>
       <Col xs={7} sm={6} md={5} lg={4}>
         <Navbar.Header>
-          <LinkContainer to="/posts">
-            <Navbar.Brand>Flora and Fauna Sighting</Navbar.Brand>
-          </LinkContainer>
+          <Navbar.Brand>
+            <Link to="/posts">
+              Flora and Fauna Sighting
+            </Link>
+          </Navbar.Brand>
         </Navbar.Header>
       </Col>
       <Col xs={7} sm={6} md={5} lg={4}>

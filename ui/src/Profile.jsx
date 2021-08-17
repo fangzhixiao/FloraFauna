@@ -131,6 +131,7 @@ class Profile extends React.Component {
     const { posts, showing } = this.state;
     if (posts == null) return null;
     const user = this.context;
+    const { onPostsChange, showSuccess, showError } = this.props;
 
 
     // TODO: nice to have: Location as town/state
@@ -166,6 +167,9 @@ class Profile extends React.Component {
               <PostTable
                 posts={posts}
                 deletePost={this.deletePost}
+                showSuccess={showSuccess}
+                showError={showError}
+                onPostsChange={onPostsChange}
               />
             </Col>
           </Modal.Body>
