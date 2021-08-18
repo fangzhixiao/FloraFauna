@@ -41,39 +41,36 @@ Instructions to run application locally on machine:
     * Marker InfoWindows will display human readable locations for some markers. Not all locations
       have human readable location data from google's geocoder library. Map makes an async call
       to Google Geocoder using the currently selected post's coordinates and will return a 
-      city,state, and country.
-      ![UI Map InfoWindow](readme_images/ite3_infoWindow.png)
+      city,state, and country.  
+      ![UI Map InfoWindow](readme_images/ite3_infoWindow.png)  
     *  Map has a location search bar that will move map to selected location. Find Me button next
-      to search bar will show you your location if permission is given to allow location services.
-       ![UI Map SearchBar](readme_images/ite3_mapSearch.png)
+      to search bar will show you your location if permission is given to allow location services.  
+       ![UI Map SearchBar](readme_images/ite3_mapSearch.png)  
     * Map markers will show up as a flower or paw print depending on sighting type (Plant or Animal)
     * Styled the search and find me components to overlay on the map.
   
 Responsible Members: Jiatian and Zhining
-  * Add new post functionality is moved to the map. To add a new post, right click on map, click
-    the plus button and the Post Add Nav Item modal will show up.
-    ![UI Map addPost](readme_images/ite3_addPost.png)
-       
-  Responsible Member: Zhining Fang
-    * Map style updated to make the markers easier to see.
-    * Map will zoom in and out using scrolling if mouse is in the map.
-    * Added filter for images, date filter has a clear button, reset button will clear all filter
-      selections but have to click apply to apply cleared filter.
-      ![UI Map Filter](readme_images/ite3_filter.png)
-    * Search bar at the top will return posts on the map that match the search on submission.
-    * Added a new React Context, PostContext to help signal the PostMapWrapper component to rerender
-      postList (therefore triggering map rerendering) when a new post is added, deleted or restored by 
-      the user.
-    * Profile component: Profile will now show only posts that the currently signed in user has made
-      allowing them to delete or edit the posts.
-      ![UI Map profile](readme_images/ite3_userProfile.png)
-    * Post component: added a confirmed button and badge. Badge displays the number of confirms a 
-      sighting post has. The author of the post cannot confirm their own post. A user may confirm
-      a post more than once if they click out of the post and view it again.
-      ![UI Map confirm](readme_images/ite3_confirmSighting.png)
-    * Certain actions cannot be done if the user is not signed in, including adding, editing, and
-      deleting a post, and commenting or confirming a post.
-      ![UI Map comments](readme_images/ite3_comments.png)
+* Add new post functionality is moved to the map. To add a new post, right click on map, click
+    the plus button and the Post Add Nav Item modal will show up.  
+    ![UI Map addPost](readme_images/ite3_addPost.png)  
+Responsible Member: Zhining Fang  
+* Map style updated to make the markers easier to see.
+* Map will zoom in and out using scrolling if mouse is in the map.
+* 
+* Search bar at the top will return posts on the map that match the search on submission.
+* Added a new React Context, PostContext to help signal the PostMapWrapper component to rerender
+  postList (therefore triggering map rerendering) when a new post is added, deleted or restored by 
+  the user.
+* Profile component: Profile will now show only posts that the currently signed in user has made
+  allowing them to delete or edit the posts.  
+  ![UI Map profile](readme_images/ite3_userProfile.png)  
+* Post component: added a confirmed button and badge. Badge displays the number of confirms a 
+  sighting post has. The author of the post cannot confirm their own post. A user may confirm
+  a post more than once if they click out of the post and view it again.  
+  ![UI Map confirm](readme_images/ite3_confirmSighting.png)  
+* Certain actions cannot be done if the user is not signed in, including adding, editing, and
+  deleting a post, and commenting or confirming a post.  
+  ![UI Map comments](readme_images/ite3_comments.png)  
       
 ---
 
