@@ -1,5 +1,9 @@
 # FloraFauna
 ----
+
+Flora and Fauna Sighting Map is an application for reporting sightings of animals and plants. Users can sign in using their Google accounts to make posts about various sightings in their area. Users can comment and confirm other posts or edit/delete their own posts. They can also upload photos with their post. The application allows users to filter by sighting type, date, time of day, and whether the post has images. Finally users can also search for posts with certian keywords or look for posts in their area using the map. 
+
+----
 Link to UI deployment: https://florafauna-ui.herokuapp.com/posts  
 Link to API deployment: https://florafauna-api.herokuapp.com/graphql
 
