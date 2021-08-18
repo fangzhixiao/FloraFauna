@@ -25,7 +25,7 @@ function NavBar({ user, onUserChange, onPostsChange }) {
         <Navbar.Header>
           <Navbar.Brand>
             <Link to="/posts">
-              Flora and Fauna Sighting
+              Flora and Fauna Sighting Map
             </Link>
           </Navbar.Brand>
         </Navbar.Header>

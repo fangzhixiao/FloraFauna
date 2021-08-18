@@ -173,10 +173,15 @@ function PostMap(props) {
               }
             }
           }
-          setAddress(`${city}, ${state}, ${country}`);
+          if (city && state && country){
+            setAddress(`${city}, ${state}, ${country}`);
+          } else {
+            setAddress('');
+          }
         },
         (error) => {
-          showError(error);
+          console.log(error);
+          setAddress('');
         },
       );
   };
