@@ -29,8 +29,7 @@ Instructions to run application locally on machine:
 ### Project Iteration 3
 
 #### API Functionality: Responsible Member: Zhiqi Lin
-* Added users to help filter posts for users in profile, display author names for posts, and for
-  user specific ui functionality.
+* Added functionality to identity and store users who signed in with Google. The googleToken is sent from the front end to the back end upon sign-in. The back end fetches user profile information from Google and stores that information in the database. This information is then used to filter posts by user and display author names for posts and comments.
 * Added new confirmed count attribute to posts and corresponding increment and decrement count 
   mutations.
 * Added hasImages filter to backend.
