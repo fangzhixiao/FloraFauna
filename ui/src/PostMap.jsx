@@ -10,6 +10,7 @@ import {
 } from '@reach/combobox';
 import usePlacesAutocomplete, { getGeocode, getLatLng } from 'use-places-autocomplete';
 import { DateTime } from 'luxon';
+import Geocode from 'react-geocode';
 import withToast from './withToast.jsx';
 import mapStyles from './mapStyles.jsx';
 import Post from './Post.jsx';
@@ -21,7 +22,7 @@ import PostContext from './PostContext.js';
 
 const div1 = {
   align: 'center',
-  width: '150px',
+  width: '250px',
   margin: '10px ',
   backgroundColor: '#F0F8FF',
   minHeight: '80px',
@@ -90,6 +91,8 @@ function PostMap(props) {
   const [newMarkerLatLng, setNewMarkerLatLng] = React.useState(center);
   const [showing, setShowing] = React.useState(false);
 
+  const [address, setAddress] = React.useState('');
+
 
   const floraIcon = flora;
   const faunaIcon = fauna;
@@ -144,6 +147,40 @@ function PostMap(props) {
 
   const { showError, showSuccess } = props;
 
+  Geocode.setLanguage('en');
+  Geocode.setApiKey(window.ENV.REACT_APP_GOOGLE_MAPS_API_KEY);
+  Geocode.setLocationType('ROOFTOP');
+
+  const reverseGeocoding = (position) => {
+    Geocode.fromLatLng(position.lat, position.lng)
+      .then(
+        (response) => {
+          let city;
+          let state;
+          let country;
+          for (let i = 0; i < response.results[0].address_components.length; i++) {
+            for (let j = 0; j < response.results[0].address_components[i].types.length; j++) {
+              switch (response.results[0].address_components[i].types[j]) {
+                case 'locality':
+                  city = response.results[0].address_components[i].long_name;
+                  break;
+                case 'administrative_area_level_1':
+                  state = response.results[0].address_components[i].long_name;
+                  break;
+                case 'country':
+                  country = response.results[0].address_components[i].long_name;
+                  break;
+              }
+            }
+          }
+          setAddress(`${city}, ${state}, ${country}`);
+        },
+        (error) => {
+          showError(error);
+        },
+      );
+  };
+
 
   return (
 
@@ -187,8 +224,10 @@ function PostMap(props) {
                         {convertDate(post.spottedUTC, post.timezone)}
                       </div>
                       <div>
-                        Address: TBD
-                        {/* Todo : get address based on location to get address */}
+                        Address:
+                        {' '}
+                        {reverseGeocoding(post.location)}
+                        {address.toString()}
                       </div>
                       <div align="center">
                         <br />
