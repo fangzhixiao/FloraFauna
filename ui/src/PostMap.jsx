@@ -77,11 +77,8 @@ function PostMap(props) {
   const [address, setAddress] = React.useState([]);
 
 
-
-
   const floraIcon = flora;
   const faunaIcon = fauna;
-
 
 
   const mapRef = React.useRef();
@@ -131,9 +128,6 @@ function PostMap(props) {
   };
 
 
-  const returnAddress = (position) => {
-    const address = reverseGeocoding(position);
-  }
 
   const reverseGeocoding = (position) =>  {
 
@@ -159,7 +153,7 @@ function PostMap(props) {
               }
             }
           }
-          setAddress(address);
+          setAddress(country);
           //console.log(city, state, country);
           //console.log(address.toString());
         },
