@@ -20,7 +20,6 @@ async function render(req, res) {
     initialData = await activeRoute.component.fetchData(match, search, req.headers.cookie);
   }
   const userData = await Page.fetchData(req.headers.cookie);
-  console.log(userData);
 
   store.initialData = initialData;
   store.userData = userData;
