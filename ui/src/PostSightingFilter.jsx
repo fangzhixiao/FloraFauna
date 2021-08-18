@@ -11,7 +11,7 @@ import {
   ControlLabel,
   InputGroup,
   Col,
-  Panel,
+  Panel, Tooltip, OverlayTrigger,
 } from 'react-bootstrap';
 
 class PostSightingFilter extends React.Component {
@@ -23,14 +23,14 @@ class PostSightingFilter extends React.Component {
       date: params.get('date') || '',
       time: params.get('time') || '',
       hasImage: params.get('image') || '',
-      changed: false,
     };
     this.onChangeSightingType = this.onChangeSightingType.bind(this);
+    this.onClickDateClear = this.onClickDateClear.bind(this);
     this.onChangeDate = this.onChangeDate.bind(this);
     this.onChangeTime = this.onChangeTime.bind(this);
     this.onChangeHasImage = this.onChangeHasImage.bind(this);
     this.applyFilter = this.applyFilter.bind(this);
-    this.showOriginalFilter = this.showOriginalFilter.bind(this);
+    this.clearFilter = this.clearFilter.bind(this);
   }
 
   componentDidUpdate(prevProps) {
@@ -42,7 +42,7 @@ class PostSightingFilter extends React.Component {
   }
 
   onChangeSightingType(e) {
-    this.setState({ sightingType: e.target.value, changed: true });
+    this.setState({ sightingType: e.target.value });
   }
 
   onChangeDate(e) {
@@ -50,30 +50,31 @@ class PostSightingFilter extends React.Component {
     try {
       dateString = e.format('MMMM DD, YYYY');
       if (dateString) {
-        this.setState({ date: dateString, changed: true });
+        this.setState({ date: dateString });
       }
     } catch (error) {
       dateString = null;
     }
   }
 
+  onClickDateClear() {
+    this.setState({ date: '' });
+  }
+
   onChangeTime(e) {
-    this.setState({ time: e.target.value, changed: true });
+    this.setState({ time: e.target.value });
   }
 
   onChangeHasImage(e) {
-    this.setState({ hasImage: e.target.value, changed: true });
+    this.setState({ hasImage: e.target.value });
   }
 
-  showOriginalFilter() {
-    const { location: { search } } = this.props;
-    const params = new URLSearchParams(search);
+  clearFilter() {
     this.setState({
-      sightingType: params.get('sightingType') || '',
-      date: params.get('date') || '',
-      time: params.get('time') || '',
-      hasImage: params.get('image') || '',
-      changed: false,
+      sightingType: '',
+      date: '',
+      time: '',
+      hasImage: '',
     });
   }
 
@@ -93,7 +94,7 @@ class PostSightingFilter extends React.Component {
 
   render() {
     const {
-      sightingType, date, time, changed, hasImage,
+      sightingType, date, time, hasImage,
     } = this.state;
 
     let dateView = new Date(date);
@@ -125,17 +126,28 @@ class PostSightingFilter extends React.Component {
             <Panel.Title toggle>Sighting Date</Panel.Title>
           </Panel.Heading>
           <Panel.Body collapsible>
-            <ControlLabel>
-              Sighting Date:
-              {' '}
-              {date}
-            </ControlLabel>
+            <div align="left">
+              <ControlLabel>
+                Date:
+                {' '}
+                {date}
+              </ControlLabel>
+            </div>
             <Datetime
               value={dateView}
               timeFormat={false}
               input={false}
               onChange={this.onChangeDate}
             />
+            <div align="right">
+              <OverlayTrigger
+                placement="right"
+                delayShow={1000}
+                overlay={<Tooltip id="details">clear date selection</Tooltip>}
+              >
+                <Button bsStyle="primary" bsSize="xsmall" onClick={this.onClickDateClear}>clear</Button>
+              </OverlayTrigger>
+            </div>
           </Panel.Body>
         </Panel>
         <Panel>
@@ -182,13 +194,19 @@ class PostSightingFilter extends React.Component {
             <Button bsStyle="primary" type="button" onClick={this.applyFilter}>
               Apply
             </Button>
-            <Button
-              type="button"
-              onClick={this.showOriginalFilter}
-              disabled={!changed}
+            <OverlayTrigger
+              placement="right"
+              delayShow={1000}
+              overlay={<Tooltip id="details">Clear filter selections</Tooltip>}
             >
-              Reset
-            </Button>
+              <Button
+                type="button"
+                onClick={this.clearFilter}
+              >
+                Reset
+              </Button>
+            </OverlayTrigger>
+
           </ButtonToolbar>
         </FormGroup>
       </Col>
