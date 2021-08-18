@@ -74,6 +74,8 @@ function PostMap(props) {
   const [newMarkerLatLng, setNewMarkerLatLng] = React.useState(center);
   const [showing, setShowing] = React.useState(false);
 
+  const [address, setAddress] = React.useState([]);
+
 
 
 
@@ -129,14 +131,18 @@ function PostMap(props) {
   };
 
 
+  const returnAddress = (position) => {
+    const address = reverseGeocoding(position);
+  }
+
   const reverseGeocoding = (position) =>  {
+
     Geocode.setLanguage("en");
     Geocode.setApiKey("AIzaSyBxw1ZLvBFlT_uLrisvAPSF29rv2PKcynw");
     Geocode.setLocationType("ROOFTOP");
-    Geocode.enableDebug();
     Geocode.fromLatLng(position.lat, position.lng).then(
         (response) => {
-          const address = response.results[0].formatted_address;
+          const address= response.results[0].formatted_address;
           let city, state, country;
           for (let i = 0; i < response.results[0].address_components.length; i++) {
             for (let j = 0; j < response.results[0].address_components[i].types.length; j++) {
@@ -153,16 +159,16 @@ function PostMap(props) {
               }
             }
           }
-
-          console.log(city, state, country);
-          console.log(address.toString());
-
-          return address.toLocaleString();
+          setAddress(address);
+          //console.log(city, state, country);
+          //console.log(address.toString());
         },
         (error) => {
           console.error(error);
         }
     );
+
+
       }
 
   return (
@@ -211,6 +217,7 @@ function PostMap(props) {
                       <div>
                         Address:
                         {reverseGeocoding(post.location)}
+                        {address.toString()}
                         {/* Todo : get address based on location to get address */}
                       </div>
                       <div align="center">
