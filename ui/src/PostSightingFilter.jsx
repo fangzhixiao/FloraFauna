@@ -31,6 +31,7 @@ class PostSightingFilter extends React.Component {
     this.onChangeHasImage = this.onChangeHasImage.bind(this);
     this.applyFilter = this.applyFilter.bind(this);
     this.clearFilter = this.clearFilter.bind(this);
+    this.showOriginalFilter = this.showOriginalFilter.bind(this);
   }
 
   componentDidUpdate(prevProps) {
@@ -39,6 +40,17 @@ class PostSightingFilter extends React.Component {
     if (prevSearch !== search) {
       this.showOriginalFilter();
     }
+  }
+
+  // eslint-disable-next-line react/sort-comp
+  showOriginalFilter() {
+    const { location: { search } } = this.props;
+    const params = new URLSearchParams(search);
+    this.setState({
+      sightingType: params.get('sightingType') || '',
+      date: params.get('date') || '',
+      time: params.get('time') || '',
+    });
   }
 
   onChangeSightingType(e) {
