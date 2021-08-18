@@ -50,27 +50,27 @@ Instructions to run application locally on machine:
     * Styled the search and find me components to overlay on the map.
   
 Responsible Members: Jiatian and Zhining
-* Add new post functionality is moved to the map. To add a new post, right click on map, click
-    the plus button and the Post Add Nav Item modal will show up.  
-    ![UI Map addPost](readme_images/ite3_addPost.png)  
-Responsible Member: Zhining Fang  
-* Map style updated to make the markers easier to see.
-* Map will zoom in and out using scrolling if mouse is in the map.
-* 
-* Search bar at the top will return posts on the map that match the search on submission.
-* Added a new React Context, PostContext to help signal the PostMapWrapper component to rerender
-  postList (therefore triggering map rerendering) when a new post is added, deleted or restored by 
-  the user.
-* Profile component: Profile will now show only posts that the currently signed in user has made
-  allowing them to delete or edit the posts.  
-  ![UI Map profile](readme_images/ite3_userProfile.png)  
-* Post component: added a confirmed button and badge. Badge displays the number of confirms a 
-  sighting post has. The author of the post cannot confirm their own post. A user may confirm
-  a post more than once if they click out of the post and view it again.  
-  ![UI Map confirm](readme_images/ite3_confirmSighting.png)  
-* Certain actions cannot be done if the user is not signed in, including adding, editing, and
-  deleting a post, and commenting or confirming a post.  
-  ![UI Map comments](readme_images/ite3_comments.png)  
+  * Add new post functionality is moved to the map. To add a new post, right click on map, click
+      the plus button and the Post Add Nav Item modal will show up.  
+      ![UI Map addPost](readme_images/ite3_addPost.png)
+
+Responsible Member: Zhining Fang
+  * Map style updated to make the markers easier to see.
+  * Map will zoom in and out using scrolling if mouse is in the map.
+  * Search bar at the top will return posts on the map that match the search on submission.
+  * Added a new React Context, PostContext to help signal the PostMapWrapper component to rerender
+    postList (therefore triggering map rerendering) when a new post is added, deleted or restored by 
+    the user.
+  * Profile component: Profile will now show only posts that the currently signed in user has made
+    allowing them to delete or edit the posts.  
+    ![UI Map profile](readme_images/ite3_userProfile.png)  
+  * Post component: added a confirmed button and badge. Badge displays the number of confirms a 
+    sighting post has. The author of the post cannot confirm their own post. A user may confirm
+    a post more than once if they click out of the post and view it again.  
+    ![UI Map confirm](readme_images/ite3_confirmSighting.png)  
+  * Certain actions cannot be done if the user is not signed in, including adding, editing, and
+    deleting a post, and commenting or confirming a post.  
+    ![UI Map comments](readme_images/ite3_comments.png)  
       
 ---
 
