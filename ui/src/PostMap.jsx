@@ -224,8 +224,6 @@ function PostMap(props) {
                         {convertDate(post.spottedUTC, post.timezone)}
                       </div>
                       <div>
-                        Address:
-                        {' '}
                         {reverseGeocoding(post.location)}
                         {address.toString()}
                       </div>

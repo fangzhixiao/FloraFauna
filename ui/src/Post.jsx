@@ -258,7 +258,15 @@ class Post extends React.Component {
     function DisplayComments() {
       if (post.comments == null) {
         return (
-          <div align="center">This post has no comments...</div>
+          <ListGroup>
+            <ListGroupItem>
+              <div align="center"><b>Comments</b></div>
+            </ListGroupItem>
+            <ListGroupItem>
+              <div align="center">This post has no comments.</div>
+            </ListGroupItem>
+          </ListGroup>
+
         );
       }
 
@@ -270,7 +278,7 @@ class Post extends React.Component {
 
         const ListHeader = () => (
           <h5>
-            <Label>{commenterId}</Label>
+            <Label bsStyle="primary">{commenterId}</Label>
             {' | '}
             {createdString}
           </h5>
@@ -287,6 +295,9 @@ class Post extends React.Component {
       });
       return (
         <ListGroup>
+          <ListGroupItem>
+            <div align="center"><b>Comments</b></div>
+          </ListGroupItem>
           {commentList}
         </ListGroup>
       );
@@ -359,7 +370,9 @@ class Post extends React.Component {
               </Panel.Body>
             </Panel>
             <br />
-            <Row><DisplayComments /></Row>
+            <Row>
+              <DisplayComments />
+            </Row>
           </Modal.Body>
           <Modal.Footer>
             <FormGroup>
